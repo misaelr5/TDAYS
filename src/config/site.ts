@@ -13,5 +13,5 @@ export const site = {
 export function whatsappUrl(
   message = "Hola Travel Days, quiero consultar por un viaje. Me interesa saber las fechas, el precio y qué incluye.",
 ) {
-  return `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(message)}`;
+  return `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(message.toWellFormed())}`;
 }

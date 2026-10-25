@@ -1,0 +1,7 @@
+.approved-media-picture { display: block; width: 100%; height: 100%; }
+.approved-media-picture img { object-fit: cover; object-position: var(--media-focal); }
+.approved-media-video { position: relative; width: 100%; height: 100%; }
+.approved-media-video video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+.approved-media-video.has-frame video { opacity: 1; }
+.approved-media-video button { position: absolute; z-index: 1; left: 8px; bottom: 8px; padding: 10px 12px; background: #09121d; color: #f9f7ee; border: 1px solid currentColor; font: inherit; }
+@media (max-width: 767px) { .approved-media-picture img { object-position: var(--media-focal-mobile); } }

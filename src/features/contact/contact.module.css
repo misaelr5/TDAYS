@@ -4,6 +4,7 @@
     radial-gradient(ellipse at 90% 15%, #465453 0, transparent 65%), var(--ink);
 }
 .intro h1 {
+  overflow-wrap: anywhere;
   font-size: clamp(45px, 6.7vw, 105px);
   max-width: 1000px;
   line-height: 0.96;

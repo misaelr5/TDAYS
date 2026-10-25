@@ -1,14 +1,10 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/config/metadata";
 import { site, whatsappUrl } from "@/config/site";
 import { Arrow } from "@/components/icons";
 import { ContactForm } from "@/features/contact/contact-form";
 import { publishedDestinations } from "@/features/destinations/data";
 import styles from "@/features/contact/contact.module.css";
-export const metadata: Metadata = {
-  title: "Contacto",
-  description:
-    "Hablá con Travel Days por WhatsApp o visitanos en Felipe Erdman 222, Villa Dolores, Córdoba.",
-};
+export const metadata = pageMetadata("Contacto", "Hablá con Travel Days por WhatsApp o visitanos en Felipe Erdman 222, Villa Dolores, Córdoba.");
 export default function ContactPage() {
   return (
     <main id="contenido" className="interior-page">

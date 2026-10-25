@@ -1,0 +1,5 @@
+.destination-details { border-top: 1px solid #b6b9ae; padding: 17px 12px 21px; font-size: 13px; line-height: 1.65; overflow-wrap: anywhere; }
+.destination-details p + p, .destination-details p + ul, .destination-details ul + p { margin-top: 14px; }
+.destination-details ul { margin: 0; padding-left: 18px; }
+.destination-price { font-size: 18px; font-weight: 600; }
+@media (max-width: 767px) { .destination-details { padding: 14px 10px 18px; font-size: 12px; } }

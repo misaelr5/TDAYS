@@ -11,7 +11,6 @@ export function Hero() {
     <section className="hero section-pad" aria-labelledby="hero-title">
       <div className="hero-glow" aria-hidden="true" />
       <div className="hero-copy">
-        <p className="section-index">/ CADA VIAJE, UNA NUEVA HISTORIA</p>
         <h1 id="hero-title">
           <RevealText>EL MUNDO TE ESPERA.</RevealText>
           <span className="script hero-script">es tu momento</span>
@@ -67,7 +66,6 @@ export function LocationSection() {
       id="encontranos"
       aria-labelledby="location-title"
     >
-      <span className="section-index">/ CERCA, ANTES DE IR LEJOS</span>
       <div className="clock-layout">
         <div className="location-copy">
           <h2 id="location-title">
@@ -133,7 +131,7 @@ export function LocationSection() {
   );
 }
 
-export function StorySection() {
+export function StorySection({ historyHref = "/nosotros" }: { historyHref?: string }) {
   return (
     <section
       className="story section-pad"
@@ -174,7 +172,7 @@ export function StorySection() {
           Turismo nacional, internacional y receptivo. Viajes educativos y de
           egresados. La atención empieza con vos.
         </p>
-        <Link className="text-link" href="/nosotros">
+        <Link className="text-link" href={historyHref}>
           Conocé nuestra historia <Arrow />
         </Link>
       </div>
@@ -286,7 +284,7 @@ export function ConsultationSection() {
 
 export function Footer() {
   return (
-    <footer className="footer section-pad">
+    <footer id="navegacion" tabIndex={-1} className="footer section-pad">
       <div className="footer-top">
         <Link href="/" className="wordmark">
           <Image

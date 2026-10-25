@@ -6,6 +6,13 @@ Frontend local creado en `C:\Users\misael\Desktop\RECREAR`. El video original se
 
 Node.js 24 y npm. La vista local utiliza **http://127.0.0.1:3210** para no interferir con otros proyectos.
 
+La migración usa RECREAR como base definitiva y se revisa por etapas. Ver
+[respaldo, pruebas y referencia visual de la etapa 1](docs/Migracion-Etapa-1.md).
+La continuación está documentada en [migración de etapas 2–5](docs/Migracion-Etapas-2-5.md)
+y en la [bitácora](docs/Bitacora.md).
+`npm test` construye QA en `.next-qa/` y usa el puerto 3211; ejecutar los checks
+secuencialmente. No ejecutarlo al mismo tiempo que otro build o generación de tipos.
+
 ```powershell
 npm ci
 npm run dev
@@ -42,7 +49,9 @@ src/components/destination-cards.tsx  Catálogo y tarjetas en servidor
 src/components/destination-carousel.tsx  Controles y scroll en cliente
 src/components/header.tsx     Cabecera y diálogo móvil
 src/components/motion.tsx     RevealText, Parallax y configuración de Motion
-src/config/                   Contactos, parámetros de motion y fotos aprobadas
+src/config/                   Contactos, metadata, motion y manifiesto de medios
+src/features/agency/          Historia, valores, formación y perfiles condicionados
+src/features/media/           Resolución en servidor y presentación audiovisual
 src/features/destinations/    Datos tipados de los ocho destinos
 public/media/logos/           Logotipo original utilizado
 docs/                        Análisis de referencia y validación
@@ -56,9 +65,26 @@ Las fuentes son locales mediante `next/font/local`: Inter del proyecto y Caveat 
 
 ## Medios y contenido
 
-**Las postales son ilustraciones temporales, no fotografías de destinos.** No se incorporaron fotos externas o generadas. Para sustituirlas, agregar archivos autorizados a `public/` y registrarlos en `src/config/media.ts` con las claves `destination:brasil`, etc. `Postcard` acepta el medio y usa `next/image`; si no hay foto aprobada, mantiene la ilustración.
+**Las postales son ilustraciones temporales, no fotografías de destinos.** El manifiesto sigue vacío. El [flujo de medios autorizados](docs/Medios.md) valida permisos documentados, procedencia, rutas, archivos, variantes y focos antes del build. `ApprovedMedia` resuelve en servidor y entrega sólo datos públicos; sin recurso aprobado conserva la ilustración. No se incorporaron fotos externas o generadas.
 
 Los destinos no acreditan disponibilidad. No se agregaron precios, fechas, testimonios, certificaciones o servicios incluidos. Los contactos proceden de la configuración actual de Travel Days. Se conserva `noindex` y `Disallow: /`; dominio, canonical, sitemap y datos estructurados comerciales requieren información confirmada antes de publicación.
+
+Nosotros incorpora la trayectoria declarada de Javier, historia, valores, áreas y formación. Los perfiles personales pendientes no se renderizan. El catálogo muestra las ocho descripciones existentes y admite campos comerciales opcionales sólo cuando existan datos confirmados.
+
+## Pruebas reproducibles
+
+```powershell
+npm run lint
+npm run typecheck
+npm run verify:media
+npm test
+```
+
+`npm test` verifica hashes, medios, build de producción aislado y Playwright/Axe.
+`npm run test:visual` ejecuta las 29 comparaciones. Las referencias originales son
+inmutables; no existe comando de actualización automática. En páginas ampliadas se
+guardan capturas reales y diferencias antes de normalizar exclusivamente el DOM de
+prueba para comparar la composición previa. Ver el informe para límites y evidencias.
 
 ## Validación y diferencias
 

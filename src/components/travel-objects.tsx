@@ -1,6 +1,6 @@
 import { Plane } from "./icons";
-import Image from "next/image";
-import type { TravelPhoto } from "@/config/media";
+import type { MediaSlot } from "@/config/media";
+import { ApprovedMedia } from "@/features/media/approved-media";
 
 export function Passport({ className = "" }: { className?: string }) {
   return (
@@ -144,27 +144,16 @@ export function Postcard({
   name,
   kind = "coast",
   className = "",
-  photo,
+  mediaSlot,
 }: {
   name: string;
   kind?: string;
   className?: string;
-  photo?: TravelPhoto;
+  mediaSlot?: MediaSlot;
 }) {
   return (
     <div className={`postcard ${className}`}>
-      {photo ? (
-        <div className="postcard-photo">
-          <Image
-            src={photo.src}
-            alt={photo.alt}
-            fill
-            sizes="(max-width: 767px) 70vw, 30vw"
-          />
-        </div>
-      ) : (
-        <Landscape kind={kind} />
-      )}
+      {mediaSlot ? <ApprovedMedia slot={mediaSlot}><Landscape kind={kind} /></ApprovedMedia> : <Landscape kind={kind} />}
       <div className="postcard-caption">
         <span className="script">{name}</span>
         <span>

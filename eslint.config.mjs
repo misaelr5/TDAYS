@@ -8,6 +8,7 @@ export default defineConfig([
     "output/**",
     ".playwright-cli/**",
     ".next/**",
+    ".next-qa/**",
     ".next-qa-*/**",
     "next-env.d.ts",
     "test-results/**",

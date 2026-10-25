@@ -211,6 +211,7 @@ svg {
   display: none;
 }
 .menu-dialog {
+  overscroll-behavior: contain;
   position: fixed;
   inset: 0;
   width: 100%;
@@ -777,7 +778,7 @@ svg {
   top: 10px;
   opacity: 0;
   transform: translate(-4px, 4px);
-  transition: all 0.3s;
+  transition: opacity 0.3s, transform 0.3s;
 }
 .destination-card:hover .card-arrow,
 .destination-card:focus-visible .card-arrow {
@@ -795,7 +796,7 @@ svg {
   padding: 14px 12px;
   gap: 8px;
 }
-.destination-meta h3 {
+.destination-meta :is(h2, h3) {
   font-size: 11px;
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -1543,7 +1544,7 @@ svg {
     padding: 12px 8px;
     align-items: start;
   }
-  .destination-meta h3 {
+  .destination-meta :is(h2, h3) {
     font-size: 10px;
   }
   .destination-meta > span {
@@ -1821,7 +1822,7 @@ svg {
     flex-direction: column;
     gap: 6px;
   }
-  .destination-meta h3 {
+  .destination-meta :is(h2, h3) {
     font-size: 10px;
   }
   .destination-meta > span {

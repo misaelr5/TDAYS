@@ -3,8 +3,12 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { whatsappUrl } from "@/config/site";
 import { Arrow } from "@/components/icons";
-import { contactLimits, prepareMessage, type MessageKind } from "./messages";
+import { contactLimits, prepareMessage, type ContactField, type MessageKind } from "./messages";
 import styles from "./contact.module.css";
+
+function isContactControl(target: EventTarget): target is HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement {
+  return target instanceof HTMLInputElement || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement;
+}
 
 export function ContactForm({
   kind,
@@ -16,7 +20,15 @@ export function ContactForm({
   const inquiry = kind === "inquiry";
   const prefix = inquiry ? "inquiry" : "experience";
   const [draft, setDraft] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{ field: ContactField; message: string } | null>(null);
+  const errorId = `${prefix}-error`;
+  function accessibility(field: ContactField, help?: string) {
+    const invalid = error?.field === field;
+    return {
+      "aria-invalid": invalid || undefined,
+      "aria-describedby": [help, invalid ? errorId : null].filter(Boolean).join(" ") || undefined,
+    };
+  }
   const result = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (draft) result.current?.focus({ preventScroll: true });
@@ -34,10 +46,11 @@ export function ContactForm({
         field instanceof HTMLTextAreaElement
       ) {
         field.setCustomValidity(next.error);
+        field.focus();
         field.reportValidity();
       }
       setDraft(null);
-      setError(next.error);
+      setError({ field: next.field, message: next.error });
       return;
     }
     setError(null);
@@ -53,9 +66,21 @@ export function ContactForm({
           inquiry ? "Consulta de viaje" : "Compartir experiencia de viaje"
         }
         onSubmit={prepare}
-        onChange={() => {
+        onInvalid={(event) => {
+          const field = event.target;
+          if (!isContactControl(field)) return;
+          // Native validation emits one event per invalid field. Keep the
+          // message associated with the first field the browser will focus.
+          if (event.currentTarget.querySelector("input:invalid,select:invalid,textarea:invalid") !== field) return;
           setDraft(null);
-          setError(null);
+          setError({ field: field.name as ContactField, message: field.validationMessage });
+        }}
+        onChange={(event) => {
+          setDraft(null);
+          const field = event.target;
+          if (!isContactControl(field)) return;
+          field.setCustomValidity("");
+          if (error?.field === field.name) setError(null);
         }}
         onInput={(event) => {
           const field = event.target;
@@ -78,6 +103,7 @@ export function ContactForm({
             autoComplete="name"
             required={inquiry}
             maxLength={contactLimits.name}
+            {...accessibility("name")}
           />
         </div>
         {inquiry && (
@@ -92,7 +118,7 @@ export function ContactForm({
               autoComplete="tel"
               inputMode="tel"
               maxLength={contactLimits.phone}
-              aria-describedby="inquiry-phone-help"
+              {...accessibility("phone", "inquiry-phone-help")}
             />
             <p id="inquiry-phone-help">
               Incluí el código de área. También podemos conversar por WhatsApp.
@@ -110,6 +136,7 @@ export function ContactForm({
             list={`${prefix}-destinations`}
             maxLength={contactLimits.destination}
             autoComplete="off"
+            {...accessibility("destination")}
           />
           <datalist id={`${prefix}-destinations`}>
             {destinations.map((name) => (
@@ -122,7 +149,7 @@ export function ContactForm({
             <label htmlFor="experience-rating">
               ¿Cómo lo valorarías? <span>(opcional)</span>
             </label>
-            <select id="experience-rating" name="rating" defaultValue="">
+            <select id="experience-rating" name="rating" defaultValue="" {...accessibility("rating")}>
               <option value="">Sin puntuar</option>
               <option value="1">1 — Muy mala</option>
               <option value="2">2 — Mala</option>
@@ -144,7 +171,7 @@ export function ContactForm({
             rows={5}
             required
             maxLength={contactLimits.message}
-            aria-describedby={`${prefix}-message-help`}
+            {...accessibility("message", `${prefix}-message-help`)}
           />
           <p id={`${prefix}-message-help`}>
             {inquiry
@@ -164,8 +191,8 @@ export function ContactForm({
           <Arrow />
         </button>
         {error && (
-          <p className={styles.error} role="alert">
-            {error}
+          <p id={errorId} className={styles.error} role="alert">
+            {error.message}
           </p>
         )}
         {draft && (

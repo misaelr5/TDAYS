@@ -50,3 +50,21 @@ Si se necesitan solicitudes guardadas automáticamente, la siguiente etapa es el
 ## Concepto para aprender
 
 Separar **validar**, **preparar un borrador** y **confirmar entrega** permite mostrar estados honestos y conectar un backend más adelante sin reescribir la presentación. Invalidar el borrador al editar evita que el CTA conserve datos desactualizados.
+
+## Continuación de la migración · 25/10/2026
+
+Los errores identifican su campo mediante `aria-invalid` y `aria-describedby`, sin
+perder las ayudas existentes. La validación nativa informa y enfoca el primer campo
+inválido; editar otro campo no borra ese error. Se rechazan mensajes hechos sólo de
+espacios o caracteres invisibles. La construcción de WhatsApp conserva Unicode y
+convierte secuencias UTF-16 aisladas antes de codificar para evitar `URIError`.
+Editar cualquier dato invalida el borrador revisado. No hay envío automático.
+
+Sin JavaScript, el botón móvil inactivo se sustituye por un enlace «Menú» a la
+navegación del footer. Con JavaScript se conserva el diálogo original y su gestión
+de foco. La ampliación de texto por CSS al 200 % motivó `overflow-wrap` en el título
+de Contacto; las siete comparaciones visuales normales de esa página no cambiaron.
+
+La matriz actual cubre 28 combinaciones de ruta/ancho, Axe en las cuatro rutas a
+390 y 1440 px, teclado, reduced-motion, ausencia de JS y estados de error/borrador.
+Los resultados definitivos están en [el cierre de etapas 2–5](Migracion-Etapas-2-5.md).

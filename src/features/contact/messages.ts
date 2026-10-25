@@ -5,8 +5,10 @@ export const contactLimits = {
   destination: 100,
   message: 1500,
 } as const;
+export type ContactField = keyof typeof contactLimits | "rating";
 type DraftResult =
-  { ok: true; message: string } | { ok: false; field: string; error: string };
+  { ok: true; message: string } | { ok: false; field: ContactField; error: string };
+function hasVisibleText(value: string) { return value.replace(/[\p{White_Space}\p{Cf}]/gu, "").length > 0; }
 
 export function prepareMessage(data: FormData, kind: MessageKind): DraftResult {
   const read = (key: string) => {
@@ -18,7 +20,7 @@ export function prepareMessage(data: FormData, kind: MessageKind): DraftResult {
   const destination = read("destination");
   const message = read("message");
   const rating = read("rating");
-  if (kind === "inquiry" && !name)
+  if (kind === "inquiry" && !hasVisibleText(name))
     return {
       ok: false,
       field: "name",
@@ -33,7 +35,7 @@ export function prepareMessage(data: FormData, kind: MessageKind): DraftResult {
     if (value.length > contactLimits[field as keyof typeof contactLimits])
       return {
         ok: false,
-        field,
+        field: field as ContactField,
         error: `Usá hasta ${contactLimits[field as keyof typeof contactLimits]} caracteres.`,
       };
   }
@@ -49,7 +51,7 @@ export function prepareMessage(data: FormData, kind: MessageKind): DraftResult {
       error:
         "Revisá el teléfono: incluí entre 7 y 15 dígitos, con código de área.",
     };
-  if (!message)
+  if (!hasVisibleText(message))
     return {
       ok: false,
       field: "message",

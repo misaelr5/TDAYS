@@ -62,6 +62,7 @@ export function Header() {
           Hablemos de tu viaje <Arrow />
         </Link>
         <button
+          type="button"
           ref={opener}
           className="menu-toggle"
           onClick={() => setOpen(true)}
@@ -70,6 +71,10 @@ export function Header() {
         >
           Menú <span>＋</span>
         </button>
+        <noscript>
+          <style>{".site-header>button.menu-toggle{display:none!important}"}</style>
+          <a className="menu-toggle" href="#navegacion">Menú <span aria-hidden="true">＋</span></a>
+        </noscript>
       </header>
       <dialog
         id="main-menu"
@@ -96,7 +101,7 @@ export function Header() {
       >
         <div className="menu-top">
           <span className="wordmark">traveldays</span>
-          <button onClick={() => setOpen(false)} aria-label="Cerrar menú">
+          <button type="button" onClick={() => setOpen(false)} aria-label="Cerrar menú">
             Cerrar ×
           </button>
         </div>

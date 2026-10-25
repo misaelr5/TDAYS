@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
 const config: NextConfig = {
+  ...(process.env.RECREAR_QA === "1"
+    ? { distDir: ".next-qa", typescript: { tsconfigPath: "tsconfig.qa.json" } }
+    : {}),
   turbopack: { root: process.cwd() },
   outputFileTracingRoot: process.cwd(),
   poweredByHeader: false,

@@ -4,6 +4,8 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/sections";
 import { MotionProvider } from "@/components/motion";
 import "./globals.css";
+import "@/features/media/media.css";
+import "@/features/destinations/details.css";
 
 const inter = localFont({
   src: "./fonts/InterVariable.woff2",
@@ -32,6 +34,11 @@ export const metadata: Metadata = {
     locale: "es_AR",
     type: "website",
     siteName: "Travel Days",
+  },
+  twitter: {
+    card: "summary",
+    title: "Travel Days — El mundo te espera",
+    description: "Tu próximo viaje empieza con una charla.",
   },
 };
 export default function RootLayout({

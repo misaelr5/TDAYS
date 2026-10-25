@@ -7,10 +7,11 @@ import { whatsappUrl } from "@/config/site";
 import { Arrow } from "./icons";
 import { Postcard } from "./travel-objects";
 import { RevealText } from "./motion";
-import { approvedPhotos } from "@/config/media";
 import { DestinationCarousel } from "./destination-carousel";
+import { DestinationDetails } from "@/features/destinations/destination-details";
 
-export function DestinationCard({ destination }: { destination: Destination }) {
+export function DestinationCard({ destination, details = false }: { destination: Destination; details?: boolean }) {
+  const Title = details ? "h2" : "h3";
   return (
     <a
       className="destination-card"
@@ -24,18 +25,19 @@ export function DestinationCard({ destination }: { destination: Destination }) {
         <Postcard
           name={destination.name ?? ""}
           kind={destination.artwork}
-          photo={approvedPhotos[`destination:${destination.slug}`]}
+          mediaSlot={`destination:${destination.slug}`}
         />
         <span className="card-arrow">
           <Arrow />
         </span>
       </div>
       <div className="destination-meta">
-        <h3>{destination.name}</h3>
+        <Title>{destination.name}</Title>
         <span>
           Consultar <Arrow />
         </span>
       </div>
+      {details && <DestinationDetails destination={destination} />}
     </a>
   );
 }
@@ -43,7 +45,7 @@ export function DestinationCard({ destination }: { destination: Destination }) {
 export function Destinations({ full = false }: { full?: boolean }) {
   const Heading = full ? "h1" : "h2";
   const cards = publishedDestinations.map((destination) => (
-    <DestinationCard key={destination.slug} destination={destination} />
+    <DestinationCard key={destination.slug} destination={destination} details={full} />
   ));
   return (
     <section
