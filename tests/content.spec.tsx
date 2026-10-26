@@ -39,7 +39,7 @@ test("Nosotros cuenta historia, respaldo, equipo y compromiso con datos reales",
   await expect(narrative).toContainText("En 2018 fundó la agencia");
   await expect(narrative.locator("#historia ol li")).toHaveCount(4);
   await expect(page.locator("[data-agency-value]")).toHaveCount(8);
-  await expect(page.locator("[data-team-area]")).toHaveCount(4);
+  await expect(narrative.locator("#equipo [data-team-portrait]")).toHaveCount(6);
   await expect(page.locator(".agency-team-profile")).toHaveCount(8);
   for (const member of teamMembers) await expect(narrative).toContainText(member.name);
   await expect(narrative).toContainText("18904");
@@ -50,6 +50,11 @@ test("Nosotros cuenta historia, respaldo, equipo y compromiso con datos reales",
   await expect(narrative).not.toContainText(/pionera|primera empresa/i);
   await expect(page.getByRole("link", { name: "Conocé la historia" })).toHaveAttribute("href", "#historia");
   for (const link of await narrative.locator('a[href^="https://wa.me/"]').all()) await expect(link).toHaveAttribute("href", /5493544312904/);
+  // The live map is third-party: only a local illustration until the visitor asks for it.
+  const map = narrative.locator("[data-office-map]");
+  await expect(map.locator("iframe")).toHaveCount(0);
+  await expect(map.getByRole("link", { name: "Cómo llegar" })).toHaveAttribute("href", /^https:\/\/www\.google\.com\/maps\/search\/\?api=1&query=/);
+  await expect(map.getByRole("button", { name: "Ver mapa interactivo" })).toBeVisible();
 });
 
 for (const width of [320, 390, 1440]) {
@@ -70,10 +75,10 @@ for (const width of [320, 390, 1440]) {
   });
 }
 
-test("catálogo mantiene ilustraciones y consultas, muestra descripciones reales y omite datos ausentes", async ({ page }) => {
+test("catálogo muestra fotografías y consultas, muestra descripciones reales y omite datos ausentes", async ({ page }) => {
   await page.goto("/destinos");
   await expect(page.locator(".destination-card")).toHaveCount(8);
-  await expect(page.locator(".destination-card .landscape")).toHaveCount(8);
+  await expect(page.locator(".destination-card .postcard-photo img")).toHaveCount(8);
   await expect(page.locator(".destination-details")).toHaveCount(8);
   for (const destination of destinations) {
     const card = page.getByRole("link", { name: `Consultar por ${destination.name} en WhatsApp`, exact: true });

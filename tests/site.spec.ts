@@ -101,3 +101,21 @@ for (const route of routes) {
     });
   }
 }
+
+test("términos y condiciones: índice navegable, legajo, footer y axe", async ({ page }) => {
+  for (const width of [320, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    await page.locator("footer").getByRole("link", { name: "Términos y condiciones" }).click();
+    await expect(page).toHaveURL(/\/terminos$/);
+    await expect(page).toHaveTitle(/Términos y condiciones/);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Términos y condiciones");
+    await expect(page.getByText(/Legajo N\.º 18904/)).toBeVisible();
+    const index = page.getByRole("navigation", { name: "Índice de términos y condiciones" });
+    await index.getByRole("link", { name: /Datos personales/ }).click();
+    await expect(page).toHaveURL(/#datos-personales$/);
+    await expect(index.getByRole("link", { name: /Datos personales/ })).toHaveAttribute("aria-current", "location");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze()).violations).toEqual([]);
+  }
+});

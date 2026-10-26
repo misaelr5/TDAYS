@@ -2,6 +2,76 @@ import { prepareMessage, contactLimits } from "../src/features/contact/messages"
 import { whatsappUrl } from "../src/config/site";
 import { test, expect } from "./fixtures";
 
+for (const width of [320, 1440]) {
+  test(`contacto: tres opciones, un módulo visible y navegación estable a ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/contacto");
+    const navigation = page.getByRole("navigation", { name: "Elegí cómo podemos ayudarte" });
+    await expect(navigation.getByRole("link")).toHaveCount(3);
+    await expect(page.locator("[data-contact-panel]:visible")).toHaveCount(1);
+    await expect(page.locator("#experiencia")).toBeHidden();
+    const position = await page.evaluate(() => scrollY);
+    await navigation.getByRole("link", { name: "La agencia", exact: true }).click();
+    await expect(page.locator("#oficina")).toBeVisible();
+    await expect(page.locator("#consulta")).toBeHidden();
+    await expect(navigation.getByRole("link", { name: "La agencia", exact: true })).toHaveAttribute("aria-current", "location");
+    expect(await page.evaluate(() => scrollY)).toBe(position);
+    await expect(page.getByRole("link", { name: "Cómo llegar", exact: true })).toHaveAttribute("href", /^https:\/\/www.google.com\/maps\/search\/\?api=1&query=/);
+    await navigation.getByRole("link", { name: "Mi experiencia", exact: true }).focus();
+    await page.keyboard.press("Enter");
+    await expect(page.locator("#experiencia")).toBeVisible();
+    await expect(page.locator("[data-contact-panel]:visible")).toHaveCount(1);
+    await expect(page.getByRole("radio")).toHaveCount(5);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.reload();
+    await expect(page.locator("#experiencia")).toBeVisible();
+  });
+}
+
+test("estrellas: teclado, valoración sin comentario, cambio y limpieza invalidan el borrador", async ({ page }) => {
+  await page.goto("/contacto#experiencia");
+  const form = page.getByRole("form", { name: "Compartir experiencia de viaje", exact: true });
+  const first = form.getByRole("radio", { name: "1 estrella: Muy mala", exact: true });
+  await first.focus();
+  await page.keyboard.press("Space");
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("ArrowRight");
+  await expect(form.getByRole("radio", { name: "3 estrellas: Regular", exact: true })).toBeChecked();
+  await form.getByRole("button", { name: "Preparar mi opinión" }).click();
+  const draft = form.getByRole("status");
+  await expect(draft).toBeFocused();
+  const link = form.getByRole("link", { name: "Revisar y enviar en WhatsApp" });
+  const message = new URL((await link.getAttribute("href"))!).searchParams.get("text")!;
+  expect(message).toContain("Puntuación: 3/5");
+  expect(message).not.toContain("Experiencia:");
+  await form.getByRole("radio", { name: "4 estrellas: Buena", exact: true }).focus();
+  await page.keyboard.press("Space");
+  await expect(draft).toHaveCount(0);
+  await form.getByRole("button", { name: "Preparar mi opinión" }).click();
+  await expect(draft).toBeVisible();
+  await form.getByRole("button", { name: "Quitar puntuación" }).click();
+  await expect(form.locator('input[name="rating"]:checked')).toHaveCount(0);
+  await expect(draft).toHaveCount(0);
+  await form.getByRole("button", { name: "Preparar mi opinión" }).click();
+  await expect(form.getByRole("alert")).toContainText("Elegí tus estrellas");
+  await form.getByRole("radio", { name: "5 estrellas: Muy buena", exact: true }).focus();
+  await page.keyboard.press("Space");
+  await expect(form.getByRole("alert")).toHaveCount(0);
+  await form.getByRole("button", { name: "Preparar mi opinión" }).click();
+  await expect(draft).toBeVisible();
+});
+
+test("contacto: los tres módulos conservan reflow al ampliar al 200%", async ({ page }) => {
+  await page.setViewportSize({ width: 640, height: 900 });
+  await page.goto("/contacto");
+  await page.locator("body").evaluate(element => { element.style.zoom = "2"; });
+  const navigation = page.getByRole("navigation", { name: "Elegí cómo podemos ayudarte" });
+  for (const name of ["Mi viaje", "La agencia", "Mi experiencia"]) {
+    await navigation.getByRole("link", { name, exact: true }).click();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});
+
 test("consulta: obligatorios, espacios, teléfono, Unicode y borrador invalidado al editar", async ({ page }) => {
   await page.goto("/contacto");
   const form = page.getByRole("form", { name: "Consulta de viaje", exact: true });
@@ -18,6 +88,7 @@ test("consulta: obligatorios, espacios, teléfono, Unicode y borrador invalidado
   await submit.click();
   await expect(form.getByRole("alert")).toContainText("Escribí tu nombre");
   await name.fill(" Lucía & Sol ");
+  await form.getByText("Sumar destino y teléfono", { exact: false }).click();
   await phone.fill("abc");
   await submit.click();
   await expect(form.getByRole("alert")).toContainText("Revisá el teléfono");
@@ -52,6 +123,7 @@ test("errores nativos y de aplicación quedan asociados al campo y reciben foco"
   const message = form.getByLabel("Contanos qué tenés en mente", { exact: true });
   await message.fill("Consulta de prueba");
   const phone = form.getByLabel("Teléfono de contacto", { exact: false });
+  await form.getByText("Sumar destino y teléfono", { exact: false }).click();
   await phone.fill("abc");
   await form.getByRole("button", { name: "Preparar mi consulta" }).click();
   await expect(phone).toBeFocused();
@@ -75,8 +147,8 @@ test("texto invisible se rechaza y WhatsApp conserva Unicode sin romperse con su
   expect(new URL(whatsappUrl("QA \uD800")).searchParams.get("text")).toBe("QA �");
 });
 
-test("opinión escrita obligatoria; nombre, viaje y puntuación opcionales", async ({ page }) => {
-  await page.goto("/contacto");
+test("opinión privada: comentario sin puntuar, datos opcionales y borrador invalidado", async ({ page }) => {
+  await page.goto("/contacto#experiencia");
   const form = page.getByRole("form", { name: "Compartir experiencia de viaje", exact: true });
   const message = form.getByLabel("Contanos tu experiencia", { exact: true });
   const submit = form.getByRole("button", { name: "Preparar mi opinión" });
@@ -86,14 +158,16 @@ test("opinión escrita obligatoria; nombre, viaje y puntuación opcionales", asy
   await expect(link).toHaveCount(0);
   await message.fill("   ");
   await submit.click();
-  await expect(form.getByRole("alert")).toContainText("Escribí cómo fue tu experiencia");
+  await expect(form.getByRole("alert")).toContainText("Elegí tus estrellas");
   await message.fill(" Opinión de prueba: gracias 😊 & hasta pronto. ");
   await submit.click();
   expect(new URL((await link.getAttribute("href"))!).searchParams.get("text")).toContain("Puntuación: sin puntuar");
+  await form.getByText("Agregar mi nombre y viaje", { exact: false }).click();
   await form.getByLabel("Tu nombre", { exact: false }).fill("Prueba QA");
   await expect(link).toHaveCount(0);
   await form.getByLabel("¿Qué viaje hiciste?", { exact: false }).fill("Brasil");
-  await form.getByLabel("¿Cómo lo valorarías?", { exact: false }).selectOption("5");
+  await form.getByRole("radio", { name: "5 estrellas: Muy buena", exact: true }).focus();
+  await page.keyboard.press("Space");
   await submit.click();
   const url = new URL((await link.getAttribute("href"))!);
   expect(url.pathname).toBe("/5493544312904");

@@ -51,20 +51,20 @@ export function prepareMessage(data: FormData, kind: MessageKind): DraftResult {
       error:
         "Revisá el teléfono: incluí entre 7 y 15 dígitos, con código de área.",
     };
-  if (!hasVisibleText(message))
+  if (kind === "experience" && rating && !/^[1-5]$/.test(rating))
+    return {
+      ok: false,
+      field: "rating",
+      error: "Elegí una puntuación de 1 a 5 o dejala sin puntuar.",
+    };
+  if (!hasVisibleText(message) && (kind === "inquiry" || !rating))
     return {
       ok: false,
       field: "message",
       error:
         kind === "inquiry"
           ? "Contanos qué viaje tenés en mente."
-          : "Escribí cómo fue tu experiencia antes de continuar.",
-    };
-  if (kind === "experience" && rating && !/^[1-5]$/.test(rating))
-    return {
-      ok: false,
-      field: "rating",
-      error: "Elegí una puntuación de 1 a 5 o dejala sin puntuar.",
+          : "Elegí tus estrellas o escribí cómo fue tu experiencia.",
     };
   return {
     ok: true,
@@ -80,7 +80,7 @@ export function prepareMessage(data: FormData, kind: MessageKind): DraftResult {
       kind === "experience"
         ? `Puntuación: ${rating ? `${rating}/5` : "sin puntuar"}`
         : null,
-      `${kind === "inquiry" ? "Consulta" : "Experiencia"}: ${message}`,
+      hasVisibleText(message) ? `${kind === "inquiry" ? "Consulta" : "Experiencia"}: ${message}` : null,
     ]
       .filter(Boolean)
       .join("\n\n"),

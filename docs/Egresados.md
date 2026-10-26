@@ -99,3 +99,38 @@ sin datos de confianza para las familias y una versión móvil de ~3000 px.
   `<details>` nativo, numeradas y la primera abierta; cierre con WhatsApp y
   acceso a preguntas frecuentes.
 - Se respetan `prefers-reduced-motion`, foco visible y AA. Sin dependencias nuevas.
+
+## Inicio visual y compacto · 26/10/2026
+
+Dirección confirmada por el usuario: dirigirse primero a madres y padres, mostrar
+Primaria y Secundaria juntas y poner el recuerdo con sus compañeros en primer plano.
+
+- `graduates-preview.tsx` y su CSS Module presentan **EGRESADOS** en grande,
+  dos módulos visuales con una frase breve y una consulta de WhatsApp por nivel.
+  Cada módulo completo es un enlace nativo con nombre accesible y foco visible.
+- Un módulo pequeño para las familias enlaza a las preguntas frecuentes de
+  `/destinos#egresados-preguntas`. Inicio ya no repite trayectoria, legajo,
+  proceso de tres pasos ni el cierre largo. La información permanece en la
+  versión ampliada de Destinos.
+- Se reutilizan los textos breves y mensajes de consulta existentes, los tokens
+  de marca y las ilustraciones originales. El encuadre horizontal acerca al grupo
+  sin sustituir la ilustración; el encuadre anterior sigue siendo el predeterminado
+  para Destinos. No se agregaron datos comerciales ni fotografías sin autorización.
+- Todo el módulo se renderiza en servidor. CSS Grid muestra dos columnas desde
+  600 px y una en pantallas menores; no se añade JavaScript ni dependencias.
+  Los estados hover son suaves y se desactivan con movimiento reducido.
+- La variante Inicio contiene actualmente 44 palabras visibles. La revisión
+  responsive cubre 320, 390, 600, 768, 1024, 1440 y 1920 px. Las capturas de
+  comparación se guardan en `output/playwright/graduates-before-*.png` y
+  `output/playwright/graduates-after-*.png`.
+
+Patrones reutilizados: [CSS Grid nativo](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Grid_layout/Common_grid_layouts)
+y [enlaces con propósito explícito](https://www.w3.org/WAI/WCAG21/Understanding/link-purpose-in-context).
+El criterio es mostrar primero la elección y dejar los detalles a un enlace de
+distancia, sin esconder las dos alternativas detrás de un selector.
+
+Validación de esta revisión: `npm run lint`, compilación de producción con
+TypeScript mediante QA y 11 pruebas Playwright/Axe aprobadas. Se comprobaron
+Inicio y Destinos, las consultas específicas, teclado y navegación sin JavaScript.
+En las capturas comparables, el bloque pasó de 1987 a 1035 px de alto en escritorio
+(viewport de 1440 px) y de 2538 a 1049 px en móvil (viewport de 390 px).

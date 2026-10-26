@@ -7,6 +7,7 @@ import { MediaContent } from "@/features/media/approved-media";
 import { graduates } from "./data";
 import { GraduatesExplorer } from "./graduates-explorer";
 import { GraduatesScene } from "./graduates-scene";
+import { GraduatesPreview } from "./graduates-preview";
 import styles from "./graduates.module.css";
 
 export function GraduatesSection({ expanded = false }: { expanded?: boolean }) {
@@ -17,9 +18,11 @@ export function GraduatesSection({ expanded = false }: { expanded?: boolean }) {
     href: whatsappUrl(level.message),
     // Approved group media, when it exists, replaces the sunset illustration only.
     visual: level.id === "secundaria" && media ? <MediaContent asset={media} />
-      : <GraduatesScene variant={level.id === "primaria" ? "morning" : "sunset"} />,
+      : <GraduatesScene variant={level.id === "primaria" ? "morning" : "sunset"} framing={expanded ? "portrait" : "landscape"} />,
     caption: level.id === "secundaria" && media ? "Su próxima historia empieza acá." : level.caption,
   }));
+
+  if (!expanded) return <GraduatesPreview levels={levels} />;
 
   return (
     <section id="egresados" className={`${styles.section} section-pad`} aria-labelledby="graduates-title" data-graduates={expanded ? "expanded" : "preview"}>

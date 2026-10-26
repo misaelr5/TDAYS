@@ -5,6 +5,8 @@ export type Destination = {
   /** Editorial labels and WhatsApp drafts, not confirmation of a bookable departure. */
   consultation?: { label: string; message: string };
   category: "Internacional" | "Nacional" | "Receptivo" | null;
+  /** Short confirmed region shown beside the category; omit when unconfirmed. */
+  location?: string;
   /** Content inventory; publication uses the authorized destination:slug slot in config/media.ts. */
   images: { src: string; alt: string }[];
   dates: { departure: string; return: string | null }[];
@@ -80,6 +82,7 @@ export const destinations: Destination[] = [
         "Hola Travel Days, quiero consultar por Cataratas del Iguazú. Me interesa saber las fechas, las visitas, el alojamiento y el precio.",
     },
     category: "Nacional",
+    location: "Misiones",
     status: "published",
     artwork: "falls",
   },
@@ -94,7 +97,8 @@ export const destinations: Destination[] = [
       message:
         "Hola Travel Days, quiero consultar por Los Túneles. ¿Se puede organizar una visita para mi fecha? ¿Cómo está el acceso y cuál sería el recorrido, la duración y el precio?",
     },
-    category: "Receptivo",
+    category: "Nacional",
+    location: "Córdoba",
     status: "published",
     artwork: "road",
   },
@@ -110,21 +114,23 @@ export const destinations: Destination[] = [
         "Hola Travel Days, quiero consultar por el Festival de Jesús María. ¿Qué fechas se pueden evaluar, cómo sería el traslado y las entradas están incluidas o se compran aparte?",
     },
     category: "Nacional",
+    location: "Córdoba",
     status: "published",
     artwork: "festival",
   },
   {
     ...empty,
     slug: "bayahibe",
-    name: "Bayahibe",
+    name: "Bayahíbe",
     description:
       "Un destino de playa en República Dominicana. Contanos cuántos días tenés y consultá las opciones de estadía.",
     consultation: {
-      label: "Consultar por Bayahibe",
+      label: "Consultar por Bayahíbe",
       message:
-        "Hola Travel Days, quiero consultar por Bayahibe. Me interesa saber las opciones de alojamiento, las fechas y qué contempla el precio.",
+        "Hola Travel Days, quiero consultar por Bayahíbe. Me interesa saber las opciones de alojamiento, las fechas y qué contempla el precio.",
     },
     category: "Internacional",
+    location: "República Dominicana",
     status: "published",
     artwork: "coast",
   },
@@ -140,6 +146,7 @@ export const destinations: Destination[] = [
         "Hola Travel Days, quiero consultar por Valeria del Mar. ¿Qué opciones de alojamiento podemos evaluar, para cuántas noches y a qué precio?",
     },
     category: "Nacional",
+    location: "Buenos Aires",
     status: "published",
     artwork: "coast",
   },
@@ -154,3 +161,8 @@ export const catalogPositions = destinations.map((destination) =>
     ? { kind: "destination" as const, destination }
     : { kind: "pending" as const, id: destination.slug },
 );
+
+// Shared by the home gallery and the catalog card so the photo morphs between them.
+export function destinationTransitionName(slug: string) {
+  return `destination-photo-${slug}`;
+}

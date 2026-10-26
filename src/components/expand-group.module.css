@@ -1,0 +1,11 @@
+/* Collapsible strips on phones. Items read `--open` (0 → 1) for anything that
+   should reveal once their strip opens; wider screens keep the list's own layout. */
+.group { list-style: none; }
+
+@media (max-width: 767px) {
+  .group { --tile-gap: 12px; --tile-collapsed: 116px; --tile-open: clamp(400px, 108vw, 460px); display: flex; flex-direction: column; gap: var(--tile-gap); }
+  .item { --open: 0; position: relative; height: var(--tile-collapsed); transition: height .55s var(--ease), --open .2s ease; }
+  .item[data-current] { --open: 1; height: var(--tile-open); transition: height .55s var(--ease), --open .4s ease .14s; }
+  .group[data-instant] .item { transition: none; }
+}
+@media (prefers-reduced-motion: reduce) { .item, .item[data-current] { transition: none; } }

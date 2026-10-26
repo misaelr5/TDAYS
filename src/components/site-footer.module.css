@@ -1,10 +1,10 @@
 .footer.footer { padding: 0; background: var(--paper); color: #fff; }
-.panel { padding: 80px clamp(24px, 6vw, 100px) 32px; border-radius: 24px 24px 0 0; background: linear-gradient(135deg, #102440, var(--deep) 65%); }
+.panel { padding: 52px clamp(24px, 6vw, 100px) 28px; border-radius: 24px 24px 0 0; background: linear-gradient(135deg, #102440, var(--deep) 65%); }
 .grid { display: grid; grid-template-columns: .8fr .9fr 1.1fr 2fr; gap: 36px; max-width: 1280px; margin: 0 auto; }
 .column { display: flex; align-items: flex-start; flex-direction: column; gap: 11px; }
 .column h2, .contact h2 { margin: 0 0 10px; font-size: 14px; font-weight: 550; letter-spacing: -.02em; line-height: 1.4; }
 .column a { display: inline-flex; align-items: center; min-height: 30px; font-size: 11px; line-height: 1.6; color: #b9b5b1; transition: color .2s; }
-.column a:hover, .visit a:hover { color: var(--brand-orange); }
+.column a:hover { color: var(--brand-orange); }
 .contact { min-width: 0; padding-left: 36px; }
 .contact > p { margin-top: 18px; color: #b9b5b1; font-size: 12px; line-height: 1.75; }
 .contactPill { display: flex; align-items: center; gap: 10px; min-height: 52px; margin-top: 24px; padding: 5px 6px 5px 15px; border: 1px solid #ffffff45; border-radius: 40px; background: #ffffff0d; backdrop-filter: blur(18px); box-shadow: inset 0 1px 0 #ffffff15; font-size: 11px; }
@@ -16,10 +16,9 @@
 .socials a { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid #ffffff30; border-radius: 50%; background: #ffffff17; transition: background .2s; }
 .socials a:hover { background: #ffffff30; }
 .socials svg { width: 18px; height: 18px; }
-.visit { display: grid; gap: 7px; margin-top: 22px; font-size: 10px; line-height: 1.65; color: #b9b5b1; }
-.visit p { max-width: 43ch; }
-.visit a { width: fit-content; min-height: 28px; display: inline-flex; align-items: center; }
-.bottom { position: relative; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 16px 28px; max-width: 1280px; margin: 64px auto 0; padding-top: 25px; font-size: 11px; line-height: 1.6; }
+.socialLabel { display: none; }
+.bottom { position: relative; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 16px 28px; max-width: 1280px; margin: 38px auto 0; padding-top: 20px; font-size: 11px; line-height: 1.6; }
+.bottom > .legal { position: static; display: inline-flex; align-items: center; min-height: 30px; color: #b9b5b1; text-decoration: underline; text-decoration-color: #b9b5b166; text-underline-offset: 4px; }
 .bottom > a { position: absolute; right: 0; display: inline-flex; align-items: center; gap: 12px; min-height: 30px; color: #b9b5b1; font-size: 10px; }
 .footer a:focus-visible { outline-color: #fff; }
 @media (max-width: 1100px) {
@@ -29,17 +28,25 @@
   .pillButton { width: 100%; margin-top: 2px; }
 }
 @media (max-width: 767px) {
-  .panel { padding: 48px 24px 24px; border-radius: 24px 24px 0 0; }
-  .grid { grid-template-columns: 1fr 1fr; gap: 32px 22px; }
-  .column { gap: 8px; }
-  .column h2 { font-size: 13px; margin-bottom: 6px; }
-  .column a { font-size: 11px; }
-  .contact { grid-column: 1 / -1; border-top: 1px solid #3d3936; padding-top: 30px; }
+  .panel { padding: 36px 24px 24px; border-radius: 24px 24px 0 0; }
+  /* Mobile keeps the invitation, the routes and the legal line; everything the
+     invitation already offers (WhatsApp, email, Instagram, contact) goes. */
+  .grid { grid-template-columns: 1fr; gap: 28px; }
+  .footer .extra { display: none; }
+  .routes { order: 2; flex-direction: row; flex-wrap: wrap; gap: 6px; }
+  .routes h2 { display: none; }
+  .routes a { min-height: 36px; padding: 0 14px; border: 1px solid #ffffff24; border-radius: 40px; background: #ffffff0d; color: #d6dde6; font-size: 12px; }
+  .contact { order: 1; }
   .contact h2 { font-size: 22px; font-weight: 500; letter-spacing: -.04em; }
   .contactPill { flex-wrap: nowrap; padding: 5px 6px 5px 12px; }
   .pillButton { width: auto; margin: 0; padding: 8px 12px; }
-  .socials { justify-content: flex-start; margin-top: 22px; }
-  .bottom { justify-content: space-between; margin-top: 35px; padding-top: 24px; border-top: 1px solid #3d3936; font-size: 10px; }
+  /* Two full-width pills, Instagram 60% and email 40%. */
+  .socials { flex-wrap: nowrap; justify-content: stretch; margin-top: 14px; }
+  .socials a:not(.extra) { display: flex; align-items: center; justify-content: center; gap: 10px; width: auto; height: 48px; border-radius: 40px; font-size: 12px; font-weight: 500; }
+  .socials a:first-child { flex: 3 1 0; }
+  .socials a:nth-child(2) { flex: 2 1 0; }
+  .socialLabel { display: inline; }
+  .bottom { justify-content: space-between; margin-top: 24px; padding-top: 18px; border-top: 1px solid #ffffff1f; font-size: 10px; }
   .bottom > a { position: static; }
 }
 @media (max-width: 359px) { .contactPill { flex-wrap: wrap; }.pillButton { width: 100%; } }

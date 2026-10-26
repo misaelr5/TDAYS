@@ -41,7 +41,7 @@ test("el menú móvil sin JavaScript ofrece acceso real a las cuatro rutas", asy
 });
 
 test("opinión inválida y borrador mantienen etiquetas, foco, asociación y axe", async ({ page }, testInfo) => {
-  await page.goto("/contacto");
+  await page.goto("/contacto#experiencia");
   const form = page.getByRole("form", { name: "Compartir experiencia de viaje" });
   const message = form.getByLabel("Contanos tu experiencia", { exact: true });
   await form.getByRole("button", { name: "Preparar mi opinión" }).click();

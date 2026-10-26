@@ -17,7 +17,7 @@ const image: ImageAsset = {
 };
 
 test("autorización: vacío, pendiente, rechazado y evidencia incompleta mantienen fallback", () => {
-  expect(Object.keys(mediaManifest).sort()).toEqual(["page:nosotros", "team:azul-barrera", "team:daiana-dascon", "team:javier-garay", "team:karoll-tello"]);
+  expect(Object.keys(mediaManifest).sort()).toEqual(["destination:bayahibe", "destination:brasil", "destination:caribe", "destination:carnavales-de-jujuy", "destination:cataratas-del-iguazu", "destination:festival-de-jesus-maria", "destination:los-tuneles", "destination:valeria-del-mar", "page:nosotros", "team:azul-barrera", "team:daiana-dascon", "team:ezequiel-grego", "team:javier-garay", "team:jorge-angelina", "team:karoll-tello"]);
   expect(approvedMedia("hero", {})).toBeNull();
   for (const status of ["pending", "rejected"] as const) {
     expect(resolveMedia("hero", { hero: { ...image, authorization: { status } } })).toBeNull();
@@ -90,24 +90,28 @@ test("video exige poster válido y respeta movimiento, red y ahorro de datos", (
 test("verificador real y hooks de build usan el manifiesto", () => {
   const result = spawnSync(process.execPath, ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", "scripts/verify-media.mjs"], { encoding: "utf8", windowsHide: true });
   expect(result.status).toBe(0);
-  expect(result.stdout).toContain("Medios aprobados verificados: 10");
+  expect(result.stdout).toContain("Medios aprobados verificados: 22");
   expect(verifyManifest({ hero: image })).toEqual({ files: 2, errors: [] });
   const pkg = JSON.parse(readFileSync("package.json", "utf8"));
   expect(pkg.scripts.prebuild).toBe("npm run verify:media");
 });
 
-test("Home conserva sus ilustraciones y no solicita videos ni material pendiente", async ({ page }) => {
+test("Home muestra fotografías licenciadas de destinos y no solicita videos ni material pendiente", async ({ page }) => {
   const videos: string[] = [];
   page.on("request", request => { if (/\.(mp4|webm)(?:[?#]|$)/.test(request.url())) videos.push(request.url()); });
   await page.goto("/");
-  await expect(page.locator("video, .postcard-photo")).toHaveCount(0);
-  await expect(page.locator("[data-destination-carousel] .landscape")).toHaveCount(8);
+  await expect(page.locator("video")).toHaveCount(0);
+  await expect(page.locator("[data-destination-carousel] .postcard-photo img")).toHaveCount(8);
+  await expect(page.locator("[data-destination-carousel] .landscape")).toHaveCount(0);
+  const sources = await page.locator("[data-destination-carousel] img").evaluateAll(images => images.map(image => image.getAttribute("src")));
+  expect(new Set(sources).size).toBe(8);
+  for (const source of sources) expect(source).toContain("/_next/image?url=%2Fmedia%2Fdestinations%2F");
   expect(videos).toEqual([]);
 });
 
 test("las copias públicas son WebP optimizadas y no incluyen EXIF, XMP ni perfiles privados", () => {
   const paths = readdirSync("public/media/travel-days", { recursive: true }).map(String).filter(path => path.endsWith(".webp"));
-  expect(paths).toHaveLength(15);
+  expect(paths).toHaveLength(21);
   for (const path of paths) {
     const data = readFileSync(resolve("public/media/travel-days", path));
     expect(data.length, path).toBeLessThan(110_000);
@@ -130,16 +134,47 @@ test("Nosotros muestra oficina y retratos autorizados con carga responsive y sin
   await expect(office).toHaveAttribute("loading", "eager");
   await expect(office).toHaveAttribute("fetchpriority", "high");
   await expect(office).toHaveAttribute("alt", /Escritorios y sillas/);
-  await expect(page.locator("[data-team-portrait]")).toHaveCount(4);
+  await expect(page.locator("[data-team-portrait]")).toHaveCount(6);
   for (const photo of await page.locator("[data-team-portrait] img").all()) {
     await expect(photo).toHaveAttribute("loading", "lazy");
     await expect(photo).toHaveAttribute("srcset", /.+/);
   }
-  for (const id of ["ezequiel-grego", "jorge-angelina", "dj-mosca"]) {
+  for (const id of ["dj-mosca"]) {
     await expect(page.locator(`img[src*="${id}"]`)).toHaveCount(0);
   }
   const html = await page.content();
   expect(html).not.toContain("Confirmación explícita del usuario");
   expect(html).not.toContain("fotos videos y contenido traveldays");
   expect(videos).toEqual([]);
+});
+
+test("fotos de destinos: licencia libre con atribución visible, WebP sin metadatos y sin duplicados", async ({ page }) => {
+  const destinations = Object.entries(mediaManifest).filter(([slot]) => slot.startsWith("destination:"));
+  expect(destinations).toHaveLength(8);
+  for (const [slot, asset] of destinations) {
+    expect(asset!.credit, slot).toBeDefined();
+    expect(asset!.credit!.license).toMatch(/^CC BY(-SA)? [234]\.0$/);
+    expect(asset!.credit!.source).toMatch(/^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);
+    expect(asset!.credit!.licenseUrl).toMatch(/^https:\/\/creativecommons\.org\/licenses\/by(-sa)?\/[234]\.0\/$/);
+  }
+  const paths = readdirSync("public/media/destinations").filter(path => path.endsWith(".webp"));
+  expect(paths).toHaveLength(8);
+  const hashes = new Set<string>();
+  for (const path of paths) {
+    const data = readFileSync(resolve("public/media/destinations", path));
+    expect(data.length, path).toBeLessThan(800_000);
+    expect(data.toString("ascii", 8, 12)).toBe("WEBP");
+    hashes.add(data.toString("base64", 0, 4096));
+    for (let offset = 12; offset + 8 <= data.length;) {
+      expect(["EXIF", "XMP ", "ICCP"], path).not.toContain(data.toString("ascii", offset, offset + 4));
+      const size = data.readUInt32LE(offset + 4);
+      offset += 8 + size + (size % 2);
+    }
+  }
+  expect(hashes.size).toBe(8);
+  await page.goto("/");
+  const credits = page.locator("#destinos details");
+  await credits.locator("summary").click();
+  await expect(credits.locator("li")).toHaveCount(8);
+  await expect(credits.getByRole("link", { name: /^CC BY/ })).toHaveCount(8);
 });

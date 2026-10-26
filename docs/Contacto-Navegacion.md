@@ -68,3 +68,47 @@ de Contacto; las siete comparaciones visuales normales de esa página no cambiar
 La matriz actual cubre 28 combinaciones de ruta/ancho, Axe en las cuatro rutas a
 390 y 1440 px, teclado, reduced-motion, ausencia de JS y estados de error/borrador.
 Los resultados definitivos están en [el cierre de etapas 2–5](Migracion-Etapas-2-5.md).
+
+## Contacto minimalista con puntuación · 26/10/2026
+
+Dirección confirmada por el usuario: título grande, tres acciones claras, menos
+CTA repetidos de WhatsApp y la opinión como opción secundaria que se abre al elegirla.
+La navegación reutiliza el lenguaje visual y la pastilla de vidrio del navbar.
+
+- **Mi viaje**: nombre y consulta visibles. Destino y teléfono se añaden desde
+  un desplegable opcional. Se conserva la validación y la revisión del borrador.
+- **La agencia**: dirección y horarios confirmados, enlace para llegar mediante
+  una búsqueda de la dirección en Google Maps, correo y teléfono. Sin mapa embebido
+  ni solicitudes externas automáticas.
+- **Mi experiencia**: cinco estrellas seleccionables, sin puntuación inicial,
+  comentario opcional y datos personales opcionales al desplegar. Se acepta una
+  puntuación sin comentario o un comentario sin puntuación; ambos vacíos se rechazan.
+  Cambiar o quitar la puntuación invalida el borrador preparado.
+
+### Arquitectura y accesibilidad
+
+`contact-explorer.tsx` reutiliza `useGlide` sin modificar el navbar. Los enlaces
+`#consulta`, `#oficina` y `#experiencia` funcionan sin JavaScript. Al hidratar,
+`useSyncExternalStore` sincroniza el hash con la opción activa; el estado explícito
+controla el panel visible sin producir saltos de scroll. CSS `:target` cubre la
+navegación sin JavaScript. Los formularios mantienen entonces sus enlaces alternativos.
+
+`star-rating.tsx` utiliza radios HTML nativos para permitir Tab, flechas y Espacio.
+Cada estrella tiene un nombre accesible con su valor y descripción, foco visible
+y un objetivo táctil de al menos 40 × 44 px. El hover solo previsualiza; la puntuación
+se cambia con un clic o con el teclado. Se puede quitar con un botón explícito.
+Las transiciones respetan movimiento reducido.
+
+`messages.ts` conserva límites, codificación segura y validación. La valoración
+viaja como `Puntuación: N/5` en el borrador privado. No hay almacenamiento,
+publicación de opiniones, promedio de estrellas ni simulación de envío exitoso.
+`site.googleReviewsUrl` sigue sin configurar: una reseña pública requiere la URL
+oficial confirmada y una decisión expresa sobre ese flujo.
+
+Se reutilizaron React/Next.js, CSS Modules, HTML nativo, `useGlide` y `whatsappUrl`.
+No se agregaron dependencias. Referencias de patrones:
+[puntuación mediante un grupo de radios](https://www.w3.org/WAI/ARIA/apg/patterns/radio/examples/radio-rating/)
+y [desplegables HTML nativos](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/details).
+
+Capturas de los tres estados en escritorio y móvil:
+`output/playwright/contact-minimal-{consulta,oficina,experiencia}-{390,1440}.png`.

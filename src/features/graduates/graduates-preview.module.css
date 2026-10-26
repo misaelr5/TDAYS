@@ -1,0 +1,141 @@
+.section {
+  padding-top: clamp(36px, 5vw, 72px);
+  padding-bottom: clamp(36px, 5vw, 72px);
+  background: var(--paper);
+  color: var(--ink);
+  scroll-margin-top: 24px;
+}
+
+.inner { container-type: inline-size; max-width: 1180px; margin-inline: auto; }
+.heading { margin-bottom: clamp(26px, 3.5vw, 44px); text-align: center; }
+.heading h2 {
+  color: var(--action);
+  /* Container units keep the word inside its column at 200% zoom too. */
+  font-size: clamp(46px, min(11.8vw, 16cqi), 156px);
+  font-weight: 600;
+  line-height: .98;
+  letter-spacing: -.065em;
+}
+.heading > p { margin-top: 18px; font-size: clamp(15px, 1.6vw, 21px); line-height: 1.5; color: var(--ink); }
+
+.levels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: var(--paper-white);
+  transition: border-color 220ms var(--ease);
+}
+.visual {
+  position: relative;
+  isolation: isolate;
+  aspect-ratio: 1.65;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--deep);
+}
+.visual > svg, .visual > picture { position: absolute; inset: 0; width: 100%; height: 100%; transition: transform 650ms var(--ease); }
+.visual img { object-fit: cover; }
+.caption {
+  position: absolute;
+  bottom: 14px;
+  left: 16px;
+  padding: 4px 9px;
+  border-radius: 40px;
+  background: var(--deep);
+  color: var(--paper-white);
+  font-size: 10px;
+  line-height: 1.5;
+}
+.cardBody { display: flex; flex: 1; flex-direction: column; align-items: flex-start; padding: 22px 18px 16px; }
+.cardHeading { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 12px; }
+.cardHeading h3 { font-size: clamp(29px, 3vw, 42px); font-weight: 500; line-height: 1.1; letter-spacing: -.05em; }
+.arrow {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--action);
+  color: var(--paper-white);
+  transition: background 220ms var(--ease);
+}
+.arrow svg { width: 18px; height: 18px; }
+.cardBody > p { margin-top: 10px; font-size: 15px; line-height: 1.6; }
+.cta { margin-top: auto; padding-top: 22px; color: var(--action); font-size: 13px; line-height: 1.5; font-weight: 500; }
+.card:focus-visible { outline: 3px solid var(--action); outline-offset: 5px; }
+.card:focus-visible .cta { text-decoration: underline; text-underline-offset: 4px; }
+
+.families {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-top: 20px;
+  padding: 24px 28px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: inset 0 1px 0 var(--paper-white);
+}
+.families h3 { font-size: clamp(18px, 2vw, 23px); font-weight: 500; line-height: 1.3; letter-spacing: -.035em; }
+.families p { margin-top: 5px; font-size: 13px; line-height: 1.6; }
+.families a {
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 16px;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid var(--line);
+  border-radius: 40px;
+  background: var(--paper-white);
+  color: var(--action);
+  font-size: 13px;
+  line-height: 1.5;
+  font-weight: 500;
+  transition: border-color 220ms var(--ease);
+}
+.families a svg { width: 15px; height: 15px; }
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover, .families a:hover { border-color: var(--action); }
+  .card:hover .visual > svg, .card:hover .visual > picture { transform: scale(1.025); }
+  .card:hover .cta { text-decoration: underline; text-underline-offset: 4px; }
+}
+
+@media (max-width: 767px) {
+  .levels { gap: 16px; }
+  .card { padding: 8px; border-radius: var(--radius-card); }
+  .visual { aspect-ratio: 1.35; border-radius: 17px; }
+  .cardBody { padding: 18px 12px 14px; }
+  .cardHeading h3 { font-size: 28px; }
+  .arrow { width: 36px; height: 36px; }
+  .cardBody > p { font-size: 13px; }
+  .cta { padding-top: 18px; font-size: 12px; }
+  .families { flex-direction: column; align-items: flex-start; gap: 16px; padding: 22px; }
+  .families a { flex-shrink: 1; }
+}
+
+@media (max-width: 599px) {
+  .levels { grid-template-columns: minmax(0, 1fr); }
+  .heading > p { margin-top: 12px; }
+  .visual { aspect-ratio: 1.65; }
+  .cardHeading h3 { font-size: 32px; }
+  .families a { width: 100%; }
+}
+
+/* A narrow column (200% zoom, small tablets) stacks the two levels so titles fit. */
+@container (max-width: 560px) {
+  .levels { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card, .visual > svg, .visual > picture, .arrow, .families a { transition: none; }
+  .card:hover .visual > svg, .card:hover .visual > picture { transform: none; }
+}

@@ -6,6 +6,9 @@
 .allDestinations svg { width: 16px; height: 16px; }
 .allDestinations:hover { background: #fff; }
 .grid.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 1600px; margin-inline: auto; gap: 28px; padding: 0 var(--gutter); margin-top: 44px; }
+.grid.grid { margin-bottom: 0; list-style: none; }
+.grid > li { display: flex; min-width: 0; }
+.grid > li > .card { flex: 1; }
 .card.card { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); min-width: 0; overflow: hidden; border: 1px solid #d7e1e880; border-radius: var(--radius-card, 24px); background: #ffffffd9; color: var(--ink); box-shadow: 0 18px 36px -26px #234a644d; scroll-margin-top: 100px; transition: border-color .2s, box-shadow .2s; }
 .card:hover { border-color: #006cf95c; box-shadow: 0 20px 36px -24px #006cf94d; }
 .card:focus-visible { outline-color: var(--brand-blue, #006cf9); }
@@ -49,3 +52,33 @@
   .catalogGuide a { border-top: 1px solid #cbd9ec; padding-top: 18px; }
   .catalogGuide a > strong { justify-content: space-between; }
 }
+
+/* Phones: the catalog becomes photo strips; one opens at a time (mechanics in expand-group). */
+@media (max-width: 767px) {
+  .grid.grid { gap: 12px; margin-top: 30px; }
+  .card.card { position: relative; isolation: isolate; display: block; height: 100%; border: 0; background: var(--deep); color: #fff; box-shadow: 0 22px 40px -30px #0c1b30b3; }
+  .card:focus-visible { outline: 3px solid var(--brand-blue, #006cf9); outline-offset: 4px; }
+  .visual { position: absolute; z-index: -1; inset: 0; min-height: 0; aspect-ratio: auto; }
+  .visual img { transform: scale(calc(1 + var(--open) * .04)); }
+  /* Stops slide toward the bottom as the strip closes, so a collapsed strip is evenly shaded. */
+  .visual::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, #0c1b30cc 0%, #0c1b3080 calc(30% + (1 - var(--open)) * 70%), #0c1b3000 calc(70% + (1 - var(--open)) * 30%), #0c1b3059 100%); pointer-events: none; }
+  .category { top: 18px; left: 22px; padding: 4px 11px; border-color: #ffffff38; background: linear-gradient(140deg, #ffffff2e, #ffffff0d 55%, #ffffff1a); box-shadow: inset 0 1px 0 #ffffff59, inset 0 -1px 0 #ffffff14; backdrop-filter: blur(22px) saturate(180%); color: #fff; font-size: 12px; font-weight: 500; }
+  .body { position: absolute; inset: 0 0 auto; padding: 52px 22px 22px; }
+  .meta h2, .meta h3 { font-size: clamp(26px, 6.4vw, 34px); line-height: 1.1; text-shadow: 0 1px 2px #0c1b3066; }
+  .cardArrow { display: none; }
+  .body :global(.destination-details), .consultation { opacity: var(--open); translate: 0 calc((1 - var(--open)) * 14px); }
+  .body :global(.destination-details) { padding: 12px 0 0; border: 0; font-size: 13px; }
+  .body :global(.destination-details p) { max-width: 36ch; color: #ffffffe6; text-shadow: 0 1px 2px #0c1b3080; }
+  .consultation { gap: 10px; margin-top: 18px; padding: 8px 12px 8px 18px; border: 1px solid #ffffffb3; background: linear-gradient(140deg, #ffffffeb, #ffffffbf); box-shadow: inset 0 1px 0 #fff, 0 10px 28px -18px #0c1b3099; backdrop-filter: blur(20px) saturate(170%); color: var(--action); font-size: 13px; }
+  .consultation svg { width: 16px; height: 16px; }
+}
+
+.credits { margin: 20px var(--gutter) 0; color: #526470; font-size: 12px; line-height: 1.6; }
+.credits summary { display: inline-flex; align-items: center; min-height: 32px; cursor: pointer; }
+.credits summary:hover { color: var(--ink); }
+.credits ul { display: flex; flex-wrap: wrap; gap: 2px 18px; margin: 8px 0 6px; padding: 0; list-style: none; }
+.credits a { color: var(--action, #0053c7); text-decoration: underline; text-underline-offset: 2px; }
+.section:has([data-reveal="pending"]) .heading { opacity: 0; translate: 0 18px; }
+.section:has([data-reveal="visible"]) .heading { animation: heading-reveal .65s var(--ease) both; }
+@keyframes heading-reveal { from { opacity: 0; translate: 0 18px; } }
+@media (prefers-reduced-motion: reduce) { .section .heading { animation: none !important; opacity: 1 !important; translate: none !important; } }

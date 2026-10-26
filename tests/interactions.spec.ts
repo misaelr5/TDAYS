@@ -113,11 +113,53 @@ test("cuatro rutas, navegación y contacto disponibles sin JavaScript", async ({
       }
     }
     await expect(page.locator("form:visible")).toHaveCount(0);
-    await expect(page.locator("noscript").getByRole("link", { name: "escribinos por WhatsApp" })).toHaveCount(2);
+    await expect(page.locator('main noscript a[href^="https://wa.me/"]')).toHaveCount(2);
+    await expect(page.getByRole("link", { name: "escribinos por WhatsApp", exact: true })).toBeVisible();
+    await page.getByRole("navigation", { name: "Elegí cómo podemos ayudarte" }).getByRole("link", { name: "Mi experiencia" }).click();
+    await expect(page.locator("#experiencia")).toBeVisible();
+    await expect(page.locator("#consulta")).toBeHidden();
+    await expect(page.getByRole("link", { name: "escribinos por WhatsApp", exact: true })).toBeVisible();
     for (const link of await page.locator("main noscript a").all()) {
       await expect(link).toHaveAttribute("href", /^https:\/\/wa\.me\/5493544312904\?text=/);
     }
   } finally {
     await context.close();
   }
+});
+
+test("galería de destinos: orden, categorías, expansión estable en escritorio y swipe en móvil", async ({ page }) => {
+  const expected = [["Brasil", "Internacional"], ["Caribe", "Internacional"], ["Carnavales de Jujuy", "Nacional"], ["Cataratas del Iguazú", "Nacional"], ["Los Túneles", "Nacional"], ["Festival de Jesús María", "Nacional"], ["Bayahíbe", "Internacional"], ["Valeria del Mar", "Nacional"]];
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const carousel = page.locator("[data-destination-carousel]");
+  const slides = carousel.locator("li");
+  await expect(slides).toHaveCount(8);
+  for (const [index, [name, category]] of expected.entries()) {
+    await expect(slides.nth(index).locator("h3")).toHaveText(name);
+    await expect(slides.nth(index).locator("p span").first()).toHaveText(category);
+  }
+  await carousel.scrollIntoViewIfNeeded();
+  const viewport = carousel.locator("[data-carousel-viewport]");
+  const widths = () => slides.evaluateAll(items => items.map(item => Math.round(item.getBoundingClientRect().width)));
+  const heights = () => slides.evaluateAll(items => items.map(item => Math.round(item.getBoundingClientRect().height)));
+  const idle = await widths();
+  expect(idle[0]).toBeGreaterThan(idle[1] * 3);
+  expect(new Set(await heights()).size).toBe(1);
+  await slides.nth(6).hover();
+  await expect.poll(async () => (await widths())[6]).toBe(idle[0]);
+  expect(new Set(await heights()).size).toBe(1);
+  expect(await viewport.evaluate(element => element.scrollWidth - element.clientWidth)).toBeLessThan(2);
+  await expect(carousel.getByRole("button", { name: "Destinos siguientes" })).toBeHidden();
+  await slides.nth(7).locator("a").focus();
+  await expect(slides.nth(7)).toHaveAttribute("data-active", "true");
+  await page.keyboard.press("ArrowLeft");
+  await expect(slides.nth(6).locator("a")).toBeFocused();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect.poll(async () => new Set(await widths()).size).toBe(1);
+  const card = (await slides.first().boundingBox())!;
+  expect(card.width).toBeLessThan(390 - 24);
+  expect(card.height).toBeGreaterThan(400);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

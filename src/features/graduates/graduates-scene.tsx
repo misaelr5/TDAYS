@@ -4,12 +4,12 @@ const palettes = {
 } as const;
 
 /** Original editorial illustration. Does not depict an actual group or offered destination. */
-export function GraduatesScene({ variant = "sunset" }: { variant?: keyof typeof palettes }) {
+export function GraduatesScene({ variant = "sunset", framing = "portrait" }: { variant?: keyof typeof palettes; framing?: "portrait" | "landscape" }) {
   const palette = palettes[variant];
   const sky = `graduates-sky-${variant}`;
   const sea = `graduates-sea-${variant}`;
   return (
-    <svg viewBox="0 0 720 860" preserveAspectRatio="xMidYMid slice" fill="none" role="img"
+    <svg viewBox={framing === "landscape" ? "0 300 720 500" : "0 0 720 860"} preserveAspectRatio="xMidYMid slice" fill="none" role="img"
       aria-label={`Ilustración de cuatro amigos mirando el mar ${palette.moment}; no representa un viaje realizado`}>
       <defs>
         <linearGradient id={sky} x2="0" y2="650" gradientUnits="userSpaceOnUse">

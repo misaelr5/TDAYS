@@ -6,6 +6,22 @@ for (const route of ["/", "/destinos"]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto(route);
       const section = page.locator("#egresados");
+      if (route === "/") {
+        await expect(section.getByRole("heading", { level: 2 })).toHaveText("EGRESADOS");
+        await expect(section.locator("[data-level]")).toHaveCount(2);
+        for (const level of ["primaria", "secundaria"]) {
+          const card = section.getByRole("link", { name: `Consultar por ${level}`, exact: true });
+          await expect(card).toBeVisible();
+          const url = new URL((await card.getAttribute("href"))!);
+          expect(url.origin + url.pathname).toBe("https://wa.me/5493544312904");
+          expect(url.searchParams.get("text")).toContain(`egresados de ${level}`);
+          await card.focus();
+          expect(await card.evaluate(element => getComputedStyle(element).outlineStyle)).not.toBe("none");
+        }
+        await expect(section.getByRole("link", { name: "Ver preguntas frecuentes" })).toHaveAttribute("href", "/destinos#egresados-preguntas");
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+        return;
+      }
       const primary = section.getByRole("radio", { name: "Primaria", exact: true });
       const secondary = section.getByRole("radio", { name: "Secundaria", exact: true });
       await expect(primary).toBeChecked();
@@ -35,6 +51,15 @@ for (const route of ["/", "/destinos"]) {
       const page = await context.newPage();
       await page.goto(route);
       const section = page.locator("#egresados");
+      if (route === "/") {
+        for (const level of ["primaria", "secundaria"]) {
+          await expect(section.getByRole("link", { name: `Consultar por ${level}`, exact: true })).toBeVisible();
+        }
+        await section.getByRole("link", { name: "Ver preguntas frecuentes" }).click();
+        await expect(page).toHaveURL(/\/destinos#egresados-preguntas$/);
+        await expect(page.locator("#egresados-preguntas details").first()).toBeVisible();
+        return;
+      }
       await section.getByRole("radio", { name: "Secundaria", exact: true }).check();
       await expect(section.getByRole("link", { name: "Consultar por secundaria" })).toBeVisible();
       await section.getByRole("radio", { name: "Primaria", exact: true }).check();

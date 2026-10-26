@@ -23,7 +23,7 @@ export function MediaContent({ asset, allowVideo = false, sizes, eager = false }
   // Linked postcards use only the poster: no nested pause button inside an anchor.
   return allowVideo ? <AmbientVideo asset={asset}>{image}</AmbientVideo> : image;
 }
-export function ApprovedMedia({ slot, children }: { slot: MediaSlot; children: ReactNode }) {
+export function ApprovedMedia({ slot, sizes, children }: { slot: MediaSlot; sizes?: string; children: ReactNode }) {
   const asset = resolveMedia(slot);
-  return asset ? <div className="postcard-photo"><MediaContent asset={asset} /></div> : children;
+  return asset ? <div className="postcard-photo"><MediaContent asset={asset} sizes={sizes} /></div> : children;
 }
