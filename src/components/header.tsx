@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { site, whatsappUrl } from "@/config/site";
 import { Arrow } from "./icons";
 import { navigation } from "@/config/navigation";
+import styles from "./header.module.css";
 export function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -35,9 +36,9 @@ export function Header() {
   return (
     <>
       <header
-        className={`site-header ${scrolled || pathname !== "/" ? "header-solid" : ""}`}
+        className={`site-header ${styles.header} ${scrolled || pathname !== "/" ? "header-solid" : ""}`}
       >
-        <nav className="desktop-nav" aria-label="Navegación principal">
+        <nav className={styles.nav} aria-label="Navegación principal">
           {navigation.map((link) => (
             <Link
               key={link.href}
@@ -48,23 +49,23 @@ export function Header() {
             </Link>
           ))}
         </nav>
-        <Link href="/" className="wordmark" aria-label="Travel Days, inicio">
+        <Link href="/" className={styles.brand} aria-label="Travel Days, inicio">
           <Image
-            className="brand-logo"
-            src="/media/logos/1.png"
+            className={styles.logo}
+            src="/media/logos/travel-days-color.png"
             alt="Travel Days"
             width={126}
-            height={44}
+            height={52}
             priority
           />
         </Link>
-        <Link className="header-contact" href="/contacto#consulta">
-          Hablemos de tu viaje <Arrow />
+        <Link className={styles.contact} href="/contacto#consulta">
+          Hablemos <Arrow />
         </Link>
         <button
           type="button"
           ref={opener}
-          className="menu-toggle"
+          className={`menu-toggle ${styles.toggle}`}
           onClick={() => setOpen(true)}
           aria-expanded={open}
           aria-controls="main-menu"
@@ -73,7 +74,7 @@ export function Header() {
         </button>
         <noscript>
           <style>{".site-header>button.menu-toggle{display:none!important}"}</style>
-          <a className="menu-toggle" href="#navegacion">Menú <span aria-hidden="true">＋</span></a>
+          <a className={`menu-toggle ${styles.toggle}`} href="#navegacion">Menú <span aria-hidden="true">＋</span></a>
         </noscript>
       </header>
       <dialog
@@ -100,7 +101,7 @@ export function Header() {
         onClose={() => setOpen(false)}
       >
         <div className="menu-top">
-          <span className="wordmark">traveldays</span>
+          <Image src="/media/logos/travel-days-color.png" alt="Travel Days" width={126} height={52} loading="eager" />
           <button type="button" onClick={() => setOpen(false)} aria-label="Cerrar menú">
             Cerrar ×
           </button>

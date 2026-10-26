@@ -68,78 +68,43 @@ export const agencyValues = [
       "Dedicar tiempo a las dudas y buscar respuestas ante inquietudes e imprevistos.",
   },
 ] as const;
+export type TeamArea = "ventas" | "administracion" | "operacion" | "asistencia";
 export type TeamMember = {
   id: string;
   name: string;
   role: string;
+  area?: TeamArea;
   description?: string;
   publication: { status: "pending" } | { status: "approved"; evidence: string };
 };
-// Questionnaire inventory; client explicitly left publication pending in Sprint 04.
+// Publication approved by the user in the Nosotros redesign brief (25/10/2026).
+const approval = { status: "approved", evidence: "Brief de rediseño Nosotros, aprobado por el usuario el 25/10/2026" } as const;
+export const owner: TeamMember = { id: "javier-garay", name: "Javier Garay", role: "Propietario y gerente", publication: approval };
 export const teamMembers: TeamMember[] = [
-  {
-    id: "javier-garay",
-    name: "Javier Garay",
-    role: "Propietario y gerente",
-    publication: { status: "pending" },
-  },
-  {
-    id: "daiana-dascon",
-    name: "Daiana Dascon",
-    role: "Administración",
-    publication: { status: "pending" },
-  },
-  {
-    id: "susana-romero",
-    name: "Susana Romero",
-    role: "Ventas",
-    publication: { status: "pending" },
-  },
-  {
-    id: "jorge-picatto",
-    name: "Jorge Picatto",
-    role: "Ventas",
-    publication: { status: "pending" },
-  },
-  {
-    id: "jorge-angelina",
-    name: "Jorge Angelina",
-    role: "Operaciones y coordinación general",
-    publication: { status: "pending" },
-  },
-  {
-    id: "azul-barrera",
-    name: "Azul Barrera",
-    role: "Paramédica en viaje y destino",
-    publication: { status: "pending" },
-  },
-  {
-    id: "karoll-tello",
-    name: "Karoll Tello",
-    role: "Coordinación",
-    publication: { status: "pending" },
-  },
-  {
-    id: "ezequiel-grego",
-    name: "Ezequiel Grego",
-    role: "Coordinación",
-    publication: { status: "pending" },
-  },
+  owner,
+  { id: "daiana-dascon", name: "Daiana D'Ascón", role: "Administración", area: "administracion", publication: approval },
+  { id: "susana-romero", name: "Susana Romero", role: "Ventas", area: "ventas", publication: approval },
+  { id: "jorge-picatto", name: "Jorge Picatto", role: "Ventas", area: "ventas", publication: approval },
+  { id: "jorge-angelina", name: "Jorge Angelina", role: "Operaciones y coordinación general", area: "operacion", publication: approval },
+  { id: "azul-barrera", name: "Azul Barrera", role: "Paramédica en viaje y destino", area: "asistencia", publication: approval },
+  { id: "karoll-tello", name: "Karoll Tello", role: "Coordinación", area: "operacion", publication: approval },
+  { id: "ezequiel-grego", name: "Ezequiel Grego", role: "Coordinación", area: "operacion", publication: approval },
 ];
-export const teamAreas = [
-  {
-    title: "Asesoramiento y ventas",
-    description:
-      "Las consultas sobre destinos, fechas, servicios y condiciones antes de contratar.",
-  },
-  {
-    title: "Administración",
-    description:
-      "El seguimiento de la información y las consultas de cada contratación.",
-  },
-  {
-    title: "Operación y coordinación",
-    description:
-      "La preparación de los viajes y la coordinación de los grupos.",
-  },
+export const teamAreas: { id: TeamArea; title: string; description: string }[] = [
+  { id: "ventas", title: "Asesoramiento y ventas", description: "Destinos, fechas, servicios y condiciones antes de contratar." },
+  { id: "administracion", title: "Administración", description: "El seguimiento de cada contratación y sus consultas." },
+  { id: "operacion", title: "Operación y coordinación", description: "La preparación de los viajes y el acompañamiento de los grupos." },
+  { id: "asistencia", title: "Asistencia en viaje", description: "Atención paramédica durante el viaje y en destino." },
+];
+export const credentials = {
+  experienceYears: 23,
+  founded: 2018,
+  license: "18904",
+  quality: "Calidad Turística, Nivel Bronce",
+} as const;
+export const training = [
+  "Primeros auxilios, RCP y uso de DEA",
+  "Manejo de grupos y emergencias",
+  "Perspectiva de género",
+  "Prevención del grooming y del bullying",
 ] as const;

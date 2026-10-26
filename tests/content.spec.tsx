@@ -20,39 +20,36 @@ test("datos comerciales se renderizan solo si están presentes y son válidos", 
   expect(invalid).not.toContain("NaN");
 });
 
-test("perfiles pendientes y aprobaciones vacías nunca se publican", () => {
+test("solo se publican perfiles aprobados con evidencia", () => {
   expect(teamMembers).toHaveLength(8);
   for (const member of teamMembers) {
-    expect(member.publication.status).toBe("pending");
-    expect(renderToStaticMarkup(<TeamMemberCard member={member} />)).toBe("");
+    expect(member.publication.status).toBe("approved");
+    expect(renderToStaticMarkup(<TeamMemberCard member={member} />)).toContain(member.role);
+    expect(renderToStaticMarkup(<TeamMemberCard member={{ ...member, publication: { status: "pending" } }} />)).toBe("");
     expect(renderToStaticMarkup(<TeamMemberCard member={{ ...member, publication: { status: "approved", evidence: " " } }} />)).toBe("");
   }
-  const html = renderToStaticMarkup(<TeamMemberCard member={{ id: "qa", name: "Perfil sintético QA", role: "Rol sintético QA", publication: { status: "approved", evidence: "Fixture únicamente" } }} />);
-  expect(html).toContain("Perfil sintético QA");
 });
 
-test("Nosotros recupera historia, valores, formación atribuida y áreas sin exponer el inventario", async ({ page, request }) => {
+test("Nosotros cuenta historia, respaldo, equipo y compromiso con datos reales", async ({ page }) => {
   await page.goto("/nosotros");
   const narrative = page.locator("[data-agency-narrative]");
+  await expect(page.locator("h1")).toHaveCount(1);
   await expect(narrative).toContainText("A los 17 años, Javier Garay");
   await expect(narrative).toContainText("23 años de experiencia personal");
   await expect(narrative).toContainText("En 2018 fundó la agencia");
-  await expect(narrative.locator("ol li")).toHaveCount(4);
+  await expect(narrative.locator("#historia ol li")).toHaveCount(4);
   await expect(page.locator("[data-agency-value]")).toHaveCount(8);
-  await expect(page.locator("[data-team-area]")).toHaveCount(3);
+  await expect(page.locator("[data-team-area]")).toHaveCount(4);
+  await expect(page.locator(".agency-team-profile")).toHaveCount(8);
+  for (const member of teamMembers) await expect(narrative).toContainText(member.name);
+  await expect(narrative).toContainText("18904");
+  await expect(narrative).toContainText("Nivel Bronce");
   await expect(narrative).toContainText("No se presentan como certificaciones verificadas.");
   await expect(narrative).toContainText("RCP");
   await expect(narrative).toContainText("grooming");
-  await expect(page.locator(".agency-team-profile")).toHaveCount(0);
-  await expect(page.getByRole("link", { name: "Conocé nuestra historia" })).toHaveAttribute("href", "#historia");
-  const html = await page.content();
-  const privateNames = teamMembers.filter(member => member.id !== "javier-garay").map(member => member.name);
-  for (const name of privateNames) expect(html).not.toContain(name);
-  for (const src of await page.locator("script[src]").evaluateAll(elements => elements.map(element => (element as HTMLScriptElement).src))) {
-    const js = await (await request.get(src)).text();
-    for (const name of privateNames) expect(js).not.toContain(name);
-  }
-  await expect(narrative).not.toContainText(/18904|nivel bronce|primera empresa/i);
+  await expect(narrative).not.toContainText(/pionera|primera empresa/i);
+  await expect(page.getByRole("link", { name: "Conocé la historia" })).toHaveAttribute("href", "#historia");
+  for (const link of await narrative.locator('a[href^="https://wa.me/"]').all()) await expect(link).toHaveAttribute("href", /5493544312904/);
 });
 
 for (const width of [320, 390, 1440]) {
@@ -73,10 +70,10 @@ for (const width of [320, 390, 1440]) {
   });
 }
 
-test("catálogo mantiene postales y consultas, muestra descripciones reales y omite datos ausentes", async ({ page }) => {
+test("catálogo mantiene ilustraciones y consultas, muestra descripciones reales y omite datos ausentes", async ({ page }) => {
   await page.goto("/destinos");
   await expect(page.locator(".destination-card")).toHaveCount(8);
-  await expect(page.locator(".destination-card .postcard")).toHaveCount(8);
+  await expect(page.locator(".destination-card .landscape")).toHaveCount(8);
   await expect(page.locator(".destination-details")).toHaveCount(8);
   for (const destination of destinations) {
     const card = page.getByRole("link", { name: `Consultar por ${destination.name} en WhatsApp`, exact: true });

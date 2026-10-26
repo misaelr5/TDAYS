@@ -1,0 +1,35 @@
+.carousel { --card-width: 224px; --card-height: 320px; position: relative; min-width: 0; }
+.viewport { overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter); scrollbar-width: none; }
+.viewport::-webkit-scrollbar { display: none; }
+.viewport:focus-visible { outline: 3px solid var(--brand-blue, #006cf9); outline-offset: -3px; }
+.track { display: flex; gap: 16px; width: max-content; min-width: 100%; margin: 0; padding: 20px var(--gutter) 32px; list-style: none; }
+.slide { flex: 0 0 var(--card-width); width: var(--card-width); scroll-snap-align: start; }
+.card { position: relative; isolation: isolate; display: block; width: 100%; height: var(--card-height); overflow: hidden; border-radius: var(--radius-card, 24px); background: #264550; color: #fff; box-shadow: 0 14px 26px -16px #1228394d; }
+.card:focus-visible { outline: 3px solid var(--brand-blue, #006cf9); outline-offset: 5px; }
+.visual, .shade { position: absolute; inset: 0; pointer-events: none; }
+.visual { overflow: hidden; z-index: -2; }
+.visual :global(.landscape) { position: absolute; top: 0; left: 50%; width: calc(var(--card-height) * 4 / 3); height: var(--card-height); max-width: none; translate: -50% 0; }
+.visual :global(.postcard-photo), .visual :global(.approved-media-picture) { position: absolute; inset: 0; width: 100%; height: 100%; }
+.visual img { width: 100%; height: 100%; object-fit: cover; }
+.shade { z-index: -1; background: linear-gradient(180deg, #071923c7 0%, #0b1f285e 30%, #101c1e00 64%, #0719234d 100%); }
+.copy { padding: 26px 24px; }
+.category { display: inline-flex; min-height: 26px; align-items: center; padding: 4px 9px; border: 1px solid #ffffff3d; border-radius: 30px; background: #ffffff12; backdrop-filter: blur(14px); font-size: 11px; line-height: 1.4; font-weight: 500; }
+.copy h3 { max-width: 13ch; margin-top: 12px; font-family: var(--font-body); font-size: 26px; line-height: 1.08; font-weight: 550; letter-spacing: -.045em; text-wrap: balance; }
+.cardArrow { position: absolute; right: 20px; bottom: 20px; display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid #ffffff6b; border-radius: 50%; background: #0c252a66; backdrop-filter: blur(14px); }
+.cardArrow svg { width: 18px; height: 18px; }
+.controls { display: flex; justify-content: flex-end; gap: 10px; padding: 0 var(--gutter); }
+.controls button { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid #b8c5cb; border-radius: 50%; background: #ffffffa6; color: #243947; transition: background .2s, color .2s; }
+.controls button:first-of-type svg { rotate: 180deg; }
+.controls svg { width: 22px; height: 22px; }
+.controls button:enabled:hover { background: var(--brand-blue, #006cf9); border-color: var(--brand-blue, #006cf9); color: #fff; }
+.controls button:disabled { opacity: .35; }
+.controls button:focus-visible { outline-color: var(--brand-blue, #006cf9); }
+@media (min-width: 768px) {
+  .carousel { --card-width: 340px; --card-height: 520px; }
+  .track { padding-top: 32px; padding-bottom: 40px; }
+  .copy { padding: 32px; }
+  .category { font-size: 13px; padding: 5px 12px; }
+  .copy h3 { margin-top: 16px; font-size: 34px; }
+  .cardArrow { right: 28px; bottom: 28px; width: 44px; height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) { .controls button { transition: none; } }

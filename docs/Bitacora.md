@@ -29,3 +29,25 @@ No se incorporaron medios nuevos, dependencias adicionales a las de QA de la eta
 1, backend ni datos comerciales nuevos. No hubo commit, push o deploy.
 
 Resultados y límites: [informe de cierre](Migracion-Etapas-2-5.md).
+
+## 25/10/2026 · nuevo hero de luz y sombras
+
+El usuario eligió una versión propia inspirada en Hero 28, sin instalar React Bits
+Pro. Se creó la escena SVG/CSS, selector accesible de cuatro destinos, consultas
+con contenido existente y fallback sin JS. Se conservaron navbar y tokens de marca.
+Sin dependencias nuevas, fotografías, commit, push o deploy.
+
+Lint, tipos, medios, build y 15 pruebas enfocadas aprobadas. Capturas reales en
+siete anchos y revisión visual de 390/1440 px. Las 29 referencias originales siguen
+intactas; Home tiene un diseño nuevo intencional. Se preservaron cambios concurrentes
+del reel, cuya validación global queda separada. [Detalle y evidencias](Hero-Luz.md).
+
+### Hero inmersivo y navbar
+
+Por pedido del usuario se retiraron márgenes, marco y esquinas del hero, que ahora
+cubre como mínimo el viewport y empieza detrás de la navbar. La cabecera es fija y
+transparente arriba; recupera su fondo al superar 60 px de scroll y vuelve a ser
+transparente al regresar. Se mantienen cabeceras sólidas en rutas interiores.
+Se verificaron siete anchos, pantalla completa y el ciclo de transparencia/scroll.
+Build con tipos y medios, lint y diez pruebas enfocadas aprobadas. Axe sobre hero
+y cabecera sin infracciones detectadas; referencias originales intactas.

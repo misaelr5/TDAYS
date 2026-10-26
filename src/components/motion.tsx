@@ -1,14 +1,11 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import {
   MotionConfig,
-  motion,
   useAnimate,
   useInView,
   useReducedMotion,
-  useScroll,
-  useTransform,
 } from "motion/react";
 import { motionTokens } from "@/config/motion";
 
@@ -58,35 +55,5 @@ export function RevealText({
         ))}
       </span>
     </span>
-  );
-}
-
-export function Parallax({
-  children,
-  className = "",
-  distance = 60,
-  rotation = 0,
-}: {
-  children: ReactNode;
-  className?: string;
-  distance?: number;
-  rotation?: number;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const reduced = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  const y = useTransform(scrollYProgress, [0, 1], [distance, -distance]);
-  const rotate = useTransform(scrollYProgress, [0, 1], [-rotation, rotation]);
-  return (
-    <motion.div
-      ref={ref}
-      className={className}
-      style={reduced ? undefined : { y, rotate }}
-    >
-      {children}
-    </motion.div>
   );
 }

@@ -38,7 +38,7 @@ export async function compareExtendedPage(page: Page, route: "/" | "/nosotros" |
   await sharp(diff, { raw: { width, height: commonHeight, channels: 4 } }).png().toFile(join(output, `${name}-diff.png`));
   const report = {
     reference: `${name}.png`, fullPageIdentical: false,
-    expectedChange: route === "/nosotros" ? "Narrativa institucional agregada y rótulo de Ubicación retirado" : route === "/destinos" ? "Descripciones reales y campos comerciales condicionales bajo las postales" : "Retirada de los dos rótulos confirmada por el usuario",
+    expectedChange: route === "/nosotros" ? "Narrativa institucional agregada y rótulo de Ubicación retirado" : route === "/destinos" ? "Descripciones reales y campos comerciales condicionales bajo las postales" : "Hero de paisaje y footer de referencia solicitados, con módulo de Egresados",
     referenceHeight: before.height, currentHeight: after.height,
     changedPixelsInCommonArea: changedPixels, addedRows: after.height! - before.height!,
     legacyCompositionIdentical: false,
@@ -55,6 +55,13 @@ export function recordNormalized(name: string, report: Awaited<ReturnType<typeof
 export async function normalizeAuthorizedChanges(page: Page, route: "/" | "/nosotros" | "/destinos") {
   // Test-only DOM normalization. Real captures/differences are saved first.
   // Source files and the 29 original baseline PNGs are never rewritten.
+  if (route === "/") {
+    // Historical composition only. The real new hero is captured first and
+    // independently checked by hero.spec.ts; original baselines stay immutable.
+    await page.locator("[data-scenic-hero]").evaluate((element, html) => {
+      element.outerHTML = html;
+    }, readFileSync("tests/fixtures/hero-before-sunlight.html", "utf8"));
+  }
   await page.evaluate(route => {
     if (route === "/nosotros") document.querySelector("[data-agency-narrative]")?.remove();
     if (route === "/destinos") {
@@ -70,12 +77,6 @@ export async function normalizeAuthorizedChanges(page: Page, route: "/" | "/noso
       label.className = "section-index";
       label.textContent = "/ CADA VIAJE, UNA NUEVA HISTORIA";
       document.querySelector(".hero-copy")?.prepend(label);
-    }
-    if (route === "/" || route === "/nosotros") {
-      const label = document.createElement("span");
-      label.className = "section-index";
-      label.textContent = "/ CERCA, ANTES DE IR LEJOS";
-      document.querySelector("#encontranos")?.prepend(label);
     }
   }, route);
 }

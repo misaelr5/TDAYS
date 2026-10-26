@@ -28,27 +28,34 @@ test("menú móvil: teclado, Escape, ciclo de foco, scroll y navegación", async
   expect(await page.locator("body").evaluate(element => element.style.overflow)).toBe("");
 });
 
-test("carrusel: controles, teclado y ambos extremos", async ({ page }) => {
+test("carrusel de destinos: controles, teclado, extremos y navegación al catálogo", async ({ page }) => {
   await page.goto("/");
-  const rail = page.getByRole("region", { name: "Destinos, desplazá para explorar" });
-  const previous = page.getByRole("button", { name: "Destinos anteriores" });
-  const next = page.getByRole("button", { name: "Destinos siguientes" });
+  const carousel = page.locator("[data-destination-carousel]");
+  const viewport = carousel.locator("[data-carousel-viewport]");
+  const cards = carousel.locator("[data-destination-preview]");
+  const previous = carousel.getByRole("button", { name: "Destinos anteriores", exact: true });
+  const next = carousel.getByRole("button", { name: "Destinos siguientes", exact: true });
+  await expect(cards).toHaveCount(8);
   await expect(previous).toBeDisabled();
-  await next.click();
-  await expect.poll(() => rail.evaluate(element => element.scrollLeft)).toBeGreaterThan(0);
-  await expect(previous).toBeEnabled();
-  await rail.focus();
-  await page.keyboard.press("ArrowLeft");
-  await expect(previous).toBeDisabled();
-  for (let i = 0; i < 10 && await next.isEnabled(); i++) {
-    await rail.focus();
-    await page.keyboard.press("ArrowRight");
-    // Scroll events update the end-state on the next rendering frame.
-    await expect.poll(() => rail.evaluate(element => element.scrollLeft)).toBeGreaterThan(0);
-  }
-  await expect(next).toBeDisabled();
-  await previous.click();
   await expect(next).toBeEnabled();
+  await next.click();
+  await expect.poll(() => viewport.evaluate(element => element.scrollLeft)).toBeGreaterThan(0);
+  await expect(previous).toBeEnabled();
+  await viewport.focus();
+  const scrollBefore = await page.evaluate(() => scrollY);
+  await page.keyboard.press("End");
+  await expect(next).toBeDisabled();
+  await expect.poll(() => viewport.evaluate(element => element.scrollWidth - element.clientWidth - element.scrollLeft)).toBeLessThan(3);
+  expect(await page.evaluate(() => scrollY)).toBe(scrollBefore);
+  await page.keyboard.press("Home");
+  await expect(previous).toBeDisabled();
+  await page.keyboard.press("ArrowRight");
+  await expect(previous).toBeEnabled();
+  await cards.last().focus();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/destinos#valeria-del-mar$/);
+  await expect(page.locator("#valeria-del-mar")).toBeInViewport();
+  expect((await page.locator("#valeria-del-mar").boundingBox())!.y).toBeGreaterThanOrEqual(65);
 });
 
 test("enlace de salto y navegación compartida", async ({ page }) => {
@@ -62,18 +69,26 @@ test("enlace de salto y navegación compartida", async ({ page }) => {
   await expect(page.getByRole("navigation", { name: "Navegación principal" }).getByRole("link")).toHaveCount(4);
 });
 
-test("reduced-motion desactiva parallax y movimiento normal sigue disponible", async ({ page }) => {
+test("línea visual compartida y carrusel utilizable con movimiento reducido", async ({ page }) => {
+  let font = "";
+  for (const route of routes) {
+    await page.goto(route);
+    await ready(page);
+    const current = await page.locator("body").evaluate(element => getComputedStyle(element).fontFamily);
+    if (!font) font = current;
+    expect(current).toBe(font);
+    expect(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--brand-blue").trim())).toBe("#006cf9");
+    await expect(page.locator(".passport, .receipt, .ghost-script")).toHaveCount(0);
+  }
   await page.goto("/");
-  await ready(page);
-  const passport = page.locator(".hero-passport");
-  expect(await passport.evaluate(element => getComputedStyle(element).transform)).toBe("none");
+  const carousel = page.locator("[data-destination-carousel]");
+  const viewport = carousel.locator("[data-carousel-viewport]");
+  expect(await viewport.evaluate(element => getComputedStyle(element).scrollBehavior)).toBe("auto");
+  await carousel.getByRole("button", { name: "Destinos siguientes" }).click();
+  await expect.poll(() => viewport.evaluate(element => element.scrollLeft)).toBeGreaterThan(0);
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.reload();
-  await ready(page);
-  await expect.poll(() => passport.evaluate(element => getComputedStyle(element).transform)).not.toBe("none");
-  const before = await passport.evaluate(element => getComputedStyle(element).transform);
-  await page.mouse.wheel(0, 450);
-  await expect.poll(() => passport.evaluate(element => getComputedStyle(element).transform)).not.toBe(before);
+  await carousel.getByRole("button", { name: "Destinos anteriores" }).click();
+  await expect.poll(() => viewport.evaluate(element => element.scrollLeft)).toBeLessThan(3);
 });
 
 test("cuatro rutas, navegación y contacto disponibles sin JavaScript", async ({ browser, baseURL }) => {
@@ -86,7 +101,16 @@ test("cuatro rutas, navegación y contacto disponibles sin JavaScript", async ({
       for (const href of routes) {
         await expect(page.locator(`footer a[href="${href}"]`).first()).toBeVisible();
       }
-      if (route === "/" || route === "/destinos") await expect(page.locator(".destination-card")).toHaveCount(8);
+      if (route === "/" || route === "/destinos") {
+        const links = page.locator(route === "/" ? "[data-destination-preview]" : "[data-destination-consultation]");
+        await expect(links).toHaveCount(8);
+        for (const link of await links.all()) await expect(link).toBeVisible();
+      }
+      if (route === "/") {
+        await page.locator("[data-destination-preview]").first().click();
+        await expect(page).toHaveURL(/\/destinos#brasil$/);
+        await expect(page.locator("#brasil")).toBeInViewport();
+      }
     }
     await expect(page.locator("form:visible")).toHaveCount(0);
     await expect(page.locator("noscript").getByRole("link", { name: "escribinos por WhatsApp" })).toHaveCount(2);

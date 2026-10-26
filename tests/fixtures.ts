@@ -48,6 +48,8 @@ export async function ready(page: Page) {
   await expect(page.locator("h1")).toHaveCount(1);
   // Trigger real lazy loading before judging images or capturing the whole page.
   for (const image of await page.locator("img").all()) {
+    // Closed dialogs can contain eagerly loaded logos; they cannot be scrolled into view.
+    if (!(await image.isVisible())) continue;
     await image.scrollIntoViewIfNeeded();
     await expect.poll(() => image.evaluate(element => {
       const img = element as HTMLImageElement;

@@ -1,4 +1,4 @@
-import { readFileSync, mkdirSync, mkdtempSync, writeFileSync, symlinkSync } from "node:fs";
+import { readFileSync, readdirSync, mkdirSync, mkdtempSync, writeFileSync, symlinkSync } from "node:fs";
 import { resolve, join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -17,7 +17,7 @@ const image: ImageAsset = {
 };
 
 test("autorización: vacío, pendiente, rechazado y evidencia incompleta mantienen fallback", () => {
-  expect(mediaManifest).toEqual({});
+  expect(Object.keys(mediaManifest).sort()).toEqual(["page:nosotros", "team:azul-barrera", "team:daiana-dascon", "team:javier-garay", "team:karoll-tello"]);
   expect(approvedMedia("hero", {})).toBeNull();
   for (const status of ["pending", "rejected"] as const) {
     expect(resolveMedia("hero", { hero: { ...image, authorization: { status } } })).toBeNull();
@@ -90,17 +90,56 @@ test("video exige poster válido y respeta movimiento, red y ahorro de datos", (
 test("verificador real y hooks de build usan el manifiesto", () => {
   const result = spawnSync(process.execPath, ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", "scripts/verify-media.mjs"], { encoding: "utf8", windowsHide: true });
   expect(result.status).toBe(0);
-  expect(result.stdout).toContain("Medios aprobados verificados: 0");
+  expect(result.stdout).toContain("Medios aprobados verificados: 10");
   expect(verifyManifest({ hero: image })).toEqual({ files: 2, errors: [] });
   const pkg = JSON.parse(readFileSync("package.json", "utf8"));
   expect(pkg.scripts.prebuild).toBe("npm run verify:media");
 });
 
-test("Home no publica imágenes de viajes ni solicita video con manifiesto vacío", async ({ page }) => {
+test("Home conserva sus ilustraciones y no solicita videos ni material pendiente", async ({ page }) => {
   const videos: string[] = [];
   page.on("request", request => { if (/\.(mp4|webm)(?:[?#]|$)/.test(request.url())) videos.push(request.url()); });
   await page.goto("/");
   await expect(page.locator("video, .postcard-photo")).toHaveCount(0);
-  await expect(page.locator(".destination-card .landscape")).toHaveCount(8);
+  await expect(page.locator("[data-destination-carousel] .landscape")).toHaveCount(8);
+  expect(videos).toEqual([]);
+});
+
+test("las copias públicas son WebP optimizadas y no incluyen EXIF, XMP ni perfiles privados", () => {
+  const paths = readdirSync("public/media/travel-days", { recursive: true }).map(String).filter(path => path.endsWith(".webp"));
+  expect(paths).toHaveLength(15);
+  for (const path of paths) {
+    const data = readFileSync(resolve("public/media/travel-days", path));
+    expect(data.length, path).toBeLessThan(110_000);
+    expect(data.toString("ascii", 0, 4)).toBe("RIFF");
+    expect(data.toString("ascii", 8, 12)).toBe("WEBP");
+    for (let offset = 12; offset + 8 <= data.length;) {
+      const chunk = data.toString("ascii", offset, offset + 4);
+      expect(["EXIF", "XMP ", "ICCP"], path).not.toContain(chunk);
+      const size = data.readUInt32LE(offset + 4);
+      offset += 8 + size + (size % 2);
+    }
+  }
+});
+
+test("Nosotros muestra oficina y retratos autorizados con carga responsive y sin notas privadas", async ({ page }) => {
+  const videos: string[] = [];
+  page.on("request", request => { if (/\.(mp4|webm)(?:[?#]|$)/.test(request.url())) videos.push(request.url()); });
+  await page.goto("/nosotros");
+  const office = page.locator("figure .approved-media-picture img");
+  await expect(office).toHaveAttribute("loading", "eager");
+  await expect(office).toHaveAttribute("fetchpriority", "high");
+  await expect(office).toHaveAttribute("alt", /Escritorios y sillas/);
+  await expect(page.locator("[data-team-portrait]")).toHaveCount(4);
+  for (const photo of await page.locator("[data-team-portrait] img").all()) {
+    await expect(photo).toHaveAttribute("loading", "lazy");
+    await expect(photo).toHaveAttribute("srcset", /.+/);
+  }
+  for (const id of ["ezequiel-grego", "jorge-angelina", "dj-mosca"]) {
+    await expect(page.locator(`img[src*="${id}"]`)).toHaveCount(0);
+  }
+  const html = await page.content();
+  expect(html).not.toContain("Confirmación explícita del usuario");
+  expect(html).not.toContain("fotos videos y contenido traveldays");
   expect(videos).toEqual([]);
 });

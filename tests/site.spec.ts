@@ -26,15 +26,24 @@ test("ocho destinos confirmados, datos comerciales vacíos y consultas específi
   }
   for (const route of ["/", "/destinos"]) {
     await page.goto(route);
-    await expect(page.locator(".destination-card")).toHaveCount(8);
-    for (const destination of publishedDestinations) {
-      const card = page.getByRole("link", { name: `Consultar por ${destination.name} en WhatsApp`, exact: true });
-      const url = new URL((await card.getAttribute("href"))!);
-      expect(url.origin + url.pathname).toBe("https://wa.me/5493544312904");
-      expect(url.searchParams.get("text")).toBe(destination.consultation?.message);
+    if (route === "/") {
+      await expect(page.locator("[data-destination-preview]")).toHaveCount(8);
+      await expect(page.locator("[data-destination-consultation]")).toHaveCount(0);
+      for (const destination of publishedDestinations) {
+        await expect(page.getByRole("link", { name: `Explorar ${destination.name} en el catálogo`, exact: true })).toHaveAttribute("href", `/destinos#${destination.slug}`);
+      }
+    } else {
+      await expect(page.locator("[data-destination-consultation]")).toHaveCount(8);
+      for (const destination of publishedDestinations) {
+        const card = page.getByRole("link", { name: `Consultar por ${destination.name} en WhatsApp`, exact: true });
+        await expect(card).toHaveAttribute("id", destination.slug);
+        const url = new URL((await card.getAttribute("href"))!);
+        expect(url.origin + url.pathname).toBe("https://wa.me/5493544312904");
+        expect(url.searchParams.get("text")).toBe(destination.consultation?.message);
+      }
     }
     const links = await page.locator('a[href^="https://wa.me/"]').evaluateAll(elements => elements.map(element => (element as HTMLAnchorElement).href));
-    expect(links.length).toBeGreaterThan(8);
+    expect(links.length).toBeGreaterThan(0);
     for (const href of links) {
       const url = new URL(href);
       expect(url.pathname).toBe("/5493544312904");
@@ -60,6 +69,24 @@ test("metadatos, bloqueo de indexación, headers y rutas retiradas", async ({ pa
     expect((await page.goto(route))?.status()).toBe(404);
     await expect(page.getByRole("link", { name: /Volver al inicio/ })).toHaveAttribute("href", "/");
   }
+});
+
+test("404 ocupa la pantalla, oculta la navegación global y ofrece volver al inicio", async ({ page }) => {
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    expect((await page.goto("/ruta-inexistente-qa"))?.status()).toBe(404);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Este destinono está en el mapa.");
+    await expect(page.getByRole("link", { name: "Volver al inicio" })).toHaveAttribute("href", "/");
+    await expect(page.locator(".site-header")).toBeHidden();
+    await expect(page.locator(".footer")).toBeHidden();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    expect(await page.locator("main").evaluate(element => element.getBoundingClientRect().height >= innerHeight)).toBe(true);
+  }
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/ruta-inexistente-qa");
+  const result = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
+  expect(result.violations).toEqual([]);
 });
 
 for (const route of routes) {

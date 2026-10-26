@@ -9,8 +9,8 @@ export default function ContactPage() {
   return (
     <main id="contenido" className="interior-page">
       <section className={styles.intro} aria-labelledby="contact-title">
-        <span className="section-index">/ CONTACTO</span>
-        <h1 id="contact-title">HABLEMOS DE TU VIAJE.</h1>
+        <span className="section-index">Contacto</span>
+        <h1 id="contact-title">Hablemos de tu viaje.</h1>
         <p>
           Si estás pensando en viajar, contanos tu idea. Si ya viajaste con
           nosotros, queremos saber cómo fue tu experiencia.

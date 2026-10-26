@@ -13,13 +13,7 @@ const inter = localFont({
   display: "swap",
   weight: "100 900",
 });
-const handwriting = localFont({
-  src: "./fonts/Caveat.ttf",
-  variable: "--font-hand",
-  display: "swap",
-  weight: "400",
-});
-export const viewport: Viewport = { themeColor: "#101c29" };
+export const viewport: Viewport = { themeColor: "#006cf9" };
 export const metadata: Metadata = {
   title: {
     default: "Travel Days — El mundo te espera",
@@ -45,7 +39,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es-AR" className={`${inter.variable} ${handwriting.variable}`}>
+    <html lang="es-AR" className={inter.variable}>
       <body>
         <a className="skip-link" href="#contenido">
           Saltar al contenido

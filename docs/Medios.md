@@ -1,8 +1,10 @@
 # Medios autorizados
 
-El manifiesto de `src/config/media.ts` permanece vacío: no hay fotografías ni
-videos de viajes aprobados localmente. Las ilustraciones de RECREAR se conservan.
-No se descargó material de Drive ni se movieron originales a `public/`.
+El manifiesto de `src/config/media.ts` incorpora un interior de oficina y cuatro
+retratos individuales con permiso web confirmado. La [auditoría audiovisual](Media-Audit.md)
+documenta los 336 archivos, la selección y los pendientes. Las ilustraciones de
+Inicio y Destinos se conservan; no hay video de viajes activado. Los originales
+permanecen privados y solo sus derivados revisados se incorporan a `public/`.
 
 ## Flujo
 

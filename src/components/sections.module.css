@@ -1,0 +1,45 @@
+.story { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: clamp(36px, 7vw, 112px); padding-top: 64px; padding-bottom: 80px; background: var(--paper); }
+.tag { display: inline-flex; width: fit-content; align-items: center; min-height: 30px; padding: 6px 13px; border: 1px solid #d7e6fb; border-radius: 999px; background: #eaf2ff; color: var(--action); font-size: 11px; line-height: 1.5; }
+.storyCopy h2, .consultationCopy h2 { margin-top: 22px; font-size: clamp(34px, 4.2vw, 62px); font-weight: 500; line-height: 1.1; letter-spacing: -.05em; text-wrap: balance; }
+.storyCopy > p { max-width: 49ch; margin-top: 22px; font-size: 14px; line-height: 1.8; color: #536276; }
+.storyCopy > a { margin-top: 26px; }
+.agencyCard { position: relative; padding: clamp(28px, 4vw, 56px); border: 1px solid var(--glass-border); border-radius: var(--radius-card); background: linear-gradient(135deg, #ffffffeb, #e8f1ffcc); box-shadow: var(--glass-shadow); backdrop-filter: blur(20px); }
+.cardTop { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; }
+.cardTop img { width: 140px; height: auto; }
+.cardTop > span { padding: 7px 12px; border: 1px solid #d7e3f3; border-radius: 999px; background: #ffffffb3; font-size: 10px; }
+.agencyCard h3 { margin-top: 36px; font-size: clamp(28px, 3vw, 42px); font-weight: 500; line-height: 1.15; letter-spacing: -.045em; }
+.agencyCard > p { max-width: 35ch; margin-top: 18px; font-size: 13px; line-height: 1.75; color: #536276; }
+.agencyCard ul { display: grid; gap: 12px; margin: 28px 0 0; padding: 22px 0 0; list-style: none; border-top: 1px solid #d4e0f0; font-size: 12px; line-height: 1.7; }
+.agencyCard li { display: flex; align-items: center; gap: 12px; }
+.agencyCard li::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--brand-orange); flex-shrink: 0; }
+.consultation { padding-top: 32px; padding-bottom: 72px; background: var(--paper); }
+.consultationPanel { position: relative; isolation: isolate; display: grid; grid-template-columns: 1.2fr 1fr; align-items: center; gap: clamp(32px, 6vw, 100px); padding: clamp(32px, 5.8vw, 88px); border: 1px solid #b5d4ff; border-radius: 32px; background: linear-gradient(125deg, #004aaf, #075fce 65%, #0060dc); color: #fff; overflow: hidden; }
+.consultationPanel::before { position: absolute; z-index: -1; content: ""; width: 540px; height: 540px; top: -380px; right: -140px; border: 1px solid #ffffff50; border-radius: 50%; box-shadow: 0 0 0 65px #ffffff08, 0 0 0 130px #ffffff05; }
+.consultationCopy .tag { color: #fff; border-color: #ffffff45; background: #ffffff16; }
+.consultationCopy > p { max-width: 38ch; margin-top: 24px; font-size: 14px; line-height: 1.8; color: #e6efff; }
+.lightLink { display: inline-flex; align-items: center; gap: 18px; min-height: 44px; margin-top: 24px; padding: 12px 0; font-size: 12px; }
+.lightLink svg { width: 16px; height: 16px; }
+.contactCard { padding: clamp(24px, 3vw, 40px); border: 1px solid #ffffff60; border-radius: var(--radius-card); background: #ffffff17; backdrop-filter: blur(20px); box-shadow: inset 0 1px 0 #ffffff45, 0 24px 45px -30px #001b5c80; }
+.contactCard h3 { font-size: clamp(24px, 2.4vw, 34px); font-weight: 500; line-height: 1.2; letter-spacing: -.04em; }
+.contactCard > p { margin-top: 10px; font-size: 13px; color: #e6efff; }
+.contactCard dl { display: grid; gap: 0; margin: 26px 0; }
+.contactCard dl > div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; padding: 15px 0; border-bottom: 1px solid #ffffff30; font-size: 11px; line-height: 1.6; }
+.contactCard dt { color: #e6efff; }
+.contactCard dd { margin: 0; }
+.contactCard > a { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 48px; padding: 12px 18px; border-radius: 999px; background: #fff; color: var(--action); font-size: 12px; font-weight: 500; }
+.contactCard > a svg { width: 16px; height: 16px; }
+.consultation a:focus-visible { outline-color: #fff; }
+@media (max-width: 900px) { .consultationPanel { grid-template-columns: 1fr 1fr; gap: 28px; padding: 36px; }.contactCard { padding: 24px; } }
+@media (max-width: 767px) {
+  .story { grid-template-columns: 1fr; gap: 32px; padding-top: 36px; padding-bottom: 44px; }
+  .storyCopy h2 { font-size: clamp(33px, 8vw, 48px); }
+  .storyCopy > p { font-size: 13px; margin-top: 18px; }
+  .agencyCard { padding: 28px 24px; }
+  .cardTop img { width: 116px; }
+  .agencyCard h3 { margin-top: 28px; }
+  .consultation { padding-top: 20px; padding-bottom: 44px; }
+  .consultationPanel { grid-template-columns: 1fr; padding: 30px 22px; gap: 28px; border-radius: 24px; }
+  .consultationCopy h2 { font-size: clamp(32px, 7.8vw, 44px); }
+  .consultationCopy > p { font-size: 13px; }
+  .contactCard { padding: 24px 20px; }
+}

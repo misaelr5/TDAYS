@@ -1,18 +1,12 @@
 import { pageMetadata } from "@/config/metadata";
-import { StorySection, LocationSection } from "@/components/sections";
 import { AgencyNarrative } from "@/features/agency/narrative";
 
-export const metadata = pageMetadata("Sobre nosotros", "Conocé a Javier Garay, su trayectoria personal en turismo y la historia de Travel Days, fundada en 2018 en Villa Dolores, Córdoba.");
+export const metadata = pageMetadata("Sobre nosotros", "Travel Days es una agencia de Villa Dolores, Córdoba, fundada en 2018 por Javier Garay. Conocé su historia, el equipo, el Legajo 18904 y cómo acompañamos cada viaje.");
 
 export default function AboutPage() {
   return (
     <main id="contenido" className="interior-page">
-      <div className="interior-title">
-        <h1>Sobre nosotros</h1>
-      </div>
-      <StorySection historyHref="#historia" />
       <AgencyNarrative />
-      <LocationSection />
     </main>
   );
 }

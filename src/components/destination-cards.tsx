@@ -5,39 +5,36 @@ import {
 } from "@/features/destinations/data";
 import { whatsappUrl } from "@/config/site";
 import { Arrow } from "./icons";
-import { Postcard } from "./travel-objects";
-import { RevealText } from "./motion";
-import { DestinationCarousel } from "./destination-carousel";
+import { Landscape } from "./travel-objects";
+import { Carousel } from "./ui/apple-cards-carousel";
+import { ApprovedMedia } from "@/features/media/approved-media";
 import { DestinationDetails } from "@/features/destinations/destination-details";
+import styles from "./destination-cards.module.css";
 
 export function DestinationCard({ destination, details = false }: { destination: Destination; details?: boolean }) {
   const Title = details ? "h2" : "h3";
   return (
     <a
-      className="destination-card"
+      className={`destination-card ${styles.card}`}
+      id={destination.slug}
+      data-destination-consultation
       href={whatsappUrl(destination.consultation?.message)}
       target="_blank"
       rel="noreferrer"
       aria-label={`Consultar por ${destination.name} en WhatsApp`}
     >
-      <div className="destination-visual">
-        <span className="card-category">{destination.category}</span>
-        <Postcard
-          name={destination.name ?? ""}
-          kind={destination.artwork}
-          mediaSlot={`destination:${destination.slug}`}
-        />
-        <span className="card-arrow">
-          <Arrow />
-        </span>
+      <div className={styles.visual}>
+        {destination.category && <span className={styles.category}>{destination.category}</span>}
+        <ApprovedMedia slot={`destination:${destination.slug}`}><Landscape kind={destination.artwork} /></ApprovedMedia>
       </div>
-      <div className="destination-meta">
-        <Title>{destination.name}</Title>
-        <span>
-          Consultar <Arrow />
-        </span>
+      <div className={styles.body}>
+        <div className={styles.meta}>
+          <Title>{destination.name}</Title>
+          <span className={styles.cardArrow} aria-hidden="true"><Arrow /></span>
+        </div>
+        {details && <DestinationDetails destination={destination} />}
+        <span className={styles.consultation}>Consultar por WhatsApp <Arrow /></span>
       </div>
-      {details && <DestinationDetails destination={destination} />}
     </a>
   );
 }
@@ -50,38 +47,35 @@ export function Destinations({ full = false }: { full?: boolean }) {
   return (
     <section
       id="destinos"
-      className={`destinations light-section section-pad ${full ? "catalog-full" : ""}`}
+      className={styles.section}
+      data-destinations={full ? "catalog" : "preview"}
       aria-labelledby="destination-heading"
     >
-      <span className="section-index">/ DESTINOS POR DESCUBRIR</span>
-      <div className="section-heading-row">
+      <div className={styles.heading}>
         <Heading id="destination-heading">
-          <RevealText>PRÓXIMAS GRANDES HISTORIAS.</RevealText>
+          {full ? "Destinos para tu próxima historia." : "Tu próximo destino."}
         </Heading>
-        <div className="heading-aside">
-          <p>
-            Un lugar nuevo.
-            <br />
-            Otra forma de mirar.
-            <br />
-            Tu próximo viaje empieza acá.
-          </p>
-          {!full && (
-            <Link className="text-link" href="/destinos">
+        {full ? <p>Explorá los destinos y conversemos sobre las opciones para tu viaje.</p>
+          : <Link className={styles.allDestinations} href="/destinos">
               Ver todos los destinos <Arrow />
-            </Link>
-          )}
-        </div>
+            </Link>}
       </div>
-      <span className="ghost-script" aria-hidden="true">
-        allá vamos
-      </span>
+      {full && <nav className={styles.catalogGuide} aria-label="Elegí tu tipo de viaje">
+        <p><strong>{publishedDestinations.length} destinos.</strong> Una consulta a tu medida.</p>
+        <a href="#egresados"><span>¿Viajan con el colegio?</span><strong>Conocé Egresados <Arrow /></strong></a>
+      </nav>}
       {full ? (
-        <div className="destination-grid">{cards}</div>
+        <div className={`destination-grid ${styles.grid}`}>{cards}</div>
       ) : (
-        <DestinationCarousel itemCount={publishedDestinations.length}>
-          {cards}
-        </DestinationCarousel>
+        <Carousel items={publishedDestinations.map(destination => ({
+          slug: destination.slug,
+          title: destination.name!,
+          category: destination.category,
+          href: `/destinos#${destination.slug}`,
+          visual: <ApprovedMedia slot={`destination:${destination.slug}`}>
+            <Landscape kind={destination.artwork} />
+          </ApprovedMedia>,
+        }))} />
       )}
     </section>
   );

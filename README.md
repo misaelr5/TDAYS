@@ -31,11 +31,12 @@ No construir sobre `.next` mientras esté sirviendo una versión anterior con `n
 
 ## Implementado
 
-- Portada oscura, titular grande con revelado por palabras, remate manuscrito y documentos de viaje superpuestos con parallax.
-- Sección clara, texto de fondo, cuatro tarjetas por vista desktop y carrusel de ocho destinos confirmados; controles, scroll táctil y teclado.
-- Reloj editorial con avión que cambia de posición y rotación con el scroll; dirección y horarios reales de la agencia.
-- Bloque institucional oscuro con pasaporte y sellos flotantes, adaptando la composición de café y granos.
-- Cierre con impresora, recibo dentado y postales. Los CTA abren consultas de WhatsApp y no confirman reservas.
+- Hero inspirado en `src/inspo`: paisaje, título centrado, navegación translúcida, barra de consulta y cuatro tarjetas superpuestas con información real. El fondo es una ilustración temporal hasta recibir la foto original. Ver [diseño y validación](docs/Hero-Paisaje.md).
+- Carrusel claro de ocho destinos inspirado en Apple Cards Carousel: tarjetas verticales redondeadas, título breve, ilustración y enlace a cada destino del catálogo. Scroll táctil, flechas y teclado; sin reproducción automática ni modal.
+- Módulo de Egresados en Inicio y versión ampliada debajo de los ocho destinos: selector nativo de primaria/secundaria, consultas específicas y preguntas para familias. Ilustración editorial propia, sin fotos ni paquetes inventados. Ver [composición y validación actuales](docs/Premium-Redesign.md) y [evolución de Egresados](docs/Egresados.md).
+- Footer oscuro de cuatro columnas inspirado en la misma referencia, con contactos, dirección y horarios reales, enlaces útiles y consulta por WhatsApp.
+- Línea visual compartida en las cuatro páginas: Inter, superficies glass, cápsulas, radios de 24 px y los colores del logo original azul `#006CF9`, naranja `#F58634` y blanco. Ver [implementación y diferencias con el componente pegado](docs/Linea-Visual.md).
+- Nosotros conserva el relato institucional y Contacto sus formularios y privacidad con el diseño unificado. Se retiraron la tipografía manuscrita, pasaportes, sellos, recibo e impresora. El cierre ofrece una consulta por WhatsApp.
 - Menú móvil fullscreen con Escape, ciclo de foco, restauración de foco y bloqueo de scroll.
 - Rutas `/`, `/destinos`, `/nosotros`, `/contacto`, 404 y robots. El catálogo completo se renderiza en servidor.
 
@@ -43,29 +44,33 @@ No construir sobre `.next` mientras esté sirviendo una versión anterior con `n
 
 ```text
 src/app/                      Rutas, layout, metadatos, fuentes y estilos
-src/components/sections.tsx    Cinco secciones y footer, renderizados en servidor
-src/components/travel-objects.tsx  Pasaporte, postales y tarjeta de embarque
+src/components/sections.tsx    Composición de secciones en servidor
+src/components/site-footer.tsx  Footer de referencia con enlaces y contactos reales
+src/components/travel-objects.tsx  Ilustración Landscape conservada
 src/components/destination-cards.tsx  Catálogo y tarjetas en servidor
-src/components/destination-carousel.tsx  Controles y scroll en cliente
+src/components/ui/apple-cards-carousel.tsx  Scroll, teclado y enlaces del carrusel
+src/components/destination-cards.module.css  Encabezado y tarjetas del catálogo
 src/components/header.tsx     Cabecera y diálogo móvil
-src/components/motion.tsx     RevealText, Parallax y configuración de Motion
+src/components/motion.tsx     RevealText y configuración de Motion
 src/config/                   Contactos, metadata, motion y manifiesto de medios
 src/features/agency/          Historia, valores, formación y perfiles condicionados
 src/features/media/           Resolución en servidor y presentación audiovisual
 src/features/destinations/    Datos tipados de los ocho destinos
+src/features/graduates/       Egresados compartido entre Inicio y Destinos
+src/features/hero/            Hero de paisaje y consulta con borrador de WhatsApp
 public/media/logos/           Logotipo original utilizado
 docs/                        Análisis de referencia y validación
 output/reference/             Fotogramas del video, sólo para revisión
 output/playwright/            Capturas, script de auditoría y resultados
 ```
 
-Se reutilizan Next.js 16.4.2, React 19.3.1, TypeScript estricto, Tailwind 4 y npm con lockfile. Motion 14.6.0 es la única dependencia de animación añadida: integra parallax y revelados sin otro motor de scroll. CSS resuelve sombras, papel, cuero, hover y transiciones del menú. Los iconos sencillos son SVG propios. `axe-core` es una herramienta de validación de desarrollo.
+Se reutilizan Next.js 16.4.2, React 19.3.1, TypeScript estricto, Tailwind 4 y npm con lockfile. Motion 14.6.0 aporta el hover del carrusel y los revelados existentes. La adaptación de Apple Cards no incorpora dependencias nuevas: utiliza enlaces reales, scroll nativo y SVG propios. CSS Modules aísla cada módulo y los tokens de marca están en globals.css. `axe-core` es una herramienta de validación de desarrollo.
 
-Las fuentes son locales mediante `next/font/local`: Inter del proyecto y Caveat (SIL Open Font License, licencia junto al archivo). No hay llamadas a Google Fonts durante la navegación.
+Inter se carga localmente mediante `next/font/local`. Caveat ya no se carga; el archivo y su licencia histórica se conservan. No hay llamadas a Google Fonts durante la navegación.
 
 ## Medios y contenido
 
-**Las postales son ilustraciones temporales, no fotografías de destinos.** El manifiesto sigue vacío. El [flujo de medios autorizados](docs/Medios.md) valida permisos documentados, procedencia, rutas, archivos, variantes y focos antes del build. `ApprovedMedia` resuelve en servidor y entrega sólo datos públicos; sin recurso aprobado conserva la ilustración. No se incorporaron fotos externas o generadas.
+**Las postales son ilustraciones temporales, no fotografías de destinos.** El manifiesto incorpora una foto real de oficina y cuatro retratos autorizados en Nosotros. La [auditoría audiovisual de 336 archivos](docs/Media-Audit.md) incluye inventario, selección, mapa por módulo y permisos pendientes. El [flujo de medios autorizados](docs/Medios.md) valida permisos documentados, procedencia, rutas, archivos, variantes y focos antes del build. `ApprovedMedia` resuelve en servidor y entrega sólo datos públicos; sin recurso aprobado conserva la ilustración. No se incorporaron fotos externas o generadas.
 
 Los destinos no acreditan disponibilidad. No se agregaron precios, fechas, testimonios, certificaciones o servicios incluidos. Los contactos proceden de la configuración actual de Travel Days. Se conserva `noindex` y `Disallow: /`; dominio, canonical, sitemap y datos estructurados comerciales requieren información confirmada antes de publicación.
 
@@ -94,7 +99,7 @@ No se implementaron backend, autenticación, Supabase, reservas, pagos o adminis
 
 ## Conceptos para aprender
 
-1. **Composición servidor/cliente:** el carrusel recibe tarjetas ya renderizadas como `children`; la interacción no obliga a enviar todos los componentes decorativos como JavaScript.
+1. **Composición servidor/cliente:** el reel recibe los datos mínimos y los paisajes ya renderizados desde el servidor; la interacción no envía la resolución de archivos ni las autorizaciones de medios al navegador.
 2. **Mejora progresiva:** títulos, tarjetas y enlaces existen antes de ejecutar JavaScript. Motion añade comportamiento y se desactiva según las preferencias de movimiento.
 3. **Contenido y presentación:** los destinos y contactos se mantienen fuera de la lógica de animación; sustituir medios no requiere reescribir las secciones.
 
