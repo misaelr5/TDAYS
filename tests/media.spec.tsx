@@ -17,7 +17,7 @@ const image: ImageAsset = {
 };
 
 test("autorización: vacío, pendiente, rechazado y evidencia incompleta mantienen fallback", () => {
-  expect(Object.keys(mediaManifest).sort()).toEqual(["destination:bayahibe", "destination:brasil", "destination:caribe", "destination:carnavales-de-jujuy", "destination:cataratas-del-iguazu", "destination:festival-de-jesus-maria", "destination:los-tuneles", "destination:valeria-del-mar", "hero", "page:inicio", "page:nosotros", "team:azul-barrera", "team:daiana-dascon", "team:dj-mosca", "team:ezequiel-grego", "team:javier-garay", "team:jorge-angelina", "team:karoll-tello"]);
+  expect(Object.keys(mediaManifest).sort()).toEqual(["destination:bayahibe", "destination:brasil", "destination:caribe", "destination:carnavales-de-jujuy", "destination:cataratas-del-iguazu", "destination:festival-de-jesus-maria", "destination:los-tuneles", "destination:valeria-del-mar", "hero", "page:inicio", "page:nosotros", "school:maestros", "team:azul-barrera", "team:daiana-dascon", "team:dj-mosca", "team:ezequiel-grego", "team:javier-garay", "team:jorge-angelina", "team:karoll-tello"]);
   expect(approvedMedia("hero", {})).toBeNull();
   for (const status of ["pending", "rejected"] as const) {
     expect(resolveMedia("hero", { hero: { ...image, authorization: { status } } })).toBeNull();
@@ -90,7 +90,7 @@ test("video exige poster válido y respeta movimiento, red y ahorro de datos", (
 test("verificador real y hooks de build usan el manifiesto", () => {
   const result = spawnSync(process.execPath, ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", "scripts/verify-media.mjs"], { encoding: "utf8", windowsHide: true });
   expect(result.status).toBe(0);
-  expect(result.stdout).toContain("Medios aprobados verificados: 30");
+  expect(result.stdout).toContain("Medios aprobados verificados: 32");
   expect(verifyManifest({ hero: image })).toEqual({ files: 2, errors: [] });
   const pkg = JSON.parse(readFileSync("package.json", "utf8"));
   expect(pkg.scripts.prebuild).toBe("npm run verify:media");
@@ -116,7 +116,7 @@ test("Home muestra fotografías licenciadas de destinos y solo el video decorati
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await expect(page.getByRole("button", { name: "Pausar video de fondo" })).toBeVisible();
   await expect.poll(() => video.evaluate(element => !(element as HTMLVideoElement).paused)).toBe(true);
-  expect(new Set(videos)).toEqual(new Set(["/media/travel-days/trips/maestrazo-termas-desktop.mp4"]));
+  expect([...new Set(videos)]).toEqual([expect.stringMatching(/^\/media\/travel-days\/trips\/maestrazo-termas-(desktop|mobile)\.mp4$/)]);
 });
 
 test("las copias públicas son WebP optimizadas y no incluyen EXIF, XMP ni perfiles privados", () => {

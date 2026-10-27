@@ -9,10 +9,10 @@ export default function Home() {
   return (
     <main id="contenido">
       <Hero />
-      <ChinaSection />
       <Destinations />
       <GraduatesSection />
       <ConsultationSection />
+      <ChinaSection />
     </main>
   );
 }

@@ -16,7 +16,7 @@ for (const width of [375, 768, 1440]) {
     await ready(page);
     const section = page.locator("#egresados");
     const guide = section.locator("[data-graduates-guide]");
-    const nav = guide.getByRole("navigation", { name: "Temas de la guía de egresados" });
+    const nav = guide.getByRole("navigation", { name: "Temas de la guía de viajes escolares" });
     await expect(guide.getByRole("heading", { level: 3 })).toHaveText("Organizamos el viaje con ustedes.");
     await expect(nav.getByRole("link")).toHaveCount(4);
     await expect(guide.locator("ol > li")).toHaveCount(3);
@@ -47,7 +47,7 @@ for (const width of [375, 768, 1440]) {
     await nav.getByRole("link", { name: "Antes de contratar", exact: true }).click();
     await expect(guide.locator("#egresados-contratacion")).toContainText("pago y cancelación");
     for (const level of ["Primaria", "Secundaria"]) {
-      await section.getByRole("radio", { name: level, exact: true }).check();
+      await section.getByRole("tab", { name: level, exact: true }).click();
       const link = guide.getByRole("link", { name: "Consultar por nuestro grupo", exact: true });
       await expect(link).toHaveCount(1);
       const url = new URL((await link.getAttribute("href"))!);
@@ -60,9 +60,9 @@ for (const width of [375, 768, 1440]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await nav.getByRole("link", { name: "Cómo empezar", exact: true }).click();
     await guide.screenshot({ path: testInfo.outputPath(`ayuda-${width}.png`), animations: "disabled", style: ".site-header { visibility: hidden !important; }" });
-    await guide.getByRole("link", { name: "Volver a los niveles" }).click();
+    await guide.getByRole("link", { name: "Volver a las categorías" }).click();
     await expect(page).toHaveURL(/#egresados$/);
-    await expect(section.getByRole("radio", { name: "Secundaria", exact: true })).toBeChecked();
+    await expect(section.getByRole("tab", { name: "Secundaria", exact: true })).toHaveAttribute("aria-selected", "true");
   });
 }
 
@@ -74,9 +74,9 @@ test("Guía de Egresados: categorías y consulta funcionan sin JavaScript al 200
     const guide = page.locator("[data-graduates-guide]");
     await expect(guide.locator("#egresados-preguntas")).toBeInViewport();
     await page.locator("body").evaluate(element => { element.style.zoom = "2"; });
-    await page.locator("#egresados").getByRole("radio", { name: "Secundaria", exact: true }).check();
+    await page.locator("#egresados").getByRole("navigation", { name: "Categorías de viajes escolares" }).getByRole("link", { name: "Secundaria", exact: true }).click();
     await expect(guide.getByRole("link", { name: "Consultar por nuestro grupo" })).toHaveAttribute("href", /egresados%20de%20secundaria/);
-    const nav = guide.getByRole("navigation", { name: "Temas de la guía de egresados" });
+    const nav = guide.getByRole("navigation", { name: "Temas de la guía de viajes escolares" });
     for (const topic of topics) {
       await nav.getByRole("link", { name: topic.label, exact: true }).click();
       await expect(guide.locator(`#${topic.id}`)).toBeVisible();
@@ -95,7 +95,7 @@ test("Guía de Egresados: categorías y consulta funcionan sin JavaScript al 200
 test("Guía de Egresados: enlaces directos y navegación Atrás/Adelante conservan la categoría", async ({ page }) => {
   await page.goto("/destinos#egresados-contratacion");
   const guide = page.locator("[data-graduates-guide]");
-  const nav = guide.getByRole("navigation", { name: "Temas de la guía de egresados" });
+  const nav = guide.getByRole("navigation", { name: "Temas de la guía de viajes escolares" });
   await expect(guide.locator("#egresados-contratacion")).toBeVisible();
   await expect(nav.getByRole("link", { name: "Antes de contratar", exact: true })).toHaveAttribute("aria-current", "location");
   await nav.getByRole("link", { name: "Destinos y fechas", exact: true }).click();

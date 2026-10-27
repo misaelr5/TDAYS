@@ -14,7 +14,6 @@
 .agencyCard li::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--brand-orange); flex-shrink: 0; }
 .consultation { padding-block: clamp(40px, 5vw, 72px) clamp(40px, 5vw, 64px); background: var(--paper); }
 .consultationInner { max-width: 1200px; margin-inline: auto; }
-.services { padding-bottom: clamp(32px, 4vw, 48px); }
 .servicesIntro { display: grid; grid-template-columns: 1fr 1fr; align-items: end; gap: clamp(32px, 5vw, 72px); }
 .servicesIntro h2 { font-size: clamp(30px, 3.2vw, 44px); line-height: 1.12; font-weight: 500; letter-spacing: -.05em; }
 .servicesIntro > p { max-width: 44ch; color: #536276; font-size: 14px; line-height: 1.75; }
@@ -25,32 +24,14 @@
 .serviceList p { max-width: 45ch; margin-top: 8px; color: #536276; font-size: 13px; line-height: 1.65; }
 .serviceArrow { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid #c7d8ee; border-radius: 50%; color: var(--action); transition: background 180ms; }
 .serviceArrow svg { width: 17px; height: 17px; }
-.agency { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); padding-top: clamp(32px, 4vw, 48px); gap: clamp(32px, 5vw, 72px); align-items: stretch; }
-.office { position: relative; min-width: 0; min-height: 480px; border-radius: var(--radius-card); overflow: hidden; background: #e1e8f0; }
-.office > picture { position: absolute; inset: 0; }
-.office figcaption { position: absolute; left: 20px; bottom: 20px; right: 20px; width: fit-content; border-radius: 999px; padding: 8px 12px; background: var(--deep); color: #fff; font-size: 11px; line-height: 1.5; }
-.agencyCopy { padding-block: 8px; }
-.agencyCopy h3 { font-size: clamp(28px, 2.8vw, 38px); font-weight: 500; line-height: 1.13; letter-spacing: -.045em; text-wrap: balance; }
-.agencyCopy > p { max-width: 48ch; margin-top: 20px; font-size: 14px; line-height: 1.8; color: #536276; }
-.historyLink, .officeLink { display: inline-flex; align-items: center; gap: 16px; min-height: 44px; color: var(--action); font-size: 12px; line-height: 1.5; font-weight: 550; }
-.historyLink { margin-top: 12px; }
-.historyLink svg, .officeLink svg, .contactAction svg { width: 16px; height: 16px; flex-shrink: 0; }
-.officeContact { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--line); }
-.officeContact > p { font-size: 14px; font-weight: 550; line-height: 1.5; }
-.officeContact address { max-width: 40ch; margin-top: 8px; color: #536276; font-size: 13px; line-height: 1.6; font-style: normal; }
-.contactAction { display: flex; justify-content: space-between; align-items: center; gap: 20px; min-height: 48px; width: fit-content; margin-top: 20px; padding: 13px 20px; border-radius: 999px; background: var(--action); color: #fff; font-size: 13px; font-weight: 550; line-height: 1.5; transition: background 180ms; }
-.officeLink { margin-top: 8px; }
 @media (hover: hover) {
   .serviceList a:hover .serviceArrow { background: #e1ecfc; }
-  .serviceList a:hover h3, .historyLink:hover, .officeLink:hover { text-decoration: underline; text-underline-offset: 4px; }
-  .contactAction:hover { background: #00449f; }
+  .serviceList a:hover h3 { text-decoration: underline; text-underline-offset: 4px; }
 }
 @media (min-width: 768px) and (max-width: 1000px) {
-  .servicesIntro, .agency { grid-template-columns: .9fr 1.1fr; gap: 28px; }
+  .servicesIntro { grid-template-columns: .9fr 1.1fr; gap: 28px; }
   .serviceList { gap: 20px; }
   .serviceList a { grid-template-columns: 1fr; }
-  .agencyCopy h3 { font-size: 28px; }
-  .office { min-height: 540px; }
 }
 @media (max-width: 767px) {
   .story { grid-template-columns: 1fr; gap: 32px; padding-top: 36px; padding-bottom: 44px; }
@@ -59,11 +40,7 @@
   .agencyCard { padding: 28px 24px; }
   .cardTop img { width: 116px; }
   .agencyCard h3 { margin-top: 28px; }
-  .servicesIntro, .agency { grid-template-columns: 1fr; gap: 20px; }
+  .servicesIntro { grid-template-columns: 1fr; gap: 20px; }
   .serviceList { grid-template-columns: 1fr; gap: 0; margin-top: 24px; }
-  .office { min-height: 0; aspect-ratio: 1.35; }
-  .agencyCopy { padding-block: 0; }
-  .agencyCopy > p { margin-top: 16px; }
-  .contactAction { width: 100%; }
 }
-@media (prefers-reduced-motion: reduce) { .serviceArrow, .contactAction { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .serviceArrow { transition: none; } }

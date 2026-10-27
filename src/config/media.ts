@@ -1,5 +1,5 @@
 export type LocalMediaPath = `/media/${string}`;
-export type MediaSlot = "hero" | "graduates" | "graduates-detail" | "page:destinos" | "page:inicio" | "page:nosotros" | "page:nosotros-historia" | "page:contacto" | `destination:${string}` | `team:${string}`;
+export type MediaSlot = "hero" | "graduates" | "graduates-detail" | `school:${"primaria" | "secundaria" | "maestros"}` | "page:destinos" | "page:inicio" | "page:nosotros" | "page:nosotros-historia" | "page:contacto" | `destination:${string}` | `team:${string}`;
 export type ImageSource = { src: LocalMediaPath; focal: { x: number; y: number } };
 type MediaBase = {
   id: string;
@@ -65,6 +65,14 @@ const destinationMedia: MediaManifest = {
   "destination:valeria-del-mar": commons("valeria-del-mar", "Pasarela de madera entre los médanos con vegetación de Valeria del Mar, en la costa bonaerense.", "Pasarela en valeriadelmar 02.jpg", { author: "Fernando Martello", license: "CC BY-SA 4.0" }, { x: 38, y: 66 }),
 };
 export const mediaManifest: MediaManifest = {
+  "school:maestros": {
+    id: "maestrazo-group-poster", type: "image",
+    alt: "Grupo de pasajeros de El Maestrazo con una bandera de Travel Days frente a montañas nevadas.",
+    provenance: "Poster existente del fragmento autorizado V140 (0–3,5 s), IMG_2723maestrazo parte 3 termas crudos.mp4. Se reutilizan los WebP ya públicos, sin recortes adicionales. docs/School-Media-Audit.md",
+    authorization: { status: "approved", evidence: "Reutilización del poster del video con permiso web explícito del usuario del 27/10/2026 para sus pasajeros adultos, registrado en el slot hero. No extiende permiso a P021, P046, P059 ni P168–P170." },
+    desktop: { src: "/media/travel-days/trips/maestrazo-termas-desktop.webp", focal: { x: 50, y: 50 } },
+    mobile: { src: "/media/travel-days/trips/maestrazo-termas-desktop.webp", focal: { x: 50, y: 50 } },
+  },
   hero: {
     id: "maestrazo-termas", type: "video", decorative: true,
     alt: "",

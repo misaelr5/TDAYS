@@ -33,7 +33,7 @@ export function GraduatesHelpCenter({ topics }: { topics: readonly HelpTopic[] }
   }
 
   return <div className={styles.helpCenter} id="egresados-preguntas" data-graduates-help data-help-ready={hash !== null || undefined}>
-    <nav className={styles.helpNav} aria-label="Temas de la guía de egresados">
+    <nav className={styles.helpNav} aria-label="Temas de la guía de viajes escolares">
       <p className={styles.helpNavLabel}>Elegí un tema</p>
       <ul>
         {topics.map(topic => <li key={topic.id}>

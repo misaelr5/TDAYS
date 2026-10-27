@@ -20,11 +20,6 @@
 .pill { position: absolute; z-index: -1; top: 0; left: 0; border-radius: 30px; background: linear-gradient(180deg, #ffffff40, #ffffff14); box-shadow: inset 0 1px 0 #ffffff73, inset 0 -1px 0 #ffffff1a, 0 4px 12px -6px #0c1b3080; opacity: 0; pointer-events: none; transition: transform .5s var(--ease), width .5s var(--ease), height .5s var(--ease), opacity .25s; }
 .pill[data-visible="true"] { opacity: 1; }
 
-/* Facebook sits inside the nav glass, after a hairline divider, outside the glide pill. */
-.nav a.social { position: relative; width: 36px; padding: 0; margin-left: 7px; }
-.nav a.social::before { content: ""; position: absolute; left: -5px; top: 50%; width: 1px; height: 16px; translate: 0 -50%; background: #ffffff40; }
-.nav a.social:hover { background: #ffffff1a; }
-.social svg { width: 19px; height: 19px; }
 .contact { grid-column: 3; grid-row: 1; justify-self: end; display: inline-flex; align-items: center; gap: 12px; min-height: 40px; padding: 9px 20px; border: 1px solid #ffffffb3; border-radius: 40px; background: linear-gradient(140deg, #ffffffeb, #ffffffbf); box-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 #ffffff59, 0 10px 28px -18px #0c1b3099; backdrop-filter: blur(20px) saturate(170%); color: var(--action); font-size: 12px; font-weight: 500; transition: transform .4s var(--ease), box-shadow .4s; }
 .contact:hover { transform: translateY(-1px); box-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 #ffffff59, 0 14px 30px -16px #0053c780; }
 .contact svg { width: 13px; height: 13px; transition: translate .35s var(--ease); }
@@ -76,6 +71,6 @@
   .toggle > span { font-size: 18px; font-weight: 300; line-height: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .nav, .nav a, .pill, .brand, .social, .contact, .contact svg, .close, .menuNav a, .menuNav svg { transition: none; }
+  .nav, .nav a, .pill, .brand, .contact, .contact svg, .close, .menuNav a, .menuNav svg { transition: none; }
   .nav::after { display: none; }
 }

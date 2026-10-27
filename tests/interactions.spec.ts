@@ -10,7 +10,7 @@ test("menú móvil: teclado, Escape, ciclo de foco, scroll y navegación", async
   await expect(toggle).toHaveAttribute("aria-expanded", "true");
   expect(await page.locator("body").evaluate(element => element.style.overflow)).toBe("hidden");
   const first = dialog.getByRole("button", { name: "Cerrar menú" });
-  const last = dialog.getByRole("link", { name: "Consultanos por WhatsApp" });
+  const last = dialog.getByRole("link", { name: "Seguinos en Facebook" });
   await first.focus();
   await page.keyboard.press("Shift+Tab");
   await expect(last).toBeFocused();

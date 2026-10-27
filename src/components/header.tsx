@@ -128,9 +128,6 @@ export function Header() {
               {link.label}
             </Link>
           ))}
-          <a className={styles.social} href={site.facebook} target="_blank" rel="noreferrer" aria-label="Facebook de Travel Days">
-            <Facebook />
-          </a>
         </nav>
         <Link href="/" className={styles.brand} aria-label="Travel Days, inicio">
           <Image

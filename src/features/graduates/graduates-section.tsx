@@ -12,15 +12,18 @@ import { GraduatesHelpCenter } from "./graduates-help-center";
 import styles from "./graduates.module.css";
 
 export function GraduatesSection({ expanded = false }: { expanded?: boolean }) {
-  const media = (expanded && resolveMedia("graduates-detail")) || resolveMedia("graduates");
-  const levels = graduates.levels.map(level => ({
-    ...level,
-    href: whatsappUrl(level.message),
-    // Approved group media, when it exists, replaces the sunset illustration only.
-    visual: level.id === "secundaria" && media ? <MediaContent asset={media} />
-      : <GraduatesScene variant={level.id === "primaria" ? "morning" : "sunset"} framing={expanded ? "portrait" : "landscape"} />,
-    caption: level.id === "secundaria" && media ? "Su próxima historia empieza acá." : level.caption,
-  }));
+  const levels = graduates.levels.map(({ message, mediaSlot, ...level }) => {
+    // Resolve each category separately: a photo's approval never assigns it to
+    // another audience. Only public presentation data crosses the client boundary.
+    const media = resolveMedia(mediaSlot);
+    return {
+      ...level,
+      href: whatsappUrl(message),
+      photographic: media !== null,
+      visual: media ? <MediaContent asset={media} sizes="(max-width: 767px) 90vw, (max-width: 1300px) 50vw, 680px" />
+        : <GraduatesScene variant={level.id === "primaria" ? "morning" : "sunset"} framing="landscape" />,
+    };
+  });
 
   if (!expanded) return <GraduatesPreview levels={levels} />;
 
@@ -28,17 +31,17 @@ export function GraduatesSection({ expanded = false }: { expanded?: boolean }) {
     <section id="egresados" className={`${styles.section} section-pad`} aria-labelledby="graduates-title" data-graduates="expanded">
       <header className={styles.intro}>
         <div>
-          <p className={styles.eyebrow}>Viajes de egresados</p>
-          <h2 id="graduates-title">Una vez en la vida.</h2>
+          <p className={styles.eyebrow}>Viajes escolares</p>
+          <h2 id="graduates-title">Estudiantes, familias y docentes.</h2>
         </div>
-        <p className={styles.introAside}>Termina una etapa y empieza una historia para recordar juntos. Elegí el nivel y contanos cómo imaginan el viaje.</p>
+        <p className={styles.introAside}>Primaria, secundaria o El Maestrazo. Cada grupo tiene sus preguntas; empecemos por las de ustedes.</p>
       </header>
 
-      <GraduatesExplorer levels={levels} />
+      <GraduatesExplorer levels={levels} expanded />
 
       <section className={styles.guide} aria-labelledby="graduates-guide-title" data-graduates-guide>
         <header className={styles.guideHeading}>
-          <p className={styles.eyebrow}>Para estudiantes y familias</p>
+          <p className={styles.eyebrow}>Antes de viajar</p>
           <h3 id="graduates-guide-title">Organizamos el viaje con ustedes.</h3>
           <p>Lo que necesitan saber para empezar, conversar en grupo y decidir con información.</p>
         </header>
@@ -90,10 +93,10 @@ export function GraduatesSection({ expanded = false }: { expanded?: boolean }) {
         </aside>
 
         <div className={styles.guideContact}>
-          <div><p className={styles.contactTitle}>Hablemos del viaje del grupo.</p><p>Colegio, nivel y la idea que tengan. Podemos empezar por ahí.</p></div>
+          <div><p className={styles.contactTitle}>Hablemos del viaje del grupo.</p><p>Estudiantes o docentes: contanos quiénes son y qué les gustaría organizar.</p></div>
           <div className={styles.guideActions}>
             {levels.map(level => <a key={level.id} className={styles.guideCta} data-guide-level={level.id} href={level.href} target="_blank" rel="noreferrer">Consultar por nuestro grupo <Arrow /></a>)}
-            <a className={styles.backLink} href="#egresados">Volver a los niveles <span aria-hidden="true">↑</span></a>
+            <a className={styles.backLink} href="#egresados">Volver a las categorías <span aria-hidden="true">↑</span></a>
           </div>
         </div>
       </section>
