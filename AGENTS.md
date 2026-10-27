@@ -1,3 +1,11 @@
+## Historial y publicación en GitHub
+
+- Conservar todos los commits individuales: no usar squash, rebase ni force-push para publicar el trabajo.
+- Cada commit creado como parte de una entrega autorizada debe enviarse a GitHub; no dejarlo solo en local. Respetar pedidos explícitos de auditoría, trabajo local o no publicación.
+- Para que el historial aparezca en la vista principal y pueda contar como contribución, integrar los cambios terminados en la rama predeterminada `main`. Preferir fast-forward cuando sea posible; si las ramas divergieron, revisar e integrar sin reescribir commits.
+- Usar la identidad Git asociada a la cuenta del usuario. No cambiar autorías históricas ni inventar fechas o contribuciones.
+- Antes de publicar: validar los cambios, revisar el diff y excluir originales privados, secretos y artefactos generados. Después del push: comprobar hash remoto, rama y estado de trabajo.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know

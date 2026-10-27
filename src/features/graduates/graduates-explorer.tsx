@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { useEffect, useSyncExternalStore, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
 import { Arrow } from "@/components/icons";
+import { useGlide } from "@/components/use-glide";
 import type { graduates } from "./data";
 import styles from "./graduates-explorer.module.css";
 
 type Category = (typeof graduates.levels)[number];
-export type GraduatesLevel = Omit<Category, "message" | "mediaSlot"> & {
+export type GraduatesLevel = Omit<Category, "message" | "mediaSlot" | "caption"> & {
+  caption: string;
   href: string;
   visual: ReactNode;
   photographic: boolean;
@@ -36,6 +38,7 @@ export function GraduatesExplorer({ levels, expanded = false }: { levels: Gradua
   const selected = hashCategory ?? url?.searchParams.get("escolar");
   const active = levels.find(level => level.id === selected)?.id ?? levels[0].id;
   const ready = location !== null;
+  const choices = useGlide<HTMLDivElement>(active);
 
   useEffect(() => {
     if (!location || !hashCategory) return;
@@ -73,10 +76,11 @@ export function GraduatesExplorer({ levels, expanded = false }: { levels: Gradua
   return <div className={styles.explorer} data-graduates-explorer data-school-ready={ready || undefined} data-expanded={expanded || undefined}>
     <div className={styles.selector}>
       <span className={styles.prompt}>¿Con quién viajás?</span>
-      <div className={styles.choices} role={ready ? "tablist" : "navigation"} aria-label="Categorías de viajes escolares">
+      <div ref={choices} className={styles.choices} role={ready ? "tablist" : "navigation"} aria-label="Categorías de viajes escolares">
+        <span className={styles.pill} data-glide-pill aria-hidden="true" />
         {levels.map((level, index) => <a key={level.id} className={styles.choice}
           id={`${prefix}-${level.id}-choice`} href={`?escolar=${level.id}#${prefix}-${level.id}`}
-          data-choice={level.id} role={ready ? "tab" : undefined}
+          data-choice={level.id} data-glide-item data-glide-active={active === level.id || undefined} role={ready ? "tab" : undefined}
           aria-selected={ready ? active === level.id : undefined}
           aria-controls={ready ? `${prefix}-${level.id}` : undefined}
           tabIndex={ready && active !== level.id ? -1 : undefined}

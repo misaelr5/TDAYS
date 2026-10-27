@@ -73,7 +73,8 @@
 .guideActions { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; gap: 6px; }
 .guideCta { display: inline-flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 48px; padding: 13px 22px; border-radius: 999px; background: var(--action); color: #fff; font-size: 13px; font-weight: 500; line-height: 1.5; transition: background .2s; }
 .guideCta[data-guide-level] { display: none; }
-.section:not(:has([data-school-active])):not(:has([data-level]:target)) .guideCta[data-guide-level="primaria"] { display: inline-flex; }
+.section:has([data-school-active]) .guideCta[data-guide-general],
+.section:has([data-level]:target) .guideCta[data-guide-general] { display: none; }
 .section:has([data-school-active][data-level="primaria"]) .guideCta[data-guide-level="primaria"],
 .section:not(:has([data-school-active])):has([data-level="primaria"]:target) .guideCta[data-guide-level="primaria"] { display: inline-flex; }
 .section:has([data-school-active][data-level="secundaria"]) .guideCta[data-guide-level="secundaria"],

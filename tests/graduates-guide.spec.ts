@@ -46,13 +46,13 @@ for (const width of [375, 768, 1440]) {
     await expect(disclosure.locator("ul")).toBeVisible();
     await nav.getByRole("link", { name: "Antes de contratar", exact: true }).click();
     await expect(guide.locator("#egresados-contratacion")).toContainText("pago y cancelación");
-    for (const level of ["Primaria", "Secundaria"]) {
+    for (const level of ["Primaria", "Secundaria", "Maestros"]) {
       await section.getByRole("tab", { name: level, exact: true }).click();
       const link = guide.getByRole("link", { name: "Consultar por nuestro grupo", exact: true });
       await expect(link).toHaveCount(1);
       const url = new URL((await link.getAttribute("href"))!);
       expect(url.origin + url.pathname).toBe("https://wa.me/5493544312904");
-      expect(url.searchParams.get("text")).toContain(`egresados de ${level.toLowerCase()}`);
+      expect(url.searchParams.get("text")).toContain(level === "Maestros" ? "grupo de docentes" : `egresados de ${level.toLowerCase()}`);
       await page.keyboard.press("Tab");
       await link.focus();
       expect(await link.evaluate(element => getComputedStyle(element).outlineStyle)).not.toBe("none");
@@ -62,7 +62,7 @@ for (const width of [375, 768, 1440]) {
     await guide.screenshot({ path: testInfo.outputPath(`ayuda-${width}.png`), animations: "disabled", style: ".site-header { visibility: hidden !important; }" });
     await guide.getByRole("link", { name: "Volver a las categorías" }).click();
     await expect(page).toHaveURL(/#egresados$/);
-    await expect(section.getByRole("tab", { name: "Secundaria", exact: true })).toHaveAttribute("aria-selected", "true");
+    await expect(section.getByRole("tab", { name: "Maestros", exact: true })).toHaveAttribute("aria-selected", "true");
   });
 }
 
@@ -82,6 +82,9 @@ test("Guía de Egresados: categorías y consulta funcionan sin JavaScript al 200
       await expect(guide.locator(`#${topic.id}`)).toBeVisible();
       for (const other of topics.filter(item => item.id !== topic.id)) await expect(guide.locator(`#${other.id}`)).toBeHidden();
     }
+    // Without JS, leaving a category hash must not silently query a different level.
+    const consultation = guide.getByRole("link", { name: "Consultar por nuestro grupo", exact: true });
+    expect(new URL((await consultation.getAttribute("href"))!).searchParams.get("text")).toContain("viajes escolares");
     const trainingQuestion = guide.locator("#egresados-acompanamiento details");
     await trainingQuestion.locator("summary").focus();
     await page.keyboard.press("Enter");

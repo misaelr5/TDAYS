@@ -1,5 +1,13 @@
 # Viajes escolares y El Maestrazo: revisión multimedia
 
+**Actualización de permisos, 27/10/2026:** después de esta auditoría el usuario
+confirmó que hay permiso para publicar las fotos de los chicos de
+`egresados y fotos varisa/` y que el material abarca ambos niveles. P168–P170
+ya están aprobadas e integradas; ver [selección vigente](School-Media-Selection.csv)
+y [usos en Inicio y Destinos](School-Travel-Redesign.md#recurso-utilizado-y-permisos).
+Las menciones siguientes a su permiso pendiente conservan el estado histórico
+de la auditoría. P021, P046 y P059 de la fiesta continúan pendientes.
+
 Revisión del 27/10/2026, previa a modificar Inicio y Destinos. Fuente prioritaria:
 `src/fotos videos y contenido traveldays/`. Este informe complementa la
 [auditoría del 25/10](Media-Audit.md); el manifiesto actual de

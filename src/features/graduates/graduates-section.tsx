@@ -15,10 +15,12 @@ export function GraduatesSection({ expanded = false }: { expanded?: boolean }) {
   const levels = graduates.levels.map(({ message, mediaSlot, ...level }) => {
     // Resolve each category separately: a photo's approval never assigns it to
     // another audience. Only public presentation data crosses the client boundary.
-    const media = resolveMedia(mediaSlot);
+    const media = (expanded && level.id === "primaria" && resolveMedia("school:primaria-detail")) || resolveMedia(mediaSlot);
     return {
       ...level,
       href: whatsappUrl(message),
+      caption: media ? (level.id === "maestros" ? level.caption : "Viajes escolares · archivo de Travel Days")
+        : (level.id === "maestros" ? "Ilustración · una salida por conversar" : level.caption),
       photographic: media !== null,
       visual: media ? <MediaContent asset={media} sizes="(max-width: 767px) 90vw, (max-width: 1300px) 50vw, 680px" />
         : <GraduatesScene variant={level.id === "primaria" ? "morning" : "sunset"} framing="landscape" />,
@@ -95,6 +97,7 @@ export function GraduatesSection({ expanded = false }: { expanded?: boolean }) {
         <div className={styles.guideContact}>
           <div><p className={styles.contactTitle}>Hablemos del viaje del grupo.</p><p>Estudiantes o docentes: contanos quiénes son y qué les gustaría organizar.</p></div>
           <div className={styles.guideActions}>
+            <a className={styles.guideCta} data-guide-general href={whatsappUrl(graduates.consultationMessage)} target="_blank" rel="noreferrer">Consultar por nuestro grupo <Arrow /></a>
             {levels.map(level => <a key={level.id} className={styles.guideCta} data-guide-level={level.id} href={level.href} target="_blank" rel="noreferrer">Consultar por nuestro grupo <Arrow /></a>)}
             <a className={styles.backLink} href="#egresados">Volver a las categorías <span aria-hidden="true">↑</span></a>
           </div>

@@ -40,13 +40,15 @@ for (const route of ["/", "/destinos"]) {
         expect(box.x + box.width).toBeLessThanOrEqual(width);
         const axe = await new AxeBuilder({ page }).include("#egresados").withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
         expect(axe.violations).toEqual([]);
-        if (category.id === "maestros") {
+        {
           const photo = panel.getByRole("img");
           await photo.scrollIntoViewIfNeeded();
-          await expect(photo).toHaveAttribute("alt", /Grupo de pasajeros de El Maestrazo/);
+          await expect(photo).toHaveAttribute("alt", category.id === "maestros" ? /Grupo de pasajeros de El Maestrazo/ : /estudiantes/i);
           await expect.poll(() => photo.evaluate(element => (element as HTMLImageElement).complete && (element as HTMLImageElement).naturalWidth > 0)).toBe(true);
-          expect(await photo.evaluate(element => getComputedStyle(element).objectFit)).toBe("contain");
-          await section.screenshot({ path: testInfo.outputPath(`escolares-${route === "/" ? "inicio" : "destinos"}-maestros-${width}.png`), animations: "disabled", style: ".site-header { visibility: hidden !important; }" });
+          expect(await photo.evaluate(element => getComputedStyle(element).objectFit)).toBe(category.id === "maestros" ? "cover" : "contain");
+          expect(await photo.getAttribute("src")).toContain(category.id === "maestros" ? "maestrazo-termas" : (category.id === "secundaria" ? "school-group-lookout" : route === "/" ? "school-group-building" : "school-group-port"));
+          await expect(panel.locator("svg[role='img']")).toHaveCount(0);
+          await section.screenshot({ path: testInfo.outputPath(`escolares-${route === "/" ? "inicio" : "destinos"}-${category.id}-${width}.png`), animations: "disabled", style: ".site-header { visibility: hidden !important; }" });
         }
       }
       await tabs.getByRole("tab", { name: "Maestros", exact: true }).focus();

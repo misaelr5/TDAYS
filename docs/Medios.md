@@ -2,8 +2,9 @@
 
 **Estado revisado el 27/10/2026:** consultar la
 [selección escolar y de El Maestrazo](School-Media-Audit.md) y el manifiesto actual.
-Hay 339 originales inventariados; las seis fotos de grupo preseleccionadas siguen
-pendientes. El manifiesto registra permiso específico para el fragmento V140 del
+Hay 339 originales inventariados; P168–P170 cuentan con permiso confirmado y se
+utilizan en Viajes escolares. Las tres fotos preseleccionadas de la fiesta de El
+Maestrazo siguen pendientes. El manifiesto registra permiso para el fragmento V140 del
 hero. La descripción histórica siguiente no es una lista vigente de aprobaciones.
 
 El manifiesto de `src/config/media.ts` incorpora un interior de oficina y cuatro

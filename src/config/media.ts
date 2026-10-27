@@ -1,5 +1,5 @@
 export type LocalMediaPath = `/media/${string}`;
-export type MediaSlot = "hero" | "graduates" | "graduates-detail" | `school:${"primaria" | "secundaria" | "maestros"}` | "page:destinos" | "page:inicio" | "page:nosotros" | "page:nosotros-historia" | "page:contacto" | `destination:${string}` | `team:${string}`;
+export type MediaSlot = "hero" | "graduates" | "graduates-detail" | `school:${"primaria" | "primaria-detail" | "secundaria" | "maestros"}` | "page:destinos" | "page:inicio" | "page:nosotros" | "page:nosotros-historia" | "page:contacto" | `destination:${string}` | `team:${string}`;
 export type ImageSource = { src: LocalMediaPath; focal: { x: number; y: number } };
 type MediaBase = {
   id: string;
@@ -23,8 +23,8 @@ export type PublicVideo = Pick<VideoAsset, "type" | "desktop" | "mobile">;
 export type PublicMedia = PublicImage | PublicVideo;
 
 // Publication decisions and their evidence are consumed on the server only.
-// Scope: the owner's empty office and individual staff portraits supplied for
-// this integration. Passenger/event media and minors remain outside public/.
+// Scope is recorded per asset. Only authorized derivatives belong in public/;
+// private originals and event photographs with pending permission stay outside.
 const officeApproval = { status: "approved", evidence: "Solicitud del usuario del 25/10/2026: integrar el material real provisto por el propietario; interior de oficina sin personas, revisado visualmente. docs/Media-Audit.md" } as const;
 const portraitApproval = { status: "approved", evidence: "Confirmación explícita del usuario del 25/10/2026: los retratos individuales del equipo tienen permiso de uso web. No cubre acompañantes ni pasajeros. docs/Media-Audit.md" } as const;
 // Folder portraits flagged in the 25/10 audit, published after the user's confirmation.
@@ -65,6 +65,30 @@ const destinationMedia: MediaManifest = {
   "destination:valeria-del-mar": commons("valeria-del-mar", "Pasarela de madera entre los médanos con vegetación de Valeria del Mar, en la costa bonaerense.", "Pasarela en valeriadelmar 02.jpg", { author: "Fernando Martello", license: "CC BY-SA 4.0" }, { x: 38, y: 66 }),
 };
 export const mediaManifest: MediaManifest = {
+  "school:primaria": {
+    id: "school-group-building", type: "image",
+    alt: "Grupo de estudiantes y acompañantes de Travel Days frente a un edificio de dos torres, durante una salida escolar.",
+    provenance: "P169: egresados y fotos varisa/482197228_1221605856357025_5238093494456184970_n.jpg. SHA-256 baaea4384caff96a1bcdbb1b158e59b1d4f2dc260106cbf91540b7e5cd92bd87. WebP sin metadatos, proporción completa; docs/School-Media-Selection.csv.",
+    authorization: { status: "approved", evidence: "Confirmación explícita del usuario del 27/10/2026: publicar las fotos de los chicos porque tenemos el permiso; identifica la carpeta egresados y fotos varisa y confirma material de ambos niveles. Abarca P168–P170, sus estudiantes y acompañantes; no las fotografías de la fiesta de El Maestrazo." },
+    desktop: { src: "/media/travel-days/schools/school-group-building-desktop.webp", focal: { x: 50, y: 50 } },
+    mobile: { src: "/media/travel-days/schools/school-group-building-mobile.webp", focal: { x: 50, y: 50 } },
+  },
+  "school:secundaria": {
+    id: "school-group-lookout", type: "image",
+    alt: "Estudiantes y acompañantes de Travel Days posan juntos en un mirador con una ciudad y sierras al fondo.",
+    provenance: "P170: egresados y fotos varisa/591143606_18050933660664862_2957467923872386535_n.jpg. SHA-256 bbb7ed6d74185b4e6c71f87107e787b4a39d40c1b61db2fd7017b6a1bd939c63. WebP sin metadatos, proporción completa; docs/School-Media-Selection.csv.",
+    authorization: { status: "approved", evidence: "Confirmación explícita del usuario del 27/10/2026: publicar las fotos de los chicos porque tenemos el permiso; identifica la carpeta egresados y fotos varisa y confirma material de ambos niveles. Abarca P168–P170, sus estudiantes y acompañantes; no las fotografías de la fiesta de El Maestrazo." },
+    desktop: { src: "/media/travel-days/schools/school-group-lookout-desktop.webp", focal: { x: 50, y: 50 } },
+    mobile: { src: "/media/travel-days/schools/school-group-lookout-mobile.webp", focal: { x: 50, y: 50 } },
+  },
+  "school:primaria-detail": {
+    id: "school-group-port", type: "image",
+    alt: "Grupo de estudiantes y acompañantes de Travel Days saludando junto a un puerto con barcos y grúas al fondo.",
+    provenance: "P168: egresados y fotos varisa/1.jpg. SHA-256 e21107d8414de1f2e50053df1994e783d037c661d33f4978f38975df9e8fa7b2. WebP sin metadatos, proporción completa; docs/School-Media-Selection.csv.",
+    authorization: { status: "approved", evidence: "Confirmación explícita del usuario del 27/10/2026: publicar las fotos de los chicos porque tenemos el permiso; identifica la carpeta egresados y fotos varisa y confirma material de ambos niveles. Abarca P168–P170, sus estudiantes y acompañantes; no las fotografías de la fiesta de El Maestrazo." },
+    desktop: { src: "/media/travel-days/schools/school-group-port-desktop.webp", focal: { x: 50, y: 50 } },
+    mobile: { src: "/media/travel-days/schools/school-group-port-mobile.webp", focal: { x: 50, y: 50 } },
+  },
   "school:maestros": {
     id: "maestrazo-group-poster", type: "image",
     alt: "Grupo de pasajeros de El Maestrazo con una bandera de Travel Days frente a montañas nevadas.",
