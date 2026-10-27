@@ -89,6 +89,7 @@ export const teamMembers: TeamMember[] = [
   { id: "azul-barrera", name: "Azul Barrera", role: "Paramédica en viaje y destino", area: "asistencia", publication: approval },
   { id: "karoll-tello", name: "Karoll Tello", role: "Coordinación", area: "operacion", publication: approval },
   { id: "ezequiel-grego", name: "Ezequiel Grego", role: "Coordinación", area: "operacion", publication: approval },
+  { id: "dj-mosca", name: "DJ Mosca", role: "Logística y DJ, RRPP", area: "operacion", publication: approval },
 ];
 export const teamAreas: { id: TeamArea; title: string; description: string }[] = [
   { id: "ventas", title: "Asesoramiento y ventas", description: "Destinos, fechas, servicios y condiciones antes de contratar." },

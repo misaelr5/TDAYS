@@ -1,5 +1,11 @@
 # Medios autorizados
 
+**Estado revisado el 27/10/2026:** consultar la
+[selección escolar y de El Maestrazo](School-Media-Audit.md) y el manifiesto actual.
+Hay 339 originales inventariados; las seis fotos de grupo preseleccionadas siguen
+pendientes. El manifiesto registra permiso específico para el fragmento V140 del
+hero. La descripción histórica siguiente no es una lista vigente de aprobaciones.
+
 El manifiesto de `src/config/media.ts` incorpora un interior de oficina y cuatro
 retratos individuales con permiso web confirmado. La [auditoría audiovisual](Media-Audit.md)
 documenta los 336 archivos, la selección y los pendientes. Las ilustraciones de

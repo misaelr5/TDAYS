@@ -1,9 +1,14 @@
 .hero { position: relative; padding-bottom: 65px; background: var(--paper); color: #191919; }
 .frame { position: relative; display: grid; align-content: center; min-height: min(88svh, 860px); padding: 150px var(--gutter) 175px; overflow-x: clip; border-radius: 0 0 18px 18px; background: #35545c; color: #fff; }
 .background, .shade { position: absolute; z-index: 0; inset: 0; overflow: hidden; border-radius: inherit; pointer-events: none; }
+/* No stacking context: the pause control can rise above the shade while the media stays under it. */
+.background { z-index: auto; }
 .background > svg { width: 100%; height: 100%; }
 .background img { object-fit: cover; }
-.shade { background: linear-gradient(180deg, #0c171d80 0%, #111c2466 40%, #0d24223d 72%, #10272c6b 100%); }
+/* The background ignores the pointer; only its pause control takes clicks. */
+.background :global(.approved-media-video) button { left: auto; right: var(--gutter); bottom: 128px; z-index: 3; min-height: 36px; padding: 8px 16px; border: 1px solid #ffffff38; border-radius: 40px; background: linear-gradient(140deg, #1a2d48b3, #0c1b3099 55%, #1a2d48b3); box-shadow: inset 0 1px 0 #ffffff40, 0 10px 26px -16px #0c1b3099; backdrop-filter: blur(18px) saturate(170%); color: #fff; font-size: 11px; font-weight: 500; pointer-events: auto; cursor: pointer; }
+.background :global(.approved-media-video) button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.shade { background: linear-gradient(180deg, #0c171d80 0%, #111c2480 40%, #0d242252 72%, #10272c6b 100%); }
 .content { position: relative; z-index: 2; width: 100%; max-width: 1160px; margin: 0 auto; text-align: center; }
 .content h1 { font-size: clamp(40px, 5.1vw, 82px); font-weight: 500; letter-spacing: -.055em; line-height: 1.08; text-wrap: balance; }
 .content > p { margin-top: 20px; font-size: clamp(13px, 1.25vw, 18px); line-height: 1.6; }
@@ -23,4 +28,5 @@
   .bottom > span:first-child { display: none; }
   .bottom a { font-size: 11px; }
   .illustration { bottom: -14px; right: auto; }
+  .background :global(.approved-media-video) button { top: 84px; bottom: auto; right: 20px; }
 }

@@ -36,6 +36,7 @@ export default function TermsPage() {
             <div className={styles.contactLinks}>
               <a className={styles.primary} href={whatsappUrl("Hola Travel Days, tengo una consulta sobre los términos y condiciones.")} target="_blank" rel="noreferrer">Escribinos por WhatsApp <Arrow /></a>
               <a href={`mailto:${site.email}`}>{site.email}</a>
+              <a href={site.facebook} target="_blank" rel="noreferrer">Facebook</a>
               <Link href="/contacto">Ir a contacto</Link>
             </div>
           </section>

@@ -18,7 +18,7 @@ const journey = [
 ];
 
 // Short labels for the flight stops; the full texts stay in data.ts.
-const stops = ["Vende viajes de egresados en las puertas de los colegios.", "Ventas, coordinación, operación, supervisión y gerencia.", "Nace la agencia propia en Villa Dolores.", "Un equipo de ocho personas y una oficina abierta."];
+const stops = ["Vende viajes de egresados en las puertas de los colegios.", "Ventas, coordinación, operación, supervisión y gerencia.", "Nace la agencia propia en Villa Dolores.", "Un equipo de nueve personas y una oficina abierta."];
 
 const profileClasses = { profile: styles.profile, monogram: styles.monogram, portrait: styles.portrait, body: styles.profileBody };
 const order = (index: number) => ({ "--i": index }) as CSSProperties;
@@ -56,7 +56,7 @@ export function AgencyNarrative() {
           <div className={styles.storyIntro} data-reveal="">
             <h2 id="history-heading">De la puerta de los colegios a una agencia propia.</h2>
             <p className={styles.lead}>A los 17 años, Javier Garay empezó a promocionar viajes de egresados en las puertas de los colegios. Pasó por ventas, coordinación, operación y gerencia: hoy suma 23 años de experiencia personal en turismo.</p>
-            <p>En 2018 fundó la agencia en Villa Dolores. Hoy la sostiene un equipo de ocho personas.</p>
+            <p>En 2018 fundó la agencia en Villa Dolores. Hoy la sostiene un equipo de nueve personas.</p>
             <blockquote className={styles.quote}>
               <p>Que el pasajero pueda sentarse frente al dueño, plantear sus dudas y recibir la misma atención antes y durante el viaje.</p>
               <footer>La idea con la que Javier Garay fundó Travel Days</footer>
@@ -105,7 +105,7 @@ export function AgencyNarrative() {
         <section className={styles.team} aria-labelledby="team-heading">
           <div className={styles.sectionHead} data-reveal="">
             <h2 id="team-heading">Quiénes te van a atender.</h2>
-            <p>Ocho personas, una misma oficina. Las conocés cuando venís.</p>
+            <p>Nueve personas, una misma oficina. Las conocés cuando venís.</p>
           </div>
           <div className={styles.teamGrid} data-reveal="">
             {teamMembers.map((member, index) => <TeamMemberCard key={member.id} member={member} index={index} classes={profileClasses} />)}

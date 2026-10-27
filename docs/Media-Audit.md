@@ -1,5 +1,11 @@
 # Travel Days: auditoría audiovisual e integración
 
+**Actualización 27/10/2026:** la [revisión de viajes escolares y El Maestrazo](School-Media-Audit.md)
+enumera 339 archivos, incorpora tres fotos nuevas al inventario y contrasta los
+permisos con el manifiesto actual, incluido el fragmento V140 autorizado. El
+informe siguiente conserva los hallazgos históricos del 25/10; sus referencias a
+336 archivos o a ausencia de video público no describen el estado actual.
+
 Fecha: 25/10/2026. Fuente: `src/fotos videos y contenido traveldays/`, entregada por el propietario a través del usuario.
 
 ## Entrega

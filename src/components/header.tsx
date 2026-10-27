@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { site, whatsappUrl } from "@/config/site";
-import { Arrow } from "./icons";
+import { Arrow, Facebook } from "./icons";
 import { useGlide } from "./use-glide";
 import { navigation } from "@/config/navigation";
 import styles from "./header.module.css";
@@ -128,6 +128,9 @@ export function Header() {
               {link.label}
             </Link>
           ))}
+          <a className={styles.social} href={site.facebook} target="_blank" rel="noreferrer" aria-label="Facebook de Travel Days">
+            <Facebook />
+          </a>
         </nav>
         <Link href="/" className={styles.brand} aria-label="Travel Days, inicio">
           <Image
@@ -208,6 +211,9 @@ export function Header() {
             <p data-menu-foot>{site.address}</p>
             <a data-menu-foot className={styles.whatsapp} href={whatsappUrl()} target="_blank" rel="noreferrer">
               Consultanos por WhatsApp <Arrow />
+            </a>
+            <a data-menu-foot className={styles.facebook} href={site.facebook} target="_blank" rel="noreferrer">
+              <span><Facebook /> Seguinos en Facebook</span> <Arrow />
             </a>
           </div>
         </div>

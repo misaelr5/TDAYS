@@ -40,11 +40,10 @@
   .contact h2 { font-size: 22px; font-weight: 500; letter-spacing: -.04em; }
   .contactPill { flex-wrap: nowrap; padding: 5px 6px 5px 12px; }
   .pillButton { width: auto; margin: 0; padding: 8px 12px; }
-  /* Two full-width pills, Instagram 60% and email 40%. */
-  .socials { flex-wrap: nowrap; justify-content: stretch; margin-top: 14px; }
-  .socials a:not(.extra) { display: flex; align-items: center; justify-content: center; gap: 10px; width: auto; height: 48px; border-radius: 40px; font-size: 12px; font-weight: 500; }
-  .socials a:first-child { flex: 3 1 0; }
-  .socials a:nth-child(2) { flex: 2 1 0; }
+  /* Three equal full-width pills: Instagram, Facebook and email. */
+  .socials { flex-wrap: nowrap; justify-content: stretch; gap: 8px; margin-top: 14px; }
+  .socials a:not(.extra) { display: flex; flex: 1 1 0; align-items: center; justify-content: center; gap: 8px; min-width: 0; width: auto; height: 48px; border-radius: 40px; font-size: 12px; font-weight: 500; }
+  .socials svg { flex-shrink: 0; }
   .socialLabel { display: inline; }
   .bottom { justify-content: space-between; margin-top: 24px; padding-top: 18px; border-top: 1px solid #ffffff1f; font-size: 10px; }
   .bottom > a { position: static; }

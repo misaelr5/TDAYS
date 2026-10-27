@@ -10,7 +10,7 @@ export function ScenicHero() {
   const media = resolveMedia("hero");
   return <section className={styles.hero} aria-labelledby="hero-title" data-scenic-hero>
     <div className={styles.frame}>
-      <div className={styles.background}>{media ? <MediaContent asset={media} sizes="100vw" eager /> : <ScenicLandscape />}</div>
+      <div className={styles.background}>{media ? <MediaContent asset={media} sizes="100vw" eager allowVideo /> : <ScenicLandscape />}</div>
       <div className={styles.shade} aria-hidden="true" />
       <div className={styles.content}>
         <h1 id="hero-title">La única agencia{" "}<br />de egresados de Traslasierra.</h1>

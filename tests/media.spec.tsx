@@ -17,7 +17,7 @@ const image: ImageAsset = {
 };
 
 test("autorización: vacío, pendiente, rechazado y evidencia incompleta mantienen fallback", () => {
-  expect(Object.keys(mediaManifest).sort()).toEqual(["destination:bayahibe", "destination:brasil", "destination:caribe", "destination:carnavales-de-jujuy", "destination:cataratas-del-iguazu", "destination:festival-de-jesus-maria", "destination:los-tuneles", "destination:valeria-del-mar", "page:inicio", "page:nosotros", "team:azul-barrera", "team:daiana-dascon", "team:ezequiel-grego", "team:javier-garay", "team:jorge-angelina", "team:karoll-tello"]);
+  expect(Object.keys(mediaManifest).sort()).toEqual(["destination:bayahibe", "destination:brasil", "destination:caribe", "destination:carnavales-de-jujuy", "destination:cataratas-del-iguazu", "destination:festival-de-jesus-maria", "destination:los-tuneles", "destination:valeria-del-mar", "hero", "page:inicio", "page:nosotros", "team:azul-barrera", "team:daiana-dascon", "team:dj-mosca", "team:ezequiel-grego", "team:javier-garay", "team:jorge-angelina", "team:karoll-tello"]);
   expect(approvedMedia("hero", {})).toBeNull();
   for (const status of ["pending", "rejected"] as const) {
     expect(resolveMedia("hero", { hero: { ...image, authorization: { status } } })).toBeNull();
@@ -59,7 +59,7 @@ test("un enlace del filesystem no puede escapar de public/media", () => {
 });
 
 test("renderer conserva fallback y omite notas internas al producir variantes y focos", () => {
-  expect(renderToStaticMarkup(<ApprovedMedia slot="hero"><span>Fallback de prueba</span></ApprovedMedia>)).toBe("<span>Fallback de prueba</span>");
+  expect(renderToStaticMarkup(<ApprovedMedia slot="graduates"><span>Fallback de prueba</span></ApprovedMedia>)).toBe("<span>Fallback de prueba</span>");
   const asset = resolveMedia("hero", { hero: image })!;
   expect(Object.keys(asset).sort()).toEqual(["alt", "desktop", "mobile", "type"]);
   const html = renderToStaticMarkup(<MediaContent asset={asset} />);
@@ -90,28 +90,38 @@ test("video exige poster válido y respeta movimiento, red y ahorro de datos", (
 test("verificador real y hooks de build usan el manifiesto", () => {
   const result = spawnSync(process.execPath, ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", "scripts/verify-media.mjs"], { encoding: "utf8", windowsHide: true });
   expect(result.status).toBe(0);
-  expect(result.stdout).toContain("Medios aprobados verificados: 24");
+  expect(result.stdout).toContain("Medios aprobados verificados: 30");
   expect(verifyManifest({ hero: image })).toEqual({ files: 2, errors: [] });
   const pkg = JSON.parse(readFileSync("package.json", "utf8"));
   expect(pkg.scripts.prebuild).toBe("npm run verify:media");
 });
 
-test("Home muestra fotografías licenciadas de destinos y no solicita videos ni material pendiente", async ({ page }) => {
+test("Home muestra fotografías licenciadas de destinos y solo el video decorativo del hero", async ({ page }) => {
   const videos: string[] = [];
-  page.on("request", request => { if (/\.(mp4|webm)(?:[?#]|$)/.test(request.url())) videos.push(request.url()); });
+  page.on("request", request => { if (/\.(mp4|webm)(?:[?#]|$)/.test(request.url())) videos.push(new URL(request.url()).pathname); });
   await page.goto("/");
-  await expect(page.locator("video")).toHaveCount(0);
+  const video = page.locator("video");
+  await expect(video).toHaveCount(1);
+  await expect(page.locator("[data-scenic-hero] video")).toHaveCount(1);
+  for (const [name, value] of [["aria-hidden", "true"], ["preload", "none"], ["tabindex", "-1"]]) await expect(video).toHaveAttribute(name, value);
+  expect(await video.evaluate(element => (element as HTMLVideoElement).muted && (element as HTMLVideoElement).loop)).toBe(true);
+  // With reduced motion (the suite's default) only the poster shows and nothing is downloaded.
+  await expect(page.getByRole("button", { name: /video de fondo/ })).toHaveCount(0);
   await expect(page.locator("[data-destination-carousel] .postcard-photo img")).toHaveCount(8);
   await expect(page.locator("[data-destination-carousel] .landscape")).toHaveCount(0);
   const sources = await page.locator("[data-destination-carousel] img").evaluateAll(images => images.map(image => image.getAttribute("src")));
   expect(new Set(sources).size).toBe(8);
   for (const source of sources) expect(source).toContain("/_next/image?url=%2Fmedia%2Fdestinations%2F");
   expect(videos).toEqual([]);
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect(page.getByRole("button", { name: "Pausar video de fondo" })).toBeVisible();
+  await expect.poll(() => video.evaluate(element => !(element as HTMLVideoElement).paused)).toBe(true);
+  expect(new Set(videos)).toEqual(new Set(["/media/travel-days/trips/maestrazo-termas-desktop.mp4"]));
 });
 
 test("las copias públicas son WebP optimizadas y no incluyen EXIF, XMP ni perfiles privados", () => {
   const paths = readdirSync("public/media/travel-days", { recursive: true }).map(String).filter(path => path.endsWith(".webp"));
-  expect(paths).toHaveLength(23);
+  expect(paths).toHaveLength(28);
   for (const path of paths) {
     const data = readFileSync(resolve("public/media/travel-days", path));
     expect(data.length, path).toBeLessThan(110_000);
@@ -134,14 +144,12 @@ test("Nosotros muestra oficina y retratos autorizados con carga responsive y sin
   await expect(office).toHaveAttribute("loading", "eager");
   await expect(office).toHaveAttribute("fetchpriority", "high");
   await expect(office).toHaveAttribute("alt", /Escritorios y sillas/);
-  await expect(page.locator("[data-team-portrait]")).toHaveCount(6);
+  await expect(page.locator("[data-team-portrait]")).toHaveCount(7);
   for (const photo of await page.locator("[data-team-portrait] img").all()) {
     await expect(photo).toHaveAttribute("loading", "lazy");
     await expect(photo).toHaveAttribute("srcset", /.+/);
   }
-  for (const id of ["dj-mosca"]) {
-    await expect(page.locator(`img[src*="${id}"]`)).toHaveCount(0);
-  }
+  await expect(page.locator('[data-team-portrait] img[srcset*="dj-mosca"]')).toHaveCount(1);
   const html = await page.content();
   expect(html).not.toContain("Confirmación explícita del usuario");
   expect(html).not.toContain("fotos videos y contenido traveldays");

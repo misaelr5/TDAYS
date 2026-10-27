@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Arrow } from "./icons";
+import { Arrow, Facebook } from "./icons";
 import { site, whatsappUrl } from "@/config/site";
 import styles from "./site-footer.module.css";
 
@@ -17,7 +17,7 @@ export function SiteFooter() {
       <div className={styles.grid}>
         {/* On mobile only this column stays, as one compact row: it is the no-JS menu target. */}
         <div className={`${styles.column} ${styles.routes}`}><h2>Travel Days</h2><Link href="/">Inicio</Link><Link href="/destinos">Destinos</Link><Link className={styles.extra} href="/destinos#egresados">Egresados</Link><Link href="/nosotros">Nosotros</Link><Link href="/contacto">Contacto</Link></div>
-        <div className={`${styles.column} ${styles.extra}`}><h2>Conversemos</h2><a href={whatsappUrl()} target="_blank" rel="noreferrer">WhatsApp</a><a href={`mailto:${site.email}`}>Email</a><a href={site.instagram} target="_blank" rel="noreferrer">Instagram</a></div>
+        <div className={`${styles.column} ${styles.extra}`}><h2>Conversemos</h2><a href={whatsappUrl()} target="_blank" rel="noreferrer">WhatsApp</a><a href={`mailto:${site.email}`}>Email</a><a href={site.instagram} target="_blank" rel="noreferrer">Instagram</a><a href={site.facebook} target="_blank" rel="noreferrer">Facebook</a></div>
         <div className={`${styles.column} ${styles.extra}`}><h2>Tu viaje</h2><Link href="/contacto#consulta">Organizá tu viaje</Link><Link href="/destinos#egresados-preguntas">Preguntas de egresados</Link><Link href="/contacto#experiencia">Compartí tu experiencia</Link><Link href="/nosotros#historia">Nuestra historia</Link></div>
         <div className={styles.contact}>
           <h2>Sigamos viajando.</h2>
@@ -25,6 +25,7 @@ export function SiteFooter() {
           <a className={styles.contactPill} href={whatsappUrl()} target="_blank" rel="noreferrer"><SocialIcon kind="chat" /><span>Escribinos por WhatsApp</span><span className={styles.pillButton}>Hablemos <Arrow /></span></a>
           <div className={styles.socials}>
             <a href={site.instagram} target="_blank" rel="noreferrer" aria-label="Instagram de Travel Days"><SocialIcon kind="instagram" /><span className={styles.socialLabel} aria-hidden="true">Instagram</span></a>
+            <a href={site.facebook} target="_blank" rel="noreferrer" aria-label="Facebook de Travel Days"><Facebook /><span className={styles.socialLabel} aria-hidden="true">Facebook</span></a>
             <a href={`mailto:${site.email}`} aria-label="Enviar email a Travel Days"><SocialIcon kind="mail" /><span className={styles.socialLabel} aria-hidden="true">Email</span></a>
             <a className={styles.extra} href={whatsappUrl()} target="_blank" rel="noreferrer" aria-label="WhatsApp de Travel Days"><SocialIcon kind="chat" /></a>
           </div>

@@ -40,6 +40,7 @@ export default function ContactPage() {
             <a className={styles.utilityLink} href={directions} target="_blank" rel="noopener noreferrer">Cómo llegar <Arrow /></a>
             <a href={`mailto:${site.email}`}>{site.email}</a>
             <a href={`tel:+${site.whatsapp}`}>{site.phone}</a>
+            <a href={site.facebook} target="_blank" rel="noopener noreferrer">Facebook</a>
           </div>
         </section>
 

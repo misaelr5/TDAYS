@@ -100,7 +100,7 @@ export const termsSections: TermsSection[] = [
   {
     id: "enlaces",
     title: "Enlaces a otros sitios",
-    paragraphs: ["El sitio incluye enlaces a WhatsApp, Instagram, Google Maps y otros servicios. Esos sitios tienen sus propias condiciones y políticas de privacidad, ajenas a Travel Days."],
+    paragraphs: ["El sitio incluye enlaces a WhatsApp, Instagram, Facebook, Google Maps y otros servicios. Esos sitios tienen sus propias condiciones y políticas de privacidad, ajenas a Travel Days."],
   },
   {
     id: "cambios",

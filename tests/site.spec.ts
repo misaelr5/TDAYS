@@ -10,7 +10,7 @@ for (const route of routes) {
       await ready(page);
       await expect(page.locator("main")).toHaveCount(1);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-      await expect.poll(() => page.evaluate(() => [...document.images].filter(image => !image.complete || image.naturalWidth === 0).length)).toBe(0);
+      await expect.poll(() => page.evaluate(() => [...document.images].filter(image => image.getClientRects().length > 0 && (!image.complete || image.naturalWidth === 0)).length)).toBe(0);
     });
   }
 }

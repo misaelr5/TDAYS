@@ -7,6 +7,7 @@ export const site = {
   address: "Felipe Erdman 222, Villa Dolores, Córdoba",
   hours: "Lunes a viernes de 9 a 12:30 y de 17 a 20:30. Sábados de 9 a 12:30.",
   instagram: "https://www.instagram.com/traveldays_1/",
+  facebook: "https://www.facebook.com/traveldayseducativos",
   googleReviewsUrl: "https://share.google/1j7Yivr2gGxjZ16Xe",
 } as const;
 export function whatsappUrl(

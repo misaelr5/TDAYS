@@ -65,6 +65,14 @@ const destinationMedia: MediaManifest = {
   "destination:valeria-del-mar": commons("valeria-del-mar", "Pasarela de madera entre los médanos con vegetación de Valeria del Mar, en la costa bonaerense.", "Pasarela en valeriadelmar 02.jpg", { author: "Fernando Martello", license: "CC BY-SA 4.0" }, { x: 38, y: 66 }),
 };
 export const mediaManifest: MediaManifest = {
+  hero: {
+    id: "maestrazo-termas", type: "video", decorative: true,
+    alt: "",
+    provenance: "Material del propietario: Videos/wetransfer_parte-3-maestrazo-videos-crudos_2026-09-14_1157/IMG_2723maestrazo parte 3 termas crudos.mp4, segundos 0 a 3,5. Sin audio ni metadatos, con fundido al azul de marca para el loop; 27/10/2026.",
+    authorization: { status: "approved", evidence: "Confirmación explícita del usuario del 27/10/2026: hay permiso de los pasajeros para el uso web de este video y todos son mayores de edad. Grupo de pasajeros con rostros visibles, revisado visualmente." },
+    desktop: { src: "/media/travel-days/trips/maestrazo-termas-desktop.mp4", poster: { src: "/media/travel-days/trips/maestrazo-termas-desktop.webp", focal: { x: 50, y: 58 } } },
+    mobile: { src: "/media/travel-days/trips/maestrazo-termas-mobile.mp4", poster: { src: "/media/travel-days/trips/maestrazo-termas-mobile.webp", focal: { x: 46, y: 58 } } },
+  },
   "page:inicio": {
     id: "office-sign", type: "image",
     alt: "Cartel de Viajes y Turismo con letras azules y naranjas sobre una pared blanca de la oficina de Travel Days.",
@@ -87,6 +95,7 @@ export const mediaManifest: MediaManifest = {
   "team:azul-barrera": portrait("azul-barrera", "Retrato de Azul Barrera, paramédica del equipo.", "Retrato individual identificado por la agencia en Azul barrera- Paramedica.JPG (P001).", { x: 51, y: 43 }),
   "team:jorge-angelina": portrait("jorge-angelina", "Retrato de Jorge Angelina, de operaciones y coordinación general.", "Recorte de Jorge angelina- coordinación general.JPG (P146) que muestra solo a Jorge.", { x: 50, y: 40 }, folderPortraitApproval),
   "team:ezequiel-grego": portrait("ezequiel-grego", "Retrato de Ezequiel Grego, del área de coordinación.", "Retrato individual identificado por la agencia en Grego Ezequiel- coordinación.PNG (P141).", { x: 50, y: 45 }, folderPortraitApproval),
+  "team:dj-mosca": portrait("dj-mosca", "Retrato de DJ Mosca, de logística, DJ y relaciones públicas.", "Retrato individual identificado por la agencia en DJ MOSCA- logística y DJ, RRPP.JPG (P007).", { x: 50, y: 40 }, { status: "approved", evidence: "Solicitud explícita del usuario del 27/10/2026: agregar a DJ Mosca (logística y DJ, RRPP) al equipo con este retrato." }),
   "team:karoll-tello": portrait("karoll-tello", "Retrato de Karoll Tello, del área de coordinación.", "Retrato individual identificado por la agencia en Karol Tello- coordinación.JPG (P147).", { x: 50, y: 35 }),
 };
 

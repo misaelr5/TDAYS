@@ -20,6 +20,13 @@ export function Arrow({
     </svg>
   );
 }
+export function Facebook({ className = "" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" aria-hidden="true">
+      <path d="M13.5 21v-7.5H16l.5-3h-3V8.6c0-.9.4-1.6 1.7-1.6h1.4V4.3A17 17 0 0 0 14.4 4c-2.6 0-4.1 1.5-4.1 4.3v2.2H7.5v3h2.8V21" />
+    </svg>
+  );
+}
 export function Plane({ className = "" }: { className?: string }) {
   return (
     <svg
