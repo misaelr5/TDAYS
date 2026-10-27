@@ -43,13 +43,15 @@ const cards: readonly TrustCard[] = [
 ];
 
 const COUNT_DURATION = 1400;
-const STAGGER = 100;
+const STAGGER = 110;
+const BAND_LEAD = 260;
 
 export function TrustCards() {
   const root = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
-    const elements = Array.from(root.current!.querySelectorAll<HTMLAnchorElement>("[data-trust-card]"));
+    const band = root.current!;
+    const elements = Array.from(band.querySelectorAll<HTMLAnchorElement>("[data-trust-card]"));
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (preference.matches || !("IntersectionObserver" in window)) return;
 
@@ -64,6 +66,7 @@ export function TrustCards() {
 
     // Final values are present in SSR and the first client render. Only enhance
     // after hydration; without JS or observer support the content remains visible.
+    band.dataset.reveal = "pending";
     items.forEach(({ element, counter }) => {
       element.dataset.reveal = "pending";
       if (counter) counter.textContent = "0";
@@ -92,7 +95,9 @@ export function TrustCards() {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
         const index = elements.indexOf(entry.target as HTMLAnchorElement);
-        items[index].start = performance.now() + index * STAGGER;
+        // The band settles first; its segments follow in a stagger.
+        band.dataset.reveal = "visible";
+        items[index].start = performance.now() + BAND_LEAD + index * STAGGER;
         observer.unobserve(entry.target);
       }
       if (!frame) frame = requestAnimationFrame(tick);
@@ -102,6 +107,7 @@ export function TrustCards() {
     const finish = () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
+      delete band.dataset.reveal;
       items.forEach(({ element, counter, card }) => {
         delete element.dataset.reveal;
         if (counter) counter.textContent = String(card.value);

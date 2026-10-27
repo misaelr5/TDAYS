@@ -1,5 +1,5 @@
 .narrative { --expand: cubic-bezier(.22, 1, .36, 1); overflow-wrap: anywhere; background: var(--paper); color: var(--ink); }
-.narrative > section { padding: clamp(56px, 7vw, 112px) var(--gutter); scroll-margin-top: 90px; }
+.narrative section { padding: clamp(56px, 7vw, 112px) var(--gutter); }
 .narrative h2 { max-width: 16em; font-size: clamp(30px, 3.4vw, 50px); line-height: 1.08; letter-spacing: -.045em; font-weight: 500; text-wrap: balance; }
 .narrative h3 { font-weight: 500; letter-spacing: -.025em; }
 
@@ -22,11 +22,6 @@
 .office { position: absolute; left: 16px; right: 16px; bottom: 16px; display: grid; gap: 4px; padding: 18px 20px; border: 1px solid #ffffffb3; border-radius: 22px; background: linear-gradient(140deg, #ffffffeb, #ffffffc4); box-shadow: inset 0 1px 0 #fff, 0 10px 28px -18px #0c1b3099; backdrop-filter: blur(20px) saturate(170%); }
 .office span { font-size: 12px; color: #536174; }
 .office strong { font-size: 16px; line-height: 1.35; font-weight: 500; letter-spacing: -.02em; color: var(--ink); }
-
-/* Chapter pills */
-.chapterNav { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; width: fit-content; max-width: calc(100% - 2 * var(--gutter)); margin: 0 auto; padding: 6px; border: 1px solid #ffffffb3; border-radius: 40px; background: linear-gradient(140deg, #ffffffeb, #ffffffbf); box-shadow: inset 0 1px 0 #fff, var(--glass-shadow); backdrop-filter: blur(20px) saturate(170%); }
-.chapterNav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 40px; color: #214364; font-size: 13px; font-weight: 500; transition: background .2s, color .2s; }
-.chapterNav a:hover { background: #eaf1fc; color: var(--action); }
 
 /* Story: compact text + photo, then a flight route through four stops */
 .story.story { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: clamp(28px, 4vw, 64px) clamp(32px, 5vw, 88px); align-items: center; max-width: calc(1320px + 2 * var(--gutter)); margin-inline: auto; }
@@ -90,7 +85,7 @@
 .profileBody p { margin-top: 4px; font-size: 13px; line-height: 1.45; color: #536174; }
 
 /* Commitment: three stages as compact cards */
-.commitment.commitment { max-width: calc(1320px + 2 * var(--gutter)); margin-inline: auto; padding-top: clamp(32px, 4vw, 56px); }
+.commitment.commitment { max-width: calc(1320px + 2 * var(--gutter)); margin-inline: auto; }
 .journey { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; max-width: 1320px; margin: 0 auto; padding: 0; list-style: none; }
 .journey li { position: relative; min-width: 0; padding: 26px; border: 1px solid var(--glass-border); border-radius: var(--radius-card, 24px); background: var(--surface); box-shadow: var(--glass-shadow), inset 0 1px 0 #fff; transition: translate .4s var(--expand), box-shadow .4s; }
 .journey li:hover { translate: 0 -4px; box-shadow: 0 24px 50px -32px #14233366, inset 0 1px 0 #fff; }
@@ -172,8 +167,6 @@
 @media (max-width: 767px) {
   .hero.hero { grid-template-columns: 1fr; }
   .heroVisual { aspect-ratio: 4 / 3; border-radius: 24px; }
-  .chapterNav { border-radius: 24px; }
-  .chapterNav a { padding: 0 12px; font-size: 12px; }
   .teamGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .backingPanel, .closingPanel { border-radius: 24px; }
   .map { min-height: 440px; }
@@ -187,7 +180,7 @@
   .monogram b { font-size: 36px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .primary, .light, .primary svg, .light svg, .facts > div, .journey li, .portrait img, .chapterNav a { transition: none; }
+  .primary, .light, .primary svg, .light svg, .facts > div, .journey li, .portrait img { transition: none; }
   .primary:hover, .light:hover, .facts > div:hover, .journey li:hover { transform: none; translate: none; }
   .profile:hover .portrait img { transform: none; }
   .pin::after { animation: none; opacity: 0; }

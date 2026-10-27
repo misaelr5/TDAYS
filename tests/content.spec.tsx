@@ -51,6 +51,7 @@ test("Nosotros cuenta historia, respaldo, equipo y compromiso con datos reales",
   await expect(page.getByRole("link", { name: "Conocé la historia" })).toHaveAttribute("href", "#historia");
   for (const link of await narrative.locator('a[href^="https://wa.me/"]').all()) await expect(link).toHaveAttribute("href", /5493544312904/);
   // The live map is third-party: only a local illustration until the visitor asks for it.
+  await page.getByRole("tab", { name: "Visitanos" }).click();
   const map = narrative.locator("[data-office-map]");
   await expect(map.locator("iframe")).toHaveCount(0);
   await expect(map.getByRole("link", { name: "Cómo llegar" })).toHaveAttribute("href", /^https:\/\/www\.google\.com\/maps\/search\/\?api=1&query=/);
@@ -63,7 +64,7 @@ for (const width of [320, 390, 1440]) {
     await page.goto("/nosotros");
     await ready(page);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    for (const section of await page.locator("[data-agency-narrative] > section").all()) {
+    for (const section of await page.locator("[data-agency-narrative] section:visible").all()) {
       expect(await section.evaluate(element => getComputedStyle(element).position)).toBe("static");
       const box = (await section.boundingBox())!;
       for (const content of await section.locator("h2,h3,p").all()) {

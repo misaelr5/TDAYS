@@ -112,3 +112,15 @@ y [desplegables HTML nativos](https://developer.mozilla.org/en-US/docs/Web/HTML/
 
 Capturas de los tres estados en escritorio y móvil:
 `output/playwright/contact-minimal-{consulta,oficina,experiencia}-{390,1440}.png`.
+
+## Reseñas en Google · 27/10/2026
+
+“Mi experiencia” reemplaza el formulario privado por el enlace “Dejar una reseña
+en Google”. Usa la URL facilitada por el usuario en `site.googleReviewsUrl`:
+https://share.google/1j7Yivr2gGxjZ16Xe.
+
+El enlace abre en otra pestaña con `noopener noreferrer`, funciona sin JavaScript
+y no requiere completar estrellas ni comentarios en esta web. La reseña se escribe
+y publica en Google. La URL redirige a la ficha de Travel Days; no se ha confirmado
+que abra directamente el editor de reseñas. La consulta de viajes sigue preparando
+su borrador de WhatsApp. Este apartado sustituye el flujo histórico descrito arriba.

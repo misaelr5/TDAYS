@@ -113,12 +113,12 @@ test("cuatro rutas, navegación y contacto disponibles sin JavaScript", async ({
       }
     }
     await expect(page.locator("form:visible")).toHaveCount(0);
-    await expect(page.locator('main noscript a[href^="https://wa.me/"]')).toHaveCount(2);
+    await expect(page.locator('main noscript a[href^="https://wa.me/"]')).toHaveCount(1);
     await expect(page.getByRole("link", { name: "escribinos por WhatsApp", exact: true })).toBeVisible();
     await page.getByRole("navigation", { name: "Elegí cómo podemos ayudarte" }).getByRole("link", { name: "Mi experiencia" }).click();
     await expect(page.locator("#experiencia")).toBeVisible();
     await expect(page.locator("#consulta")).toBeHidden();
-    await expect(page.getByRole("link", { name: "escribinos por WhatsApp", exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Dejar una reseña en Google", exact: true })).toHaveAttribute("href", "https://share.google/1j7Yivr2gGxjZ16Xe");
     for (const link of await page.locator("main noscript a").all()) {
       await expect(link).toHaveAttribute("href", /^https:\/\/wa\.me\/5493544312904\?text=/);
     }

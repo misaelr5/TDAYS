@@ -36,6 +36,7 @@
 .panelHeading > p { margin-top: 12px; color: #536174; font-size: 14px; line-height: 1.7; }
 
 .form { display: flex; flex-direction: column; gap: 20px; max-width: 680px; margin-inline: auto; }
+.review { display: flex; flex-direction: column; gap: 16px; max-width: 680px; margin-inline: auto; }
 .field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .field label, .rating legend { font-size: 13px; font-weight: 500; line-height: 1.5; }
 .field label span, .rating legend span { font-weight: 400; color: #536174; }

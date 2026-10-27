@@ -40,19 +40,20 @@ test("el menú móvil sin JavaScript ofrece acceso real a las cuatro rutas", asy
   } finally { await context.close(); }
 });
 
-test("opinión inválida y borrador mantienen etiquetas, foco, asociación y axe", async ({ page }, testInfo) => {
-  await page.goto("/contacto#experiencia");
-  const form = page.getByRole("form", { name: "Compartir experiencia de viaje" });
-  const message = form.getByLabel("Contanos tu experiencia", { exact: true });
-  await form.getByRole("button", { name: "Preparar mi opinión" }).click();
+test("consulta inválida y borrador mantienen etiquetas, foco, asociación y axe", async ({ page }, testInfo) => {
+  await page.goto("/contacto#consulta");
+  const form = page.getByRole("form", { name: "Consulta de viaje" });
+  const message = form.getByLabel("Tu nombre", { exact: true });
+  await form.getByRole("button", { name: "Preparar mi consulta" }).click();
   await expect(message).toBeFocused();
   await expect(message).toHaveAttribute("aria-invalid", "true");
-  await expect(message).toHaveAttribute("aria-describedby", "experience-message-help experience-error");
-  const invalid = await new AxeBuilder({ page }).include("#experiencia").withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
-  await message.fill("Opinión de prueba QA");
-  await form.getByRole("button", { name: "Preparar mi opinión" }).click();
+  await expect(message).toHaveAttribute("aria-describedby", "inquiry-error");
+  const invalid = await new AxeBuilder({ page }).include("#consulta").withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
+  await message.fill("Prueba QA");
+  await form.getByLabel("Contanos qué tenés en mente", { exact: true }).fill("Consulta de prueba QA");
+  await form.getByRole("button", { name: "Preparar mi consulta" }).click();
   await expect(form.getByRole("status")).toBeFocused();
-  const draft = await new AxeBuilder({ page }).include("#experiencia").withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
+  const draft = await new AxeBuilder({ page }).include("#consulta").withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
   await testInfo.attach("axe-estados", { body: JSON.stringify({ invalid: invalid.violations, draft: draft.violations }), contentType: "application/json" });
   expect(invalid.violations).toEqual([]);
   expect(draft.violations).toEqual([]);

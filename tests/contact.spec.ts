@@ -1,5 +1,5 @@
 import { prepareMessage, contactLimits } from "../src/features/contact/messages";
-import { whatsappUrl } from "../src/config/site";
+import { site, whatsappUrl } from "../src/config/site";
 import { test, expect } from "./fixtures";
 
 for (const width of [320, 1440]) {
@@ -21,45 +21,13 @@ for (const width of [320, 1440]) {
     await page.keyboard.press("Enter");
     await expect(page.locator("#experiencia")).toBeVisible();
     await expect(page.locator("[data-contact-panel]:visible")).toHaveCount(1);
-    await expect(page.getByRole("radio")).toHaveCount(5);
+    await expect(page.getByRole("link", { name: "Dejar una reseña en Google" })).toHaveAttribute("href", site.googleReviewsUrl);
+    await expect(page.locator("#experiencia form")).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.reload();
     await expect(page.locator("#experiencia")).toBeVisible();
   });
 }
-
-test("estrellas: teclado, valoración sin comentario, cambio y limpieza invalidan el borrador", async ({ page }) => {
-  await page.goto("/contacto#experiencia");
-  const form = page.getByRole("form", { name: "Compartir experiencia de viaje", exact: true });
-  const first = form.getByRole("radio", { name: "1 estrella: Muy mala", exact: true });
-  await first.focus();
-  await page.keyboard.press("Space");
-  await page.keyboard.press("ArrowRight");
-  await page.keyboard.press("ArrowRight");
-  await expect(form.getByRole("radio", { name: "3 estrellas: Regular", exact: true })).toBeChecked();
-  await form.getByRole("button", { name: "Preparar mi opinión" }).click();
-  const draft = form.getByRole("status");
-  await expect(draft).toBeFocused();
-  const link = form.getByRole("link", { name: "Revisar y enviar en WhatsApp" });
-  const message = new URL((await link.getAttribute("href"))!).searchParams.get("text")!;
-  expect(message).toContain("Puntuación: 3/5");
-  expect(message).not.toContain("Experiencia:");
-  await form.getByRole("radio", { name: "4 estrellas: Buena", exact: true }).focus();
-  await page.keyboard.press("Space");
-  await expect(draft).toHaveCount(0);
-  await form.getByRole("button", { name: "Preparar mi opinión" }).click();
-  await expect(draft).toBeVisible();
-  await form.getByRole("button", { name: "Quitar puntuación" }).click();
-  await expect(form.locator('input[name="rating"]:checked')).toHaveCount(0);
-  await expect(draft).toHaveCount(0);
-  await form.getByRole("button", { name: "Preparar mi opinión" }).click();
-  await expect(form.getByRole("alert")).toContainText("Elegí tus estrellas");
-  await form.getByRole("radio", { name: "5 estrellas: Muy buena", exact: true }).focus();
-  await page.keyboard.press("Space");
-  await expect(form.getByRole("alert")).toHaveCount(0);
-  await form.getByRole("button", { name: "Preparar mi opinión" }).click();
-  await expect(draft).toBeVisible();
-});
 
 test("contacto: los tres módulos conservan reflow al ampliar al 200%", async ({ page }) => {
   await page.setViewportSize({ width: 640, height: 900 });
@@ -147,40 +115,19 @@ test("texto invisible se rechaza y WhatsApp conserva Unicode sin romperse con su
   expect(new URL(whatsappUrl("QA \uD800")).searchParams.get("text")).toBe("QA �");
 });
 
-test("opinión privada: comentario sin puntuar, datos opcionales y borrador invalidado", async ({ page }) => {
+test("Mi experiencia ofrece la reseña pública en Google sin recopilar una opinión local", async ({ page }) => {
   await page.goto("/contacto#experiencia");
-  const form = page.getByRole("form", { name: "Compartir experiencia de viaje", exact: true });
-  const message = form.getByLabel("Contanos tu experiencia", { exact: true });
-  const submit = form.getByRole("button", { name: "Preparar mi opinión" });
-  const link = form.getByRole("link", { name: "Revisar y enviar en WhatsApp" });
-  await submit.click();
-  await expect(message).toBeFocused();
-  await expect(link).toHaveCount(0);
-  await message.fill("   ");
-  await submit.click();
-  await expect(form.getByRole("alert")).toContainText("Elegí tus estrellas");
-  await message.fill(" Opinión de prueba: gracias 😊 & hasta pronto. ");
-  await submit.click();
-  expect(new URL((await link.getAttribute("href"))!).searchParams.get("text")).toContain("Puntuación: sin puntuar");
-  await form.getByText("Agregar mi nombre y viaje", { exact: false }).click();
-  await form.getByLabel("Tu nombre", { exact: false }).fill("Prueba QA");
-  await expect(link).toHaveCount(0);
-  await form.getByLabel("¿Qué viaje hiciste?", { exact: false }).fill("Brasil");
-  await form.getByRole("radio", { name: "5 estrellas: Muy buena", exact: true }).focus();
-  await page.keyboard.press("Space");
-  await submit.click();
-  const url = new URL((await link.getAttribute("href"))!);
-  expect(url.pathname).toBe("/5493544312904");
-  expect(url.searchParams.get("text")).toContain("Puntuación: 5/5");
-  expect(url.searchParams.get("text")).toContain("Viaje realizado: Brasil");
-  await expect(form.getByRole("status")).toBeFocused();
-  await expect(form.getByRole("status")).toContainText("Mensaje preparado. Falta enviarlo.");
-  await expect(form.getByRole("status")).not.toContainText(/mensaje enviado|opinión publicada|recibimos tu/i);
-  expect(await page.evaluate(() => ({ local: localStorage.length, session: sessionStorage.length }))).toEqual({ local: 0, session: 0 });
-  expect(await page.context().cookies()).toEqual([]);
-  await page.reload();
-  await expect(message).toBeEmpty();
-  await expect(link).toHaveCount(0);
+  const panel = page.locator("#experiencia");
+  await expect(panel).toBeVisible();
+  const link = panel.getByRole("link", { name: "Dejar una reseña en Google", exact: true });
+  await expect(link).toHaveAttribute("href", site.googleReviewsUrl);
+  await expect(link).toHaveAttribute("target", "_blank");
+  await expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  await expect(link).toHaveAccessibleDescription(/nueva pestaña.*Google/);
+  await expect(panel.locator("form, input, textarea")).toHaveCount(0);
+  await link.focus();
+  await expect(link).toBeFocused();
+  expect(await link.evaluate(element => getComputedStyle(element).outlineStyle)).not.toBe("none");
 });
 
 test("límites y puntuaciones manipuladas se rechazan también fuera de la validación HTML", () => {

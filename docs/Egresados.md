@@ -134,3 +134,58 @@ TypeScript mediante QA y 11 pruebas Playwright/Axe aprobadas. Se comprobaron
 Inicio y Destinos, las consultas específicas, teclado y navegación sin JavaScript.
 En las capturas comparables, el bloque pasó de 1987 a 1035 px de alto en escritorio
 (viewport de 1440 px) y de 2538 a 1049 px en móvil (viewport de 390 px).
+
+## Guía integrada en Destinos — 26/10/2026
+
+El apartado ampliado reúne proceso, preguntas, respaldo y contacto dentro de una sola guía. Se conserva el selector de primaria/secundaria y el módulo de los ocho destinos.
+
+- Tres pasos visibles: contar quiénes integran el grupo, conversar sobre el viaje y revisar la propuesta.
+- La antigua pregunta sobre cómo empezar se integra al primer paso, conservando colegio, nivel, cantidad aproximada, año y la posibilidad de consultar sin tener todo definido.
+- Las dudas sobre destinos/fechas y contratación conservan sus respuestas. La formación pasa a una pregunta sobre preparación y acompañamiento, junto a coordinación y asistencia paramédica para consultar por cada propuesta.
+- La experiencia identifica a Javier Garay y comparte una franja compacta con oficina, legajo y enlace a la historia.
+- El cierre ofrece una consulta principal para el grupo. Su mensaje conserva el nivel elegido mediante los radios nativos y CSS `:has()`, incluso sin JavaScript.
+- El ancla `/destinos#egresados-preguntas` y el regreso a `#egresados` siguen disponibles.
+
+Se reutilizan componentes de servidor, CSS Grid, `<details>/<summary>`, los datos institucionales y `whatsappUrl`. No se incorporan dependencias, medios ni estado de cliente. Las transiciones respetan `prefers-reduced-motion`.
+
+Los cambios de esta revisión se limitan a `graduates-section.tsx`, `graduates.module.css`, los pasos/preguntas de `graduates/data.ts` y las pruebas de `graduates-guide.spec.ts`. El Home conserva su vista breve. Las capturas antes/después y comprobaciones de integridad están en `output/playwright/egresados-guide/`.
+
+La primera comparación de imágenes del catálogo completo registra cero píxeles distintos a 375, 768 y 1440 px. La altura del apartado completo de Egresados pasa de 3406 a 2799 px en 375, de 2432 a 2076 px en 768 y de 2556 a 1907 px en 1440. Los números corresponden al estado inicial de los desplegables.
+
+Validación final de esta revisión:
+
+- `npm run lint`: exit 0.
+- `npx tsc --noEmit --incremental false`: exit 0; también pasó el chequeo de TypeScript del build de producción aislado.
+- `npm test -- --grep-invert 'referencia visual'`: build correcto, 95 pruebas aprobadas y siete fallos en `tests/site.spec.ts:13`, todos en Nosotros. La suite completa no está verde.
+- Las cuatro pruebas nuevas de `graduates-guide.spec.ts` pasaron: controles por teclado, contenido desplegable, consulta que conserva primaria/secundaria, Axe a 375/768/1440 y funcionamiento sin JavaScript al 200%.
+- Los siete fallos de Nosotros aparecen tras la conversión concurrente de esa página a capítulos/pestañas. El test exige que todas las imágenes estén cargadas aunque el panel del equipo esté oculto. Se verificó en navegador que las seis imágenes diferidas pendientes cargan al abrir «El equipo». La evidencia queda en `nosotros-concurrent-test-diagnosis.json`; los archivos y tests de ese trabajo se preservaron.
+- Las 29 comparaciones visuales históricas, ya pendientes de actualización, no se reejecutaron. Sus hashes originales siguen intactos.
+- Capturas finales de la guía y comparación antes/después del catálogo completo: cero píxeles distintos a 375, 768 y 1440 px. Sin overflow. Capturas del build de producción en `output/playwright/egresados-guide/after-*-guide.png`.
+- `git diff --check` de los archivos de esta intervención: correcto. `next-env.d.ts` conserva exactamente sus bytes iniciales. No se añadieron paquetes, commits ni despliegues.
+
+El resultado general de esta ejecución se conserva en `output/playwright/egresados-guide/functional-results.json`. Los cambios concurrentes detectados en Nosotros, sus capítulos, estilos globales y tests quedan separados en el informe de integridad; no forman parte de esta intervención.
+
+## Centro de ayuda por categorías — 26/10/2026
+
+Por indicación del usuario se usa FAQ 7 únicamente como inspiración conceptual: navegación por categorías y respuestas desplegables. La implementación es propia de Travel Days; no se descargó código de React Bits Pro, no requiere licencia y no añade dependencias. El intento inicial de instalación se detuvo al aclararse ese alcance. `components.json`, `package.json` y el lockfile conservan sus bytes iniciales.
+
+La guía conserva su título, datos, respaldo y consulta por nivel. Los temas son Cómo empezar, Destinos y fechas, Antes de contratar y Acompañamiento. Las respuestas y los tres pasos se reutilizan sin añadir promesas o servicios incluidos.
+
+`graduates-help-center.tsx` aporta una frontera de cliente pequeña para leer el hash, marcar `aria-current` y cambiar de categoría sin desplazar la página. El contenido se genera en servidor y se pasa como ReactNode. Cada tema tiene una URL directa y la selección responde a Atrás/Adelante. Los enlaces reales y CSS `:target` mantienen la navegación sin JavaScript; los detalles conservan controles HTML nativos. El menú es lateral en desktop/tablet y se acomoda en dos columnas en mobile.
+
+Se conservan `#egresados-preguntas` y `#egresados`, el selector de primaria/secundaria y sus mensajes específicos. Las ocho cards y el Home quedan fuera de esta intervención.
+
+Capturas, comparación del catálogo y resultados: `output/playwright/egresados-help-center/`. Las primeras comparaciones del catálogo completo a 375, 768 y 1440 px registran cero píxeles distintos.
+
+Validación final del centro de ayuda:
+
+- Lint y `tsc --noEmit --incremental false`: exit 0. Build de producción aislado y TypeScript: correctos.
+- `npm test -- tests/graduates-guide.spec.ts tests/premium.spec.ts tests/home-lower.spec.ts tests/interactions.spec.ts tests/accessibility.spec.ts`: **26 passed, exit 0**, sin flaky. Es una ejecución enfocada; no se reejecutó toda la suite ni sus comparaciones históricas pendientes.
+- Cobertura de la guía: cuatro categorías, navegación por teclado, conservación del scroll, enlaces directos, Atrás/Adelante, desplegables nativos, consulta según nivel, 200% de zoom y funcionamiento sin JavaScript.
+- Axe: cero infracciones en los cuatro temas a 375, 768 y 1440 px. Sin overflow en los anchos comprobados.
+- Capturas del build de producción: guía inicial a 375/768/1440 y estados de Destinos y Acompañamiento en desktop y mobile. El servidor de inspección usó el puerto 3212 y se cerró al terminar.
+- Comparación del catálogo completo: cero píxeles distintos en los tres anchos. Los 29 hashes de referencias históricas siguen intactos.
+- Hashes: ningún cambio inesperado en archivos preexistentes. Configuración de registries, paquetes, lockfile, estilos globales y `next-env.d.ts` permanecen iguales al estado inicial.
+- No se creó una clave ni un archivo de entorno, ni se hizo commit, push o deploy.
+
+Los resultados de esta ejecución se conservan en `output/playwright/egresados-help-center/test-results.json`. El siguiente paso es revisar el recorrido con el contenido real en el navegador local antes de consolidar la versión.

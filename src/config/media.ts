@@ -1,5 +1,5 @@
 export type LocalMediaPath = `/media/${string}`;
-export type MediaSlot = "hero" | "graduates" | "graduates-detail" | "page:destinos" | "page:nosotros" | "page:nosotros-historia" | "page:contacto" | `destination:${string}` | `team:${string}`;
+export type MediaSlot = "hero" | "graduates" | "graduates-detail" | "page:destinos" | "page:inicio" | "page:nosotros" | "page:nosotros-historia" | "page:contacto" | `destination:${string}` | `team:${string}`;
 export type ImageSource = { src: LocalMediaPath; focal: { x: number; y: number } };
 type MediaBase = {
   id: string;
@@ -65,6 +65,14 @@ const destinationMedia: MediaManifest = {
   "destination:valeria-del-mar": commons("valeria-del-mar", "Pasarela de madera entre los médanos con vegetación de Valeria del Mar, en la costa bonaerense.", "Pasarela en valeriadelmar 02.jpg", { author: "Fernando Martello", license: "CC BY-SA 4.0" }, { x: 38, y: 66 }),
 };
 export const mediaManifest: MediaManifest = {
+  "page:inicio": {
+    id: "office-sign", type: "image",
+    alt: "Cartel de Viajes y Turismo con letras azules y naranjas sobre una pared blanca de la oficina de Travel Days.",
+    provenance: "Foto de la oficina enviada por el usuario en la conversación del 27/10/2026. Interior sin personas; copia WebP sin metadatos.",
+    authorization: { status: "approved", evidence: "Solicitud explícita del usuario del 27/10/2026: usar esta foto de la oficina en Inicio. Interior sin personas, revisado visualmente." },
+    desktop: { src: "/media/travel-days/office/office-sign-desktop.webp", focal: { x: 48, y: 33 } },
+    mobile: { src: "/media/travel-days/office/office-sign-mobile.webp", focal: { x: 48, y: 31 } },
+  },
   ...destinationMedia,
   "page:nosotros": {
     id: "office-consultation", type: "image",

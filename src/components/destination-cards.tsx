@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { ViewTransition } from "react";
 import {
-  destinationTransitionName,
   publishedDestinations,
   type Destination,
 } from "@/features/destinations/data";
@@ -27,11 +25,10 @@ export function DestinationCard({ destination, details = false }: { destination:
       rel="noreferrer"
       aria-label={`Consultar por ${destination.name} en WhatsApp`}
     >
-      <div className={styles.visual}>
+      {/* Arrival point of the photo morph from the home gallery (destination-transition). */}
+      <div className={styles.visual} data-destination-photo>
         {destination.category && <span className={styles.category}>{destination.category}</span>}
-        <ViewTransition name={destinationTransitionName(destination.slug)} share="destination-morph" default="none">
-          <ApprovedMedia slot={`destination:${destination.slug}`} sizes="(max-width: 639px) 100vw, (max-width: 1100px) 45vw, 25vw"><Landscape kind={destination.artwork} /></ApprovedMedia>
-        </ViewTransition>
+        <ApprovedMedia slot={`destination:${destination.slug}`} sizes="(max-width: 639px) 100vw, (max-width: 1100px) 45vw, 25vw"><Landscape kind={destination.artwork} /></ApprovedMedia>
       </div>
       <div className={styles.body}>
         <div className={styles.meta}>
@@ -63,10 +60,6 @@ export function Destinations({ full = false }: { full?: boolean }) {
               Ver todos los destinos <Arrow />
             </Link>}
       </div>
-      {full && <nav className={styles.catalogGuide} aria-label="Elegí tu tipo de viaje">
-        <p><strong>{publishedDestinations.length} destinos.</strong> Una consulta a tu medida.</p>
-        <a href="#egresados"><span>¿Viajan con el colegio?</span><strong>Conocé Egresados <Arrow /></strong></a>
-      </nav>}
       {full ? (
         <ExpandGroup
           className={`destination-grid ${styles.grid}`}

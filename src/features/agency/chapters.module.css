@@ -1,0 +1,24 @@
+.chapters { position: relative; }
+
+/* The navbar's dark glass, a touch denser so white labels hold AA over light pages */
+.tabs { position: sticky; z-index: 20; top: 76px; display: flex; gap: 2px; width: fit-content; max-width: calc(100% - 2 * var(--gutter)); margin: 0 auto; padding: 4px; overflow-x: auto; scrollbar-width: none; border: 1px solid #ffffff38; border-radius: 40px; background: linear-gradient(140deg, #1a2d48e0, #0c1b30d1 55%, #1a2d48e0); box-shadow: inset 0 1px 0 #ffffff40, inset 0 -1px 0 #ffffff0f, 0 14px 36px -18px #0c1b30b3; backdrop-filter: blur(22px) saturate(180%); isolation: isolate; }
+.tabs::-webkit-scrollbar { display: none; }
+.tabs a { position: relative; flex-shrink: 0; min-height: 40px; display: inline-flex; align-items: center; justify-content: center; padding: 9px 20px; border-radius: 30px; color: #fff; font-size: 13px; font-weight: 500; line-height: 1.4; letter-spacing: -.005em; white-space: nowrap; text-shadow: 0 1px 2px #0c1b3066; transition: background .2s, box-shadow .2s, opacity .2s; }
+.tabs a[aria-selected="false"] { opacity: .82; }
+.tabs a:hover { opacity: 1; }
+.tabs a:focus-visible { outline-color: #fff; outline-offset: -3px; }
+/* Before the pill is placed the selected tab keeps its own glass. */
+.tabs:not([data-glide-ready]) a[aria-selected="true"] { background: linear-gradient(180deg, #ffffff38, #ffffff14); box-shadow: inset 0 1px 0 #ffffff66, 0 4px 12px -6px #0c1b3080; }
+.pill { position: absolute; z-index: -1; top: 0; left: 0; border-radius: 30px; background: linear-gradient(180deg, #ffffff40, #ffffff14); box-shadow: inset 0 1px 0 #ffffff73, inset 0 -1px 0 #ffffff1a, 0 4px 12px -6px #0c1b3080; opacity: 0; pointer-events: none; transition: transform .5s var(--ease), width .5s var(--ease), height .5s var(--ease), opacity .25s; }
+.pill[data-visible="true"] { opacity: 1; }
+
+.panels { min-height: 60vh; }
+:global(:root[data-chapter-transition]) .panels { view-transition-name: chapter-panel; }
+
+@media (max-width: 767px) {
+  .tabs { top: 68px; max-width: calc(100% - 32px); }
+  .tabs a { padding: 9px 14px; font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tabs a, .pill { transition: none; }
+}

@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState, ViewTransition, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Arrow } from "@/components/icons";
-import { destinationTransitionName } from "@/features/destinations/data";
+import { goToDestination } from "@/features/destinations/destination-transition";
 import styles from "./apple-cards-carousel.module.css";
 
 export type CarouselItem = {
@@ -33,8 +34,7 @@ export function Carousel({ items }: { items: CarouselItem[] }) {
   const track = useRef<HTMLUListElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const [active, setActive] = useState(0);
-  // Only the chosen card is named, so a single photo morphs into its catalog card.
-  const [chosen, setChosen] = useState<string | null>(null);
+  const router = useRouter();
   const [state, setState] = useState<ScrollState>({ previous: false, next: false, current: 0 });
 
   useEffect(() => {
@@ -139,11 +139,10 @@ export function Carousel({ items }: { items: CarouselItem[] }) {
             data-destination-preview
             data-destination-slug={item.slug}
             onFocus={() => { clearTimeout(timer.current); setActive(index); }}
-            onClick={() => setChosen(item.slug)}
+            // The photo travels into its catalog card (see destination-transition).
+            onClick={event => goToDestination(event, router, item.slug, event.currentTarget.querySelector("[data-destination-photo]"))}
           >
-            <ViewTransition name={chosen === item.slug ? destinationTransitionName(item.slug) : undefined} share="destination-morph" default="none">
-              <div className={styles.visual} aria-hidden="true">{item.visual}</div>
-            </ViewTransition>
+            <div className={styles.visual} aria-hidden="true" data-destination-photo>{item.visual}</div>
             <div className={styles.shade} aria-hidden="true" />
             <span className={styles.rail} aria-hidden="true">{item.title}</span>
             <div className={styles.copy}>

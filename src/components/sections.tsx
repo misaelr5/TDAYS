@@ -1,6 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
-import { whatsappUrl } from "@/config/site";
+import { site, whatsappUrl } from "@/config/site";
+import { credentials } from "@/features/agency/data";
+import { resolveMedia } from "@/features/media/files";
+import { MediaContent } from "@/features/media/approved-media";
 import { Arrow } from "./icons";
 import { ScenicHero } from "@/features/hero/scenic-hero";
 import { SiteFooter } from "./site-footer";
@@ -29,19 +32,44 @@ export function StorySection({ historyHref = "/nosotros" }: { historyHref?: stri
 }
 
 export function ConsultationSection() {
+  const office = resolveMedia("page:inicio");
+  const services = [
+    { title: "Turismo nacional e internacional", description: "Contanos qué destino tenés en mente y cómo te gustaría viajar.", message: "Hola Travel Days, quiero consultar por un viaje de turismo nacional o internacional." },
+    { title: "Viajes educativos", description: "Una experiencia para el colegio. Empecemos por el grupo y la idea del viaje.", message: "Hola Travel Days, quiero consultar por un viaje educativo para nuestro colegio." },
+    { title: "Turismo receptivo", description: "Si estás pensando en visitar la región, conversemos sobre tu viaje.", message: "Hola Travel Days, quiero consultar por turismo receptivo y conocer la región." },
+  ];
   return <section className={`${styles.consultation} section-pad`} id="consulta" aria-labelledby="consultation-title" data-travel-consultation>
-    <div className={styles.consultationPanel}>
-      <div className={styles.consultationCopy}>
-        <span className={styles.tag}>Tu próxima historia</span>
-        <h2 id="consultation-title">Tu próximo viaje.<br />Empieza con una charla.</h2>
-        <p>Contanos adónde querés ir, cuándo y con quién. Empecemos por ahí.</p>
-        <Link className={styles.lightLink} href="/destinos">Explorá destinos <Arrow /></Link>
+    <div className={styles.consultationInner}>
+      <div className={styles.services}>
+        <div className={styles.servicesIntro}>
+          <h2 id="consultation-title">Más formas de viajar.<br />La misma cercanía.</h2>
+          <p>Además de egresados, hay más formas de viajar con nosotros. Elegí tu opción y conversemos por WhatsApp.</p>
+        </div>
+        <ul className={styles.serviceList}>
+          {services.map(service => <li key={service.title}>
+            <a href={whatsappUrl(service.message)} target="_blank" rel="noreferrer" aria-label={`Consultar por ${service.title.toLowerCase()} en WhatsApp`}>
+              <div><h3>{service.title}</h3><p>{service.description}</p></div>
+              <span className={styles.serviceArrow} aria-hidden="true"><Arrow /></span>
+            </a>
+          </li>)}
+        </ul>
       </div>
-      <div className={styles.contactCard}>
-        <h3>Vos ponés las ganas.</h3>
-        <p>Nosotros te escuchamos.</p>
-        <dl><div><dt>Destino</dt><dd>El que tengas en mente</dd></div><div><dt>Fecha</dt><dd>La que te gustaría</dd></div><div><dt>Compañía</dt><dd>Con quien quieras compartirlo</dd></div></dl>
-        <a href={whatsappUrl()} target="_blank" rel="noreferrer">Hablemos de tu viaje <Arrow /></a>
+      <div className={styles.agency}>
+        {office && <figure className={styles.office}>
+          <MediaContent asset={office} sizes="(max-width: 767px) 100vw, 45vw" />
+          <figcaption>Nuestra oficina en Villa Dolores</figcaption>
+        </figure>}
+        <div className={styles.agencyCopy}>
+          <h3>Un viaje empieza<br />con alguien que te escucha.</h3>
+          <p>Javier Garay fundó Travel Days en {credentials.founded}, con una trayectoria personal de más de {credentials.experienceYears} años en turismo. Hoy seguimos atendiendo de cerca, antes, durante y después de cada viaje.</p>
+          <Link className={styles.historyLink} href="/nosotros#historia">Conocé nuestra historia <Arrow /></Link>
+          <div className={styles.officeContact}>
+            <p>Hablemos por WhatsApp o en la oficina.</p>
+            <address>{site.address}</address>
+            <a className={styles.contactAction} href={whatsappUrl()} target="_blank" rel="noreferrer">Hablemos de tu viaje <Arrow /></a>
+            <Link className={styles.officeLink} href="/contacto#oficina">Ver ubicación y horarios <Arrow /></Link>
+          </div>
+        </div>
       </div>
     </div>
   </section>;

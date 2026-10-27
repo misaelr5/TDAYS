@@ -161,8 +161,3 @@ export const catalogPositions = destinations.map((destination) =>
     ? { kind: "destination" as const, destination }
     : { kind: "pending" as const, id: destination.slug },
 );
-
-// Shared by the home gallery and the catalog card so the photo morphs between them.
-export function destinationTransitionName(slug: string) {
-  return `destination-photo-${slug}`;
-}

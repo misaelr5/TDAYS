@@ -12,7 +12,7 @@ for (const width of widths) {
     expect(bounds!.x).toBe(0);
     expect(bounds!.y).toBe(0);
     expect(bounds!.width).toBe(width);
-    await expect(hero.getByRole("heading", { level: 1 })).toHaveText("Lugares extraordinarios.Historias para toda la vida.");
+    await expect(hero.getByRole("heading", { level: 1 })).toHaveText("La única agencia de egresados de Traslasierra.");
     await expect(hero.getByRole("form", { name: "Prepará tu consulta de viaje" })).toBeVisible();
     const cards = hero.locator("[data-trust-card]");
     await expect(cards).toHaveCount(4);

@@ -30,34 +30,33 @@ export const graduates = {
   ],
   steps: [
     {
-      title: "Primero, ustedes",
+      title: "Contanos del grupo",
       description:
-        "Contanos de qué colegio son, si egresan de primaria o secundaria y qué viaje tienen en mente.",
+        "Colegio, nivel, cantidad aproximada de personas y año en que quieren viajar. Podemos empezar aunque todavía no tengan todo definido.",
     },
     {
-      title: "Un viaje para su grupo",
+      title: "Conversemos el viaje",
       description:
         "Conversemos sobre destinos, fechas y lo que les gustaría vivir. Las preguntas de las familias también tienen su lugar.",
     },
     {
-      title: "Todo claro antes de salir",
+      title: "Revisemos la propuesta",
       description:
         "Consulten servicios, costos y condiciones de cada propuesta antes de tomar una decisión.",
     },
   ],
   questions: [
     {
-      question: "¿Por dónde empezamos?",
-      answer:
-        "Escribinos con el nombre del colegio, el nivel, la cantidad aproximada de personas y el año en que les gustaría viajar. Si todavía no tienen todo definido, podemos empezar por su idea.",
-    },
-    {
-      question: "¿Qué destinos y fechas podemos consultar?",
+      id: "egresados-destinos",
+      topic: "Destinos y fechas",
+      question: "¿Cómo elegimos destinos y fechas?",
       answer:
         "Contanos qué lugar les gustaría conocer y cuándo. Las opciones, fechas y disponibilidad se consultan para cada grupo; los ocho destinos del catálogo no son un listado de paquetes de egresados.",
     },
     {
-      question: "¿Qué deberíamos revisar con las familias?",
+      id: "egresados-contratacion",
+      topic: "Antes de contratar",
+      question: "¿Qué conviene revisar antes de contratar?",
       answer:
         "Antes de contratar, consulten transporte, alojamiento, comidas, actividades, coordinación, asistencia, documentación y condiciones de pago y cancelación. Los servicios incluidos y sus condiciones deben confirmarse en la propuesta de su grupo.",
     },

@@ -8,11 +8,11 @@ import { graduates } from "./data";
 import { GraduatesExplorer } from "./graduates-explorer";
 import { GraduatesScene } from "./graduates-scene";
 import { GraduatesPreview } from "./graduates-preview";
+import { GraduatesHelpCenter } from "./graduates-help-center";
 import styles from "./graduates.module.css";
 
 export function GraduatesSection({ expanded = false }: { expanded?: boolean }) {
   const media = (expanded && resolveMedia("graduates-detail")) || resolveMedia("graduates");
-  const consultation = whatsappUrl(graduates.consultationMessage);
   const levels = graduates.levels.map(level => ({
     ...level,
     href: whatsappUrl(level.message),
@@ -25,7 +25,7 @@ export function GraduatesSection({ expanded = false }: { expanded?: boolean }) {
   if (!expanded) return <GraduatesPreview levels={levels} />;
 
   return (
-    <section id="egresados" className={`${styles.section} section-pad`} aria-labelledby="graduates-title" data-graduates={expanded ? "expanded" : "preview"}>
+    <section id="egresados" className={`${styles.section} section-pad`} aria-labelledby="graduates-title" data-graduates="expanded">
       <header className={styles.intro}>
         <div>
           <p className={styles.eyebrow}>Viajes de egresados</p>
@@ -36,60 +36,67 @@ export function GraduatesSection({ expanded = false }: { expanded?: boolean }) {
 
       <GraduatesExplorer levels={levels} />
 
-      <div className={styles.method}>
-        <aside className={styles.trust} aria-labelledby="graduates-trust">
-          <p className={styles.trustFigure}><span>{credentials.experienceYears}</span> años</p>
-          <h3 id="graduates-trust">de experiencia de Javier en turismo, que empezó promocionando viajes de egresados en las puertas de los colegios.</h3>
-          <ul className={styles.trustFacts}>
-            <li>Coordinación con los grupos</li>
-            <li>Asistencia paramédica en viaje y destino</li>
-            <li>Legajo oficial N.º {credentials.license}</li>
+      <section className={styles.guide} aria-labelledby="graduates-guide-title" data-graduates-guide>
+        <header className={styles.guideHeading}>
+          <p className={styles.eyebrow}>Para estudiantes y familias</p>
+          <h3 id="graduates-guide-title">Organizamos el viaje con ustedes.</h3>
+          <p>Lo que necesitan saber para empezar, conversar en grupo y decidir con información.</p>
+        </header>
+
+        <GraduatesHelpCenter topics={[
+          {
+            id: "egresados-inicio", label: "Cómo empezar",
+            content: <ol className={styles.steps}>
+              {graduates.steps.map((step, index) => (
+                <li key={step.title}>
+                  <span className={styles.stepNumber} aria-hidden="true">{index + 1}</span>
+                  <div><h5>{step.title}</h5><p>{step.description}</p></div>
+                </li>
+              ))}
+            </ol>,
+          },
+          ...graduates.questions.map(item => ({
+            id: item.id,
+            label: item.topic,
+            content: <div className={styles.accordion}>
+              <details open>
+                <summary><span>{item.question}</span><span className={styles.questionIcon} aria-hidden="true" /></summary>
+                <div className={styles.answer}><p>{item.answer}</p></div>
+              </details>
+            </div>,
+          })),
+          {
+            id: "egresados-acompanamiento", label: "Acompañamiento",
+            content: <div className={styles.accordion}>
+              <details open>
+                <summary><span>¿Cómo se prepara el equipo para acompañarnos?</span><span className={styles.questionIcon} aria-hidden="true" /></summary>
+                <div className={styles.answer}>
+                  <p>Consultá por la coordinación del grupo y la asistencia paramédica en viaje y destino. El equipo informa formación en:</p>
+                  <ul className={styles.training}>{training.map(item => <li key={item}>{item}</li>)}</ul>
+                  <p>Los servicios y su alcance se confirman en la propuesta de cada grupo.</p>
+                </div>
+              </details>
+            </div>,
+          },
+        ]} />
+
+        <aside className={styles.backing} aria-label="La experiencia y la oficina de Travel Days">
+          <ul className={styles.facts}>
+            <li><strong>{credentials.experienceYears} años</strong> de experiencia de Javier Garay</li>
+            <li>Oficina en Villa Dolores</li>
+            <li>Legajo N.º {credentials.license}</li>
           </ul>
-          <Link className={styles.trustLink} href="/nosotros#historia">Conocé nuestra historia <Arrow /></Link>
+          <Link className={styles.historyLink} href="/nosotros#historia">Conocé nuestra historia <Arrow /></Link>
         </aside>
 
-        <div className={styles.process}>
-          <p className={styles.eyebrow}>Cómo empezamos</p>
-          <h3>De la primera charla a una propuesta clara.</h3>
-          <ol className={styles.steps}>
-            {graduates.steps.map((step, index) => (
-              <li key={step.title}>
-                <span className={styles.stepNumber} aria-hidden="true">0{index + 1}</span>
-                <h4>{step.title}</h4>
-                <p>{step.description}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </div>
-
-      {expanded && <div className={styles.questions} id="egresados-preguntas">
-        <div className={styles.questionsIntro}>
-          <p className={styles.eyebrow}>Para estudiantes y familias</p>
-          <h3>Las ganas de viajar.<br />Las cosas claras.</h3>
-          <p>Escuchar a estudiantes y familias es parte de la historia de Travel Days. Estas son las dudas con las que suele empezar cada grupo.</p>
-          <div className={styles.training}>
-            <h4>Formación del equipo para trabajar con grupos</h4>
-            <ul>{training.map(item => <li key={item}>{item}</li>)}</ul>
+        <div className={styles.guideContact}>
+          <div><p className={styles.contactTitle}>Hablemos del viaje del grupo.</p><p>Colegio, nivel y la idea que tengan. Podemos empezar por ahí.</p></div>
+          <div className={styles.guideActions}>
+            {levels.map(level => <a key={level.id} className={styles.guideCta} data-guide-level={level.id} href={level.href} target="_blank" rel="noreferrer">Consultar por nuestro grupo <Arrow /></a>)}
+            <a className={styles.backLink} href="#egresados">Volver a los niveles <span aria-hidden="true">↑</span></a>
           </div>
         </div>
-        <div className={styles.accordion}>
-          {graduates.questions.map((item, index) => <details key={item.question} open={index === 0}>
-            <summary><span className={styles.questionNumber} aria-hidden="true">0{index + 1}</span>{item.question}<span className={styles.questionIcon} aria-hidden="true" /></summary>
-            <p>{item.answer}</p>
-          </details>)}
-        </div>
-      </div>}
-
-      <div className={styles.closing}>
-        <p className={styles.closingTitle}>No te quedes sin tu viaje.</p>
-        <p className={styles.closingText}>El primer recuerdo puede empezar con una charla por WhatsApp, con el colegio, el nivel y la idea que tengan.</p>
-        <div className={styles.closingActions}>
-          <a className={styles.closingPrimary} href={consultation} target="_blank" rel="noreferrer">Hablemos de Egresados <Arrow /></a>
-          {expanded ? <a className={styles.closingSecondary} href="#egresados">Volver a los niveles <span aria-hidden="true">↑</span></a>
-            : <Link className={styles.closingSecondary} href="/destinos#egresados-preguntas">Preguntas frecuentes <Arrow /></Link>}
-        </div>
-      </div>
+      </section>
     </section>
   );
 }

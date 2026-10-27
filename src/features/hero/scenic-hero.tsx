@@ -13,9 +13,12 @@ export function ScenicHero() {
       <div className={styles.background}>{media ? <MediaContent asset={media} sizes="100vw" eager /> : <ScenicLandscape />}</div>
       <div className={styles.shade} aria-hidden="true" />
       <div className={styles.content}>
-        <h1 id="hero-title">Lugares extraordinarios.<br />Historias para toda la vida.</h1>
-        <p>Tu próxima gran historia empieza con Travel Days.</p>
-        <TripInquiry destinations={publishedDestinations.flatMap(destination => destination.name ? [destination.name] : [])} />
+        <h1 id="hero-title">La única agencia{" "}<br />de egresados de Traslasierra.</h1>
+        <p>Seguridad, seriedad, calidad, servicio y cumplimiento.{" "}<br />Así viaja Travel Days®.</p>
+        <TripInquiry
+          destinations={publishedDestinations.flatMap(destination => destination.name ? [destination.name] : [])}
+          catalog={Object.fromEntries(publishedDestinations.flatMap(destination => destination.name ? [[destination.name, destination.slug]] : []))}
+        />
       </div>
       <div className={styles.bottom}><span>Desde Villa Dolores, hacia nuevas historias.</span><a href="#destinos">Explorá destinos <span aria-hidden="true">↓</span></a>{!media && <span className={styles.illustration}>Ilustración de paisaje</span>}</div>
     </div>

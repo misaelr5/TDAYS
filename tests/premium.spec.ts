@@ -7,17 +7,23 @@ for (const route of ["/", "/destinos"]) {
       await page.goto(route);
       const section = page.locator("#egresados");
       if (route === "/") {
-        await expect(section.getByRole("heading", { level: 2 })).toHaveText("EGRESADOS");
+        await expect(section.getByRole("heading", { level: 2 })).toHaveText("Una etapa termina.El viaje empieza.");
         await expect(section.locator("[data-level]")).toHaveCount(2);
         for (const level of ["primaria", "secundaria"]) {
+          await section.getByRole("radio", { name: level === "primaria" ? "Primaria" : "Secundaria", exact: true }).check();
           const card = section.getByRole("link", { name: `Consultar por ${level}`, exact: true });
           await expect(card).toBeVisible();
           const url = new URL((await card.getAttribute("href"))!);
           expect(url.origin + url.pathname).toBe("https://wa.me/5493544312904");
           expect(url.searchParams.get("text")).toContain(`egresados de ${level}`);
+          await page.keyboard.press("Tab");
           await card.focus();
           expect(await card.evaluate(element => getComputedStyle(element).outlineStyle)).not.toBe("none");
         }
+        await section.getByRole("radio", { name: "Secundaria", exact: true }).focus();
+        await page.keyboard.press("ArrowLeft");
+        await expect(section.getByRole("radio", { name: "Primaria", exact: true })).toBeChecked();
+        await expect(section.locator('[data-level="secundaria"]')).toBeHidden();
         await expect(section.getByRole("link", { name: "Ver preguntas frecuentes" })).toHaveAttribute("href", "/destinos#egresados-preguntas");
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
         return;
@@ -53,11 +59,15 @@ for (const route of ["/", "/destinos"]) {
       const section = page.locator("#egresados");
       if (route === "/") {
         for (const level of ["primaria", "secundaria"]) {
+          await section.getByRole("radio", { name: level === "primaria" ? "Primaria" : "Secundaria", exact: true }).check();
           await expect(section.getByRole("link", { name: `Consultar por ${level}`, exact: true })).toBeVisible();
         }
         await section.getByRole("link", { name: "Ver preguntas frecuentes" }).click();
         await expect(page).toHaveURL(/\/destinos#egresados-preguntas$/);
-        await expect(page.locator("#egresados-preguntas details").first()).toBeVisible();
+        const topics = page.getByRole("navigation", { name: "Temas de la guía de egresados" });
+        await expect(topics).toBeVisible();
+        await topics.getByRole("link", { name: "Destinos y fechas", exact: true }).click();
+        await expect(page.locator("#egresados-destinos details")).toBeVisible();
         return;
       }
       await section.getByRole("radio", { name: "Secundaria", exact: true }).check();
@@ -68,13 +78,26 @@ for (const route of ["/", "/destinos"]) {
   });
 }
 
-test("los accesos locales llevan a Egresados y a los capítulos de Nosotros", async ({ page }) => {
-  await page.goto("/destinos");
-  await page.getByRole("navigation", { name: "Elegí tu tipo de viaje" }).getByRole("link").click();
-  await expect(page).toHaveURL(/#egresados$/);
-  await expect(page.getByRole("group", { name: "Elegí el nivel de tu grupo" })).toBeInViewport();
+test("los capítulos de Nosotros funcionan como pestañas en el lugar", async ({ page }) => {
   await page.goto("/nosotros");
-  await page.getByRole("navigation", { name: "Conocé la agencia" }).getByRole("link", { name: "El equipo" }).click();
-  await expect(page).toHaveURL(/#equipo$/);
+  const tabs = page.getByRole("tablist", { name: "Conocé la agencia" });
+  await expect(tabs.getByRole("tab")).toHaveText(["Nuestra historia", "El equipo", "Cómo te acompañamos", "Visitanos"]);
+  await expect(page.getByRole("tabpanel")).toHaveCount(1);
+  await expect(page.getByRole("tabpanel")).toHaveAttribute("id", "historia");
+  await tabs.getByRole("tab", { name: "El equipo" }).click();
+  await expect(page).toHaveURL(/\/nosotros#equipo$/);
+  await expect(tabs.getByRole("tab", { name: "El equipo" })).toHaveAttribute("aria-selected", "true");
   await expect(page.locator("#equipo")).toBeInViewport();
+  await expect(page.locator("#historia")).toBeHidden();
+  // The bar stays stuck under the header while reading the chapter.
+  await page.mouse.wheel(0, 900);
+  await expect(tabs).toBeInViewport();
+  await tabs.getByRole("tab", { name: "El equipo" }).focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(tabs.getByRole("tab", { name: "Cómo te acompañamos" })).toBeFocused();
+  await expect(page.locator("#compromiso")).toBeVisible();
+  await expect(page.locator("#equipo")).toBeHidden();
+  await page.goto("/nosotros#visitanos");
+  await expect(page.locator("#visitanos")).toBeInViewport();
+  await expect(tabs.getByRole("tab", { name: "Visitanos" })).toHaveAttribute("aria-selected", "true");
 });

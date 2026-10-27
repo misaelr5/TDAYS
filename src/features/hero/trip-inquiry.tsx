@@ -2,9 +2,11 @@
 
 import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { whatsappUrl } from "@/config/site";
 import { Arrow } from "@/components/icons";
 import { useGlide } from "@/components/use-glide";
+import { goToDestination } from "@/features/destinations/destination-transition";
 import styles from "./trip-inquiry.module.css";
 
 type Panel = "destination" | "date" | "travelers";
@@ -24,8 +26,10 @@ const sameDay = (a: Date | null, b: Date | null) => !!a && !!b && a.toDateString
 const dayKey = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 const travelersText = (value: Travelers) => value === "grupo" ? "Un grupo" : value ? `${value} ${value === 1 ? "persona" : "personas"}` : null;
 
-export function TripInquiry({ destinations }: { destinations: readonly string[] }) {
+/** `catalog` maps each destination name to its card in /destinos. */
+export function TripInquiry({ destinations, catalog = {} }: { destinations: readonly string[]; catalog?: Readonly<Record<string, string>> }) {
   const options = [...destinations, "Egresados"];
+  const router = useRouter();
   const id = useId();
   const [open, setOpen] = useState<Panel | null>(null);
   const [destination, setDestination] = useState<string | null>(null);
@@ -124,7 +128,11 @@ export function TripInquiry({ destinations }: { destinations: readonly string[] 
         <a href={whatsappUrl(draft)} target="_blank" rel="noreferrer">Abrir WhatsApp <Arrow /></a>
         <button type="button" onClick={() => { setDraft(null); triggers.current.destination?.focus(); }}>Editar consulta</button>
       </div>
-    </div> : <p className={styles.helper} data-trip-help>Elegí lo que tengas definido. Consultamos las opciones con vos.</p>}
+    </div> : destination && catalog[destination] ? <p className={styles.helper} data-trip-help>
+      <Link className={styles.catalogLink} href={`/destinos#${catalog[destination]}`} onClick={event => goToDestination(event, router, catalog[destination], event.currentTarget, "chip")}>
+        Ver {destination} en el catálogo <Arrow />
+      </Link>
+    </p> : <p className={styles.helper} data-trip-help>Elegí lo que tengas definido. Consultamos las opciones con vos.</p>}
     <noscript><style>{"[data-trip-inquiry],[data-trip-help]{display:none!important}"}</style><div className={styles.nojs}><Link href="/contacto#consulta">Consultá por tu viaje <Arrow /></Link><Link href="/destinos">Explorá destinos</Link></div></noscript>
   </div>;
 }

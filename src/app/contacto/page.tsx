@@ -45,10 +45,15 @@ export default function ContactPage() {
 
         <section id="experiencia" className={styles.panel} data-contact-panel="experiencia" aria-labelledby="experience-heading">
           <div className={styles.panelHeading}>
-            <h2 id="experience-heading">El viaje sigue en tus recuerdos.</h2>
-            <p>Si viajaste con nosotros, nos gustaría saber cómo fue.</p>
+            <h2 id="experience-heading">Tu experiencia cuenta.</h2>
+            <p>Si viajaste con nosotros, compartí tu experiencia en Google.</p>
           </div>
-          <ContactForm kind="experience" destinations={destinations} />
+          <div className={styles.review}>
+            <a className={styles.submit} href={site.googleReviewsUrl} target="_blank" rel="noopener noreferrer" aria-describedby="google-review-help">
+              Dejar una reseña en Google <Arrow />
+            </a>
+            <p id="google-review-help" className={styles.privacy}>Se abre la ficha de Travel Days en una nueva pestaña. La reseña se escribe y publica en Google.</p>
+          </div>
         </section>
       </ContactExplorer>
     </main>

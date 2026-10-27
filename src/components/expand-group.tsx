@@ -22,25 +22,30 @@ export function ExpandGroup({ items, className, label }: { items: ExpandItem[]; 
   useEffect(() => {
     const list = root.current;
     if (!list) return;
-    // A hash link (/destinos#brasil) opens its strip without animating, then re-anchors
-    // so the shifted layout cannot push the target out of view.
-    const sync = () => {
-      const id = decodeURIComponent(location.hash.slice(1));
+    // Opens the strip holding element `id` without animating. A hash link re-anchors
+    // only when the opening pushed the target out of view; `expand-group:open`
+    // (dispatched by callers that position the target themselves) never scrolls.
+    const open = (id: string, anchor: boolean) => {
       const target = id ? document.getElementById(id) : null;
       const item = target?.closest<HTMLElement>("[data-expand-index]");
       if (!target || !item || !list.contains(item)) return;
       list.dataset.instant = "";
       setCurrent(Number(item.dataset.expandIndex));
       requestAnimationFrame(() => {
-        target.scrollIntoView({ block: "start", behavior: "instant" });
+        const top = target.getBoundingClientRect().top;
+        if (anchor && (top < 0 || top > innerHeight * .6)) target.scrollIntoView({ block: "start", behavior: "instant" });
         requestAnimationFrame(() => { delete list.dataset.instant; });
       });
     };
-    const frame = requestAnimationFrame(sync);
-    window.addEventListener("hashchange", sync);
+    const fromHash = () => open(decodeURIComponent(location.hash.slice(1)), true);
+    const fromEvent = (event: Event) => open(String((event as CustomEvent<string>).detail ?? ""), false);
+    const frame = requestAnimationFrame(fromHash);
+    window.addEventListener("hashchange", fromHash);
+    window.addEventListener("expand-group:open", fromEvent);
     return () => {
       cancelAnimationFrame(frame);
-      window.removeEventListener("hashchange", sync);
+      window.removeEventListener("hashchange", fromHash);
+      window.removeEventListener("expand-group:open", fromEvent);
     };
   }, []);
 

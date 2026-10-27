@@ -85,6 +85,11 @@
 .panel button:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
 
 .helper { margin-top: 16px; font-size: 11px; line-height: 1.6; color: #f2f4f2; text-shadow: 0 1px 2px #0c1b3066; }
+/* Shortcut to the chosen destination's card; it morphs into the card photo on navigation. */
+.catalogLink { display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 18px; border: 1px solid #ffffff38; border-radius: 40px; background: linear-gradient(140deg, #ffffff2e, #ffffff0d 55%, #ffffff1a); box-shadow: inset 0 1px 0 #ffffff59, inset 0 -1px 0 #ffffff14, 0 12px 32px -20px #0c1b3099; backdrop-filter: blur(22px) saturate(180%); color: #fff; font-size: 12px; font-weight: 500; text-shadow: 0 1px 2px #0c1b3066; animation: panel-in .32s var(--ease); transition: background .2s; }
+.catalogLink:hover { background: linear-gradient(140deg, #ffffff3d, #ffffff1a 55%, #ffffff29); }
+.catalogLink:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.catalogLink svg { width: 14px; height: 14px; }
 
 /* Draft: transparent glass card under the bar. */
 .draft { position: relative; max-width: 560px; margin: 18px auto 0; padding: 20px 22px; border: 1px solid #ffffff38; border-radius: var(--radius-card); background: linear-gradient(140deg, #1a2d48b3, #0c1b3099 55%, #1a2d48b3); box-shadow: inset 0 1px 0 #ffffff40, inset 0 -1px 0 #ffffff0f, 0 14px 36px -18px #0c1b30b3; backdrop-filter: blur(22px) saturate(180%); text-align: left; font-size: 13px; line-height: 1.6; animation: panel-in .4s var(--ease); }
