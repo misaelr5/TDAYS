@@ -66,10 +66,6 @@
 .facts dd { margin: 0; font-size: clamp(30px, 3vw, 46px); line-height: 1; letter-spacing: -.05em; font-weight: 500; font-variant-numeric: tabular-nums; }
 .facts > div:first-child dd { color: var(--action); }
 .facts .factText { font-size: clamp(18px, 1.5vw, 22px); line-height: 1.2; letter-spacing: -.03em; }
-.values { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--line); }
-.values > h3 { font-size: 14px; color: #536276; }
-.values dl { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
-.values dt { padding: 7px 14px; border: 1px solid var(--line); border-radius: 40px; background: var(--paper-white); font-size: 13px; }
 
 /* Team: equal editorial portraits */
 .sectionHead { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px 48px; max-width: 1320px; margin: 0 auto clamp(32px, 4vw, 56px); }
@@ -131,8 +127,8 @@
 /* Entrances: hidden only when ScrollReveal marks an off-screen module */
 .narrative [data-reveal="pending"]:not(.teamGrid, .journey, .flight) { opacity: 0; translate: 0 18px; }
 .narrative [data-reveal="visible"]:not(.teamGrid, .journey, .flight) { animation: rise .7s var(--ease) both; }
-.teamGrid[data-reveal="pending"] > *, .journey[data-reveal="pending"] > li, .flight[data-reveal="pending"] li, .backingPanel[data-reveal="pending"] .facts > div, .backingPanel[data-reveal="pending"] .values dl > div { opacity: 0; }
-.teamGrid[data-reveal="visible"] > *, .journey[data-reveal="visible"] > li, .flight[data-reveal="visible"] li, .backingPanel[data-reveal="visible"] .facts > div, .backingPanel[data-reveal="visible"] .values dl > div { animation: rise .65s var(--ease) both; animation-delay: calc(var(--i, 0) * 80ms + .1s); }
+.teamGrid[data-reveal="pending"] > *, .journey[data-reveal="pending"] > li, .flight[data-reveal="pending"] li, .backingPanel[data-reveal="pending"] .facts > div { opacity: 0; }
+.teamGrid[data-reveal="visible"] > *, .journey[data-reveal="visible"] > li, .flight[data-reveal="visible"] li, .backingPanel[data-reveal="visible"] .facts > div { animation: rise .65s var(--ease) both; animation-delay: calc(var(--i, 0) * 80ms + .1s); }
 .flight[data-reveal="visible"] li { animation-delay: calc(var(--i, 0) * 380ms + .25s); }
 .flight[data-reveal="pending"] .route { clip-path: inset(0 100% 0 0); }
 .flight[data-reveal="visible"] .route { animation: draw 1.7s var(--expand) both; }

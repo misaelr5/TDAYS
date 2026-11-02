@@ -10,8 +10,9 @@ for (const level of ["primaria", "secundaria"]) for (const width of [390, 1440])
     await video.scrollIntoViewIfNeeded();
     const frame = await video.boundingBox();
     expect(frame!.width / frame!.height).toBeCloseTo(3 / 2, 2);
-    await expect(video).toHaveAttribute("src", new RegExp(`${level === "primaria" ? "primaria-compact" : "secundaria-loop"}-${width < 768 ? "mobile" : "desktop"}\\.mp4$`));
-    await expect.poll(() => video.evaluate(v => !(v as HTMLVideoElement).paused && (v as HTMLVideoElement).currentTime > 0)).toBe(true);
+    await expect(video).toHaveAttribute("src", new RegExp(`${level === "primaria" ? "primaria-tio-joe" : "secundaria-loop"}-${width < 768 ? "mobile" : "desktop"}\\.mp4$`));
+    // Cold WebKit decoding can outlast the default 5 s while the poster remains visible.
+    await expect.poll(() => video.evaluate(v => !(v as HTMLVideoElement).paused && (v as HTMLVideoElement).currentTime > 0), { timeout: 15_000 }).toBe(true);
     expect(await video.evaluate(v => (v as HTMLVideoElement).videoWidth / (v as HTMLVideoElement).videoHeight)).toBeCloseTo(3 / 2, 2);
     expect(await video.evaluate(v => (v as HTMLVideoElement).muted && (v as HTMLVideoElement).loop && (v as HTMLVideoElement).playsInline)).toBe(true);
     await card.getByRole("button", { name: "Pausar video de fondo" }).click();

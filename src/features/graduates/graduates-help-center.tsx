@@ -32,7 +32,7 @@ export function GraduatesHelpCenter({ topics }: { topics: readonly HelpTopic[] }
     window.dispatchEvent(new HashChangeEvent("hashchange"));
   }
 
-  return <div className={styles.helpCenter} id="egresados-preguntas" data-graduates-help data-help-ready={hash !== null || undefined}>
+  return <div className={styles.helpCenter} id="egresados-preguntas" data-graduates-help data-soft-reveal="" data-help-ready={hash !== null || undefined}>
     <nav className={styles.helpNav} aria-label="Temas de la guía de viajes escolares">
       <p className={styles.helpNavLabel}>Elegí un tema</p>
       <ul>

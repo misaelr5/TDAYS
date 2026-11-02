@@ -21,6 +21,7 @@ export function DestinationCard({ destination, details = false, eager = false }:
       className={`destination-card ${styles.card}`}
       id={destination.slug}
       data-destination-consultation
+      data-soft-reveal={details ? "" : undefined}
       href={whatsappUrl(destination.consultation?.message)}
       target="_blank"
       rel="noreferrer"
@@ -53,13 +54,12 @@ export function Destinations({ full = false }: { full?: boolean }) {
       aria-labelledby="destination-heading"
     >
       <div className={styles.heading} data-intro-group={full || undefined}>
-        <Sticker kind="plane" at={{ bottom: "clamp(4px, 4vw, 56px)", right: "calc(var(--gutter) + 6px)" }} tilt={-8} size="clamp(50px, 5vw, 72px)" />
-        <Sticker kind="pin" at={{ bottom: "8px", right: "calc(var(--gutter) + 76px)" }} tilt={10} size="38px" only="mobile" />
+        {!full && <Sticker kind="plane" at={{ bottom: "clamp(4px, 4vw, 56px)", right: "calc(var(--gutter) + 6px)" }} tilt={-8} size="clamp(50px, 5vw, 72px)" />}
+        {!full && <Sticker kind="pin" at={{ bottom: "8px", right: "calc(var(--gutter) + 76px)" }} tilt={10} size="38px" only="mobile" />}
         <Heading id="destination-heading">
           {full ? "Destinos para tu próxima historia." : "Tu próximo destino."}
         </Heading>
-        {full ? <p>Explorá los destinos y conversemos sobre las opciones para tu viaje.</p>
-          : <Link className={styles.allDestinations} href="/destinos">
+        {!full && <Link className={styles.allDestinations} href="/destinos">
               Ver todos los destinos <Arrow />
             </Link>}
       </div>

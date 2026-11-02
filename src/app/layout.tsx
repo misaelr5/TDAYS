@@ -8,6 +8,7 @@ import { pageMetadata } from "@/config/metadata";
 import { publicOrigin } from "@/config/seo";
 import { site } from "@/config/site";
 import { ContactEvents } from "@/features/contact/contact-events";
+import { ScrollReveal } from "@/features/agency/scroll-reveal";
 import { publishedDestinations } from "@/features/destinations/data";
 import "./globals.css";
 import "@/features/media/media.css";
@@ -39,7 +40,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es-AR" className={`${inter.variable} ${interExtended.variable}`}>
+    <html lang="es-AR" data-scroll-behavior="smooth" className={`${inter.variable} ${interExtended.variable}`}>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organization).replace(/</g, "\\u003c") }} />
         <a className="skip-link" href="#contenido" tabIndex={0}>
@@ -48,6 +49,7 @@ export default function RootLayout({
         <MotionProvider>
           <ContactEvents destinations={publishedDestinations.map(destination => destination.slug)} />
           <PageSlide />
+          <ScrollReveal root="body" selector="[data-soft-reveal]" />
           <Header />
           {children}
           <Footer />

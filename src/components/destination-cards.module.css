@@ -1,7 +1,8 @@
 .section { padding: clamp(52px, 6vw, 88px) 0; background: var(--paper); color: var(--ink); overflow: clip; }
+/* Keep the first module close to the hero trust band. */
+.section[data-destinations="preview"] { padding-top: clamp(28px, 3vw, 44px); padding-bottom: clamp(32px, 4vw, 56px); }
 .heading { position: relative; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 24px; padding: 0 var(--gutter); margin: 0 auto 12px; }
 .heading h1, .heading h2 { max-width: 21ch; font-size: var(--section-title-size); line-height: 1.08; }
-.heading > p { max-width: 35ch; color: #526470; font-size: 14px; line-height: 1.65; }
 .allDestinations { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; gap: 16px; min-height: 44px; padding: 10px 18px; border: 1px solid #aabfcf80; border-radius: 40px; background: #ffffff9e; color: #214364; font-size: 12px; font-weight: 500; }
 .allDestinations svg { width: 16px; height: 16px; }
 .allDestinations:hover { background: #fff; }
@@ -31,10 +32,9 @@
 .body :global(.destination-details p) { color: #526470; }
 .consultation { display: inline-flex; align-items: center; gap: 12px; min-height: 42px; margin-top: 20px; padding: 9px 15px; border-radius: 30px; background: var(--brand-blue, #006cf9); color: #fff; font-size: 11px; line-height: 1.5; font-weight: 500; }
 .consultation svg { width: 15px; height: 15px; }
-@media (max-width: 1100px) { .grid.grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }.heading { align-items: flex-start; }.heading > p { max-width: 28ch; } }
+@media (max-width: 1100px) { .grid.grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }.heading { align-items: flex-start; } }
 @media (max-width: 639px) {
   .heading { align-items: flex-start; flex-direction: column; gap: 18px; margin-bottom: 8px; }
-  .heading > p { max-width: 36ch; font-size: 13px; }
   .allDestinations { min-height: 42px; font-size: 11px; }
   .grid.grid { grid-template-columns: minmax(0, 1fr); gap: 24px; margin-top: 30px; }
   .body { padding: 22px; }
@@ -72,8 +72,8 @@
 .credits summary:hover { color: var(--ink); }
 .credits ul { display: flex; flex-wrap: wrap; gap: 2px 18px; margin: 8px 0 6px; padding: 0; list-style: none; }
 .credits a { color: var(--action, #0053c7); text-decoration: underline; text-underline-offset: 2px; }
-.section:has([data-reveal="pending"]) .heading { opacity: 0; translate: 0 18px; }
-.section:has([data-reveal="visible"]) .heading { animation: heading-reveal .65s var(--ease) both; }
+.section[data-destinations="preview"]:has([data-reveal="pending"]) .heading { opacity: 0; translate: 0 18px; }
+.section[data-destinations="preview"]:has([data-reveal="visible"]) .heading { animation: heading-reveal .65s var(--ease) both; }
 @keyframes heading-reveal { from { opacity: 0; translate: 0 18px; } }
 @media (prefers-reduced-motion: reduce) { .section .heading { animation: none !important; opacity: 1 !important; translate: none !important; } }
 /* Reduced transparency or more contrast: solid chips instead of glass over the photo. */

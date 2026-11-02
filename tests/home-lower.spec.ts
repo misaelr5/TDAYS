@@ -9,7 +9,7 @@ for (const width of [375, 768, 1440]) {
     const graduates = page.locator("#egresados");
     const services = page.locator("#consulta");
     const positions = await page.locator("#destinos, #egresados, #consulta, #turismo-chino, footer").evaluateAll(elements => elements.map(element => ({ id: element.id, top: element.getBoundingClientRect().top, bottom: element.getBoundingClientRect().bottom })));
-    expect(positions.map(position => position.id)).toEqual(["egresados", "destinos", "consulta", "turismo-chino", "navegacion"]);
+    expect(positions.map(position => position.id)).toEqual(["destinos", "egresados", "consulta", "turismo-chino", "navegacion"]);
     for (let index = 1; index < positions.length; index++) {
       expect(Math.abs(positions[index].top - positions[index - 1].bottom)).toBeLessThanOrEqual(1);
     }

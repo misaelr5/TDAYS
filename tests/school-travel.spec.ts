@@ -8,19 +8,6 @@ const categories = [
 ] as const;
 
 for (const route of ["/", "/destinos"]) {
-  test(`Egresados: los accesos para familias abren su respuesta desde ${route}`, async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 900 });
-    for (const [label, id] of [["Cómo empezar", "egresados-inicio"], ["Acompañamiento", "egresados-acompanamiento"], ["Antes de contratar", "egresados-contratacion"]]) {
-      await page.goto(route);
-      await page.locator('aside[aria-labelledby="graduates-families-title"]').getByRole("link", { name: label, exact: true }).click();
-      await expect(page).toHaveURL(new RegExp(`/destinos#${id}$`));
-      const answer = page.locator(`#${id}`);
-      await expect(answer).toBeVisible();
-      await expect(answer).toBeInViewport();
-      await expect(page.getByRole("navigation", { name: "Temas de la guía de viajes escolares" }).getByRole("link", { name: label, exact: true })).toHaveAttribute("aria-current", "location");
-    }
-  });
-
   for (const width of [320, 390, 768, 1440]) {
     test(`Egresados: propuestas visibles, consultas y accesibilidad en ${route} a ${width}px`, async ({ page }, testInfo) => {
       await page.setViewportSize({ width, height: 1000 });
@@ -49,7 +36,7 @@ for (const route of ["/", "/destinos"]) {
         await photo.scrollIntoViewIfNeeded();
         await expect(photo).toHaveAttribute("alt", category.id === "maestros" ? /Grupo de El Maestrazo/ : "");
         await expect.poll(() => photo.evaluate(image => (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth > 0)).toBe(true);
-        expect(await photo.getAttribute("src")).toContain(category.id === "maestros" ? "maestrazo-fiesta" : category.id === "primaria" ? "primaria-compact" : "secundaria-loop");
+        expect(await photo.getAttribute("src")).toContain(category.id === "maestros" ? "maestrazo-fiesta" : category.id === "primaria" ? "primaria-tio-joe" : "secundaria-loop");
       }
       const primary = (await section.locator('[data-level="primaria"]').boundingBox())!;
       const secondary = (await section.locator('[data-level="secundaria"]').boundingBox())!;

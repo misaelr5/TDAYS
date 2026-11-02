@@ -66,12 +66,12 @@ const destinationMedia: MediaManifest = {
 };
 export const mediaManifest: MediaManifest = {
   "school:primaria": {
-    id: "primaria-loop", type: "video", decorative: true,
+    id: "primaria-tio-joe", type: "video", decorative: true,
     alt: "",
-    provenance: "Tres fotografías del propietario de egresados y fotos varisa: P169 (edificio), P168 (puerto) y P170 (mirador). Montaje de 10,8 segundos en dos franjas, una foto arriba y otra abajo, con fundidos y acercamiento leve; excluye IMG_E2648.JPG. Hashes y recortes en docs/16-VIDEO-FOTOS-PRIMARIA.md. Sin audio ni metadatos de origen; 02/11/2026.",
-    authorization: { status: "approved", evidence: "Permiso explícito del usuario del 27/10/2026 para publicar P168–P170, incluidos estudiantes y acompañantes. Solicitud del 02/11/2026 en esta conversación: hacer el montaje con las fotos de egresados y fotos varisa, excluir IMG_E2648.JPG y colocarlo en la tarjeta de Primaria. Asignación editorial; no afirma curso ni colegio." },
-    desktop: { src: "/media/travel-days/schools/primaria-compact-desktop.mp4", poster: { src: "/media/travel-days/schools/primaria-compact-desktop.webp", focal: { x: 50, y: 50 } } },
-    mobile: { src: "/media/travel-days/schools/primaria-compact-mobile.mp4", poster: { src: "/media/travel-days/schools/primaria-compact-mobile.webp", focal: { x: 50, y: 50 } } },
+    provenance: "Video del propietario: video primaria/Tío Joe primaria.mp4. SHA-256 0e840da55470dcfae8adaef8b470411e31e8314860e4e97ecb142b451bf115e8. Montaje de 12 segundos en dos planos: escalada, toboganes, juegos en el agua y momentos del grupo. Cortes en docs/17-VIDEO-PRIMARIA-TIO-JOE.md. Sin audio ni metadatos de origen; 02/11/2026.",
+    authorization: { status: "approved", evidence: "Confirmación explícita del usuario del 02/11/2026 en esta conversación: los videos tienen autorización de imagen, incluidos menores. Aclara usar solo Tío Joe primaria.mp4 y reemplazar las fotos del módulo de Primaria por un montaje equilibrado, con prioridad en diversión." },
+    desktop: { src: "/media/travel-days/schools/primaria-tio-joe-desktop.mp4", poster: { src: "/media/travel-days/schools/primaria-tio-joe-desktop.webp", focal: { x: 50, y: 50 } } },
+    mobile: { src: "/media/travel-days/schools/primaria-tio-joe-mobile.mp4", poster: { src: "/media/travel-days/schools/primaria-tio-joe-mobile.webp", focal: { x: 50, y: 50 } } },
   },
   "school:secundaria": {
     id: "secundaria-loop", type: "video", decorative: true,

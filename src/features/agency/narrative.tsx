@@ -5,7 +5,7 @@ import { site, whatsappUrl } from "@/config/site";
 import { ScenicLandscape } from "@/features/hero/scenic-landscape";
 import { resolveMedia } from "@/features/media/files";
 import { MediaContent } from "@/features/media/approved-media";
-import { agencyValues, credentials, teamMembers, timeline, training } from "./data";
+import { credentials, teamMembers, timeline, training } from "./data";
 import { TeamMemberCard } from "./team-member";
 import { ScrollReveal } from "./scroll-reveal";
 import { OfficeMap } from "./office-map";
@@ -94,12 +94,6 @@ export function AgencyNarrative() {
               <div style={order(2)}><dt>Legajo oficial N.º</dt><dd>{credentials.license}</dd></div>
               <div style={order(3)}><dt>Certificación</dt><dd className={styles.factText}>{credentials.quality}</dd></div>
             </dl>
-            <div className={styles.values}>
-              <h3>Cómo trabajamos</h3>
-              <dl>
-                {agencyValues.map((value, index) => <div key={value.title} data-agency-value style={order(index)}><dt>{value.title}</dt><dd className="sr-only">{value.description}</dd></div>)}
-              </dl>
-            </div>
           </div>
         </section>
       </> },
@@ -118,7 +112,6 @@ export function AgencyNarrative() {
         <section className={styles.commitment} aria-labelledby="commitment-heading">
           <div className={styles.sectionHead} data-reveal="">
             <h2 id="commitment-heading">Cómo te acompañamos.</h2>
-            <p>Lo que hacemos en cada etapa, sin letra chica.</p>
           </div>
           <ol className={styles.journey} data-reveal="">
             {journey.map((step, index) => <li key={step.stage} style={order(index)}>

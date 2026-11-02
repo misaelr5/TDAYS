@@ -7,8 +7,8 @@
   scroll-margin-top: 20px;
 }
 .section > * { max-width: 1280px; margin-inline: auto; }
-/* The hero's trust band already provides the transition into the home module. */
-.section[data-graduates="preview"] { padding-top: clamp(28px, 3vw, 44px); }
+/* Compact opening for the home preview after the destination catalog. */
+.section[data-graduates="preview"] { padding-top: clamp(28px, 3vw, 44px); padding-bottom: clamp(32px, 4vw, 56px); }
 .section a:focus-visible, .section button:focus-visible, .section summary:focus-visible { outline: 3px solid var(--action); outline-offset: 4px; }
 .eyebrow { display: flex; align-items: center; gap: 9px; font-size: 12px; line-height: 1.5; color: #526275; }
 .eyebrow::before { content: ""; width: 6px; height: 6px; flex-shrink: 0; border-radius: 50%; background: var(--brand-orange); }

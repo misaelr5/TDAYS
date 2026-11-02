@@ -16,7 +16,7 @@ function SocialIcon({ kind }: { kind: "instagram" | "mail" | "chat" }) {
 export function SiteFooter() {
   return <footer className={`footer ${styles.footer}`} id="navegacion" tabIndex={-1}>
     <div className={styles.panel}>
-      <div className={styles.grid}>
+      <div className={styles.grid} data-soft-reveal="">
         {/* On mobile only this column stays, as one compact row: it is the no-JS menu target. */}
         <div className={`${styles.column} ${styles.routes}`}><h2>Travel Days</h2><Link href="/">Inicio</Link><Link href="/#egresados">Egresados</Link><Link href="/destinos">Destinos</Link><Link href="/nosotros">Nosotros</Link><Link href="/contacto">Contacto</Link></div>
         <div className={`${styles.column} ${styles.extra}`}><h2>Conversemos</h2><a href={whatsappUrl()} target="_blank" rel="noreferrer">WhatsApp</a><a href={`mailto:${site.email}`}>Email</a><a href={site.instagram} target="_blank" rel="noreferrer">Instagram</a><a href={site.facebook} target="_blank" rel="noreferrer">Facebook</a></div>

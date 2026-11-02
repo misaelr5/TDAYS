@@ -26,48 +26,6 @@ export const timeline = [
       "Turismo nacional, internacional y receptivo; viajes educativos y de egresados de primaria y secundaria.",
   },
 ] as const;
-export const agencyValues = [
-  {
-    title: "Honestidad",
-    description:
-      "Hablar con claridad sobre cada propuesta y orientar la elección del viaje.",
-  },
-  {
-    title: "Transparencia",
-    description:
-      "Dar espacio a las preguntas sobre condiciones, servicios y contratación antes de decidir.",
-  },
-  {
-    title: "Seriedad",
-    description:
-      "Revisar transporte, alojamiento, comidas y excursiones al conversar sobre una propuesta.",
-  },
-  {
-    title: "Responsabilidad",
-    description:
-      "Considerar quiénes viajan y las necesidades del grupo al preparar una propuesta.",
-  },
-  {
-    title: "Cumplimiento",
-    description:
-      "Trabajar sobre los servicios y las condiciones acordados al contratar.",
-  },
-  {
-    title: "Cercanía",
-    description:
-      "Escuchar en persona, con oficina local y la posibilidad de hablar con el dueño.",
-  },
-  {
-    title: "Calidad de servicio",
-    description:
-      "Atender consultas antes de contratar y durante el viaje.",
-  },
-  {
-    title: "Atención humana",
-    description:
-      "Dedicar tiempo a las dudas y buscar respuestas ante inquietudes e imprevistos.",
-  },
-] as const;
 export type TeamArea = "ventas" | "administracion" | "operacion" | "asistencia";
 export type TeamMember = {
   id: string;

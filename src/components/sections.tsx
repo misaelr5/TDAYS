@@ -38,13 +38,13 @@ export function ConsultationSection() {
   return <section className={`${styles.consultation} section-pad`} id="consulta" aria-labelledby="consultation-title" data-travel-consultation>
     <div className={styles.consultationInner}>
       <div>
-        <div className={styles.servicesIntro}>
+        <div className={styles.servicesIntro} data-soft-reveal="">
           <Sticker kind="pin" at={{ top: "-26px", right: "0" }} tilt={12} size="clamp(40px, 4vw, 56px)" />
           <h2 id="consultation-title">Más formas de viajar.<br />La misma cercanía.</h2>
           <p>Además de egresados, hay más formas de viajar con nosotros. Elegí tu opción y conversemos por WhatsApp.</p>
         </div>
         <ul className={styles.serviceList}>
-          {services.map(service => <li key={service.title}>
+          {services.map(service => <li key={service.title} data-soft-reveal="">
             <a href={whatsappUrl(service.message)} target="_blank" rel="noreferrer" aria-label={`Consultar por ${service.title.toLowerCase()} en WhatsApp`}>
               <div><h3>{service.title}</h3><p>{service.description}</p></div>
               <span className={styles.serviceArrow} aria-hidden="true"><Arrow /></span>

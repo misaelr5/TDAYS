@@ -14,7 +14,7 @@ const reply = {
 export function ChinaSection() {
   return (
     <section id="turismo-chino" className={styles.section} aria-labelledby="china-title" data-china>
-      <div className={styles.card}>
+      <div className={styles.card} data-soft-reveal="">
         <span className={styles.glyph} lang="zh-Hans" aria-hidden="true">欢迎</span>
         <div className={styles.copy}>
           <p className={styles.badge}><span aria-hidden="true">1.ª</span> Primera empresa traslaserrana</p>

@@ -30,7 +30,7 @@ export function GraduatesSection({ expanded = false }: { expanded?: boolean }) {
       <GraduatesPrograms levels={levels} expanded={expanded} />
 
       {expanded && <section className={styles.guide} aria-labelledby="graduates-guide-title" data-graduates-guide>
-        <header className={styles.guideHeading}>
+        <header className={styles.guideHeading} data-soft-reveal="">
           <p className={styles.eyebrow}>Antes de viajar</p>
           <h3 id="graduates-guide-title">Organizamos el viaje con ustedes.</h3>
           <p>Lo que necesitan saber para empezar, conversar en grupo y decidir con información.</p>
@@ -73,7 +73,7 @@ export function GraduatesSection({ expanded = false }: { expanded?: boolean }) {
           },
         ]} />
 
-        <aside className={styles.backing} aria-label="La experiencia y la oficina de Travel Days">
+        <aside className={styles.backing} aria-label="La experiencia y la oficina de Travel Days" data-soft-reveal="">
           <ul className={styles.facts}>
             <li><strong>{credentials.experienceYears} años</strong> de experiencia de Javier Garay</li>
             <li>Oficina en Villa Dolores</li>
@@ -82,7 +82,7 @@ export function GraduatesSection({ expanded = false }: { expanded?: boolean }) {
           <Link className={styles.historyLink} href="/nosotros#historia">Conocé nuestra historia <Arrow /></Link>
         </aside>
 
-        <div className={styles.guideContact}>
+        <div className={styles.guideContact} data-soft-reveal="">
           <div><p className={styles.contactTitle}>Hablemos del viaje del grupo.</p><p>Estudiantes o docentes: contanos quiénes son y qué les gustaría organizar.</p></div>
           <div className={styles.guideActions}>
             <a className={styles.guideCta} data-guide-general href={whatsappUrl(graduates.consultationMessage)} target="_blank" rel="noreferrer">Consultar por nuestro grupo <Arrow /></a>

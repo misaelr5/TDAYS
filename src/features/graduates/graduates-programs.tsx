@@ -18,12 +18,11 @@ export function GraduatesPrograms({ levels, expanded = false }: { levels: Gradua
   const prefix = expanded ? "escolares" : "inicio-escolares";
   const schools = levels.filter(level => level.id !== "maestros");
   const teachers = levels.find(level => level.id === "maestros");
-  const guide = expanded ? "" : "/destinos";
 
   return <div className={styles.programs} data-graduates-programs>
     <ScrollReveal root="#egresados" />
     <header className={styles.heading} data-reveal="">
-      <div><p>Primaria y secundaria</p><h2 id="graduates-title">Egresados.</h2></div>
+      <div><h2 id="graduates-title">Egresados.</h2></div>
       <p className={styles.introduction}>El viaje es de ustedes.<br />Lo conversamos con el grupo y las familias.</p>
     </header>
 
@@ -52,15 +51,7 @@ export function GraduatesPrograms({ levels, expanded = false }: { levels: Gradua
       </article>)}
     </div>
 
-    <aside className={styles.families} data-reveal="" aria-labelledby="graduates-families-title">
-      <div><h3 id="graduates-families-title">El grupo sueña el viaje.<br />Las familias también cuentan.</h3><p>Organización, acompañamiento y condiciones, antes de decidir.</p></div>
-      <div className={styles.familyLinks}>
-        <a href={`${guide}#egresados-inicio`}>Cómo empezar <Arrow /></a>
-        <a href={`${guide}#egresados-acompanamiento`}>Acompañamiento <Arrow /></a>
-        <a href={`${guide}#egresados-contratacion`}>Antes de contratar <Arrow /></a>
-        {!expanded && <Link className={styles.allQuestions} href="/destinos#egresados-preguntas">Ver preguntas frecuentes <Arrow diagonal={false} /></Link>}
-      </div>
-    </aside>
+    {!expanded && <Link className={`${styles.more} ${styles.questions}`} href="/destinos#egresados-preguntas">Ver preguntas frecuentes <Arrow diagonal={false} /></Link>}
 
     {teachers && <article className={styles.teachers} id={`${prefix}-maestros`} data-level="maestros" data-reveal="" aria-labelledby={`${prefix}-maestros-title`}>
       <figure className={styles.teacherPhoto}>{teachers.visual}<figcaption className="sr-only">{teachers.caption}</figcaption></figure>

@@ -24,13 +24,13 @@ export default function TermsPage() {
         </aside>
 
         <article className={styles.article}>
-          {termsSections.map((section, index) => <section key={section.id} id={section.id} className={styles.section} aria-labelledby={`${section.id}-title`}>
+          {termsSections.map((section, index) => <section key={section.id} id={section.id} className={styles.section} aria-labelledby={`${section.id}-title`} data-soft-reveal="">
             <h2 id={`${section.id}-title`}><span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>{section.title}</h2>
             {section.paragraphs?.map(paragraph => <p key={paragraph}>{paragraph}</p>)}
             {section.items && <ul>{section.items.map(item => <li key={item}>{item}</li>)}</ul>}
           </section>)}
 
-          <section className={styles.contact} aria-labelledby="terms-contact-title">
+          <section className={styles.contact} aria-labelledby="terms-contact-title" data-soft-reveal="">
             <h2 id="terms-contact-title">¿Te quedó alguna duda?</h2>
             <p>Escribinos y lo conversamos. Estamos en {site.address}.</p>
             <div className={styles.contactLinks}>
