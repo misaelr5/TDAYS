@@ -66,8 +66,8 @@ test("enlace de salto y navegación compartida", async ({ page }) => {
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/#contenido$/);
   await page.setViewportSize({ width: 1440, height: 900 });
-  await expect(page.getByRole("navigation", { name: "Navegación principal" }).getByRole("link")).toHaveCount(5);
-  await expect(page.getByRole("navigation", { name: "Navegación principal" }).getByRole("link", { name: "Egresados", exact: true })).toHaveAttribute("href", "/#egresados");
+  await expect(page.getByRole("navigation", { name: "Navegación principal" }).getByRole("link")).toHaveCount(4);
+  await expect(page.getByRole("navigation", { name: "Navegación principal" }).getByRole("link", { name: "Egresados", exact: true })).toHaveCount(0);
 });
 
 test("línea visual compartida y carrusel utilizable con movimiento reducido", async ({ page }) => {

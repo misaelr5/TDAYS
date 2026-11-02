@@ -119,7 +119,7 @@ export function Header() {
       >
         <nav className={styles.nav} data-intro-drop="1" aria-label="Navegación principal" ref={nav} style={{ "--sheen-x": 50, "--sheen-y": 0 } as CSSProperties}>
           <span className={styles.pill} data-glide-pill aria-hidden="true" />
-          {navigation.map((link) => (
+          {navigation.filter((link) => link.label !== "Egresados").map((link) => (
             <Link
               key={link.href}
               href={link.href}
