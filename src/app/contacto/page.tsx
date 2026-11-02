@@ -1,11 +1,13 @@
 import { pageMetadata } from "@/config/metadata";
-import { site } from "@/config/site";
+import { site, whatsappUrl } from "@/config/site";
 import { Arrow } from "@/components/icons";
 import { ContactExplorer } from "@/features/contact/contact-explorer";
 import { ContactForm } from "@/features/contact/contact-form";
 import { publishedDestinations } from "@/features/destinations/data";
 import { Sticker, TextSticker } from "@/components/stickers";
 import styles from "@/features/contact/contact.module.css";
+import agencyStyles from "@/features/agency/narrative.module.css";
+import { OfficeMap } from "@/features/agency/office-map";
 
 export const metadata = pageMetadata("Contacto", "Hablá con Travel Days por WhatsApp o visitanos en Felipe Erdman 222, Villa Dolores, Córdoba.", "/contacto");
 
@@ -32,20 +34,24 @@ export default function ContactPage() {
           <ContactForm kind="inquiry" destinations={destinations} />
         </section>
 
-        <section id="oficina" className={styles.panel} data-contact-panel="oficina" aria-labelledby="office-heading">
-          <div className={styles.panelHeading}>
-            <h2 id="office-heading">Nos vemos en Villa Dolores.</h2>
-            <p>Un lugar para sentarnos a conversar.</p>
-          </div>
-          <dl className={styles.officeDetails}>
-            <div><dt>Nuestra oficina</dt><dd>{site.address}</dd></div>
-            <div><dt>Horarios de atención</dt><dd>{site.hours}</dd></div>
-          </dl>
-          <div className={styles.officeLinks}>
-            <a className={styles.utilityLink} href={directions} target="_blank" rel="noopener noreferrer">Cómo llegar <Arrow /></a>
-            <a href={`mailto:${site.email}`}>{site.email}</a>
-            <a href={`tel:+${site.whatsapp}`}>{site.phone}</a>
-            <a href={site.facebook} target="_blank" rel="noopener noreferrer">Facebook</a>
+        <section id="oficina" className={`${styles.panel} ${styles.officePanel}`} data-contact-panel="oficina" aria-labelledby="office-heading">
+          <div className={agencyStyles.closingPanel}>
+            <div className={agencyStyles.closingCopy}>
+              <h2 id="office-heading">Pasá por la oficina o escribinos.</h2>
+              <p className={agencyStyles.closingLead}>Contanos qué viaje tenés en mente. Te responde alguien del equipo, con nombre y apellido.</p>
+              <dl className={agencyStyles.contactList}>
+                <div><dt>Horarios</dt><dd>{site.hours}</dd></div>
+                <div><dt>WhatsApp</dt><dd>{site.phone}</dd></div>
+              </dl>
+              <div className={agencyStyles.heroActions}>
+                <a className={agencyStyles.light} href={whatsappUrl()} target="_blank" rel="noopener noreferrer">Escribinos por WhatsApp <Arrow /></a>
+              </div>
+              <div className={styles.officeExtraLinks}>
+                <a href={`mailto:${site.email}`}>{site.email}</a>
+                <a href={site.facebook} target="_blank" rel="noopener noreferrer">Facebook</a>
+              </div>
+            </div>
+            <OfficeMap address={site.address} directions={directions} />
           </div>
         </section>
 

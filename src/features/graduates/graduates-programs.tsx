@@ -51,7 +51,7 @@ export function GraduatesPrograms({ levels, expanded = false }: { levels: Gradua
       </article>)}
     </div>
 
-    {!expanded && <Link className={`${styles.more} ${styles.questions}`} href="/destinos#egresados-preguntas">Ver preguntas frecuentes <Arrow diagonal={false} /></Link>}
+    {!expanded && <Link className={`${styles.more} ${styles.questions}`} href="/nosotros#viajes-escolares">Ver preguntas frecuentes <Arrow diagonal={false} /></Link>}
 
     {teachers && <article className={styles.teachers} id={`${prefix}-maestros`} data-level="maestros" data-reveal="" aria-labelledby={`${prefix}-maestros-title`}>
       <figure className={styles.teacherPhoto}>{teachers.visual}<figcaption className="sr-only">{teachers.caption}</figcaption></figure>

@@ -88,8 +88,8 @@ test("móvil, reflow 200% y sin JS conservan capítulos accesibles", async ({ pa
   await page.setViewportSize({ width: 640, height: 900 });
   await page.goto("/nosotros#equipo");
   await page.locator("body").evaluate(element => { element.style.zoom = "2"; });
-  await page.getByRole("tab", { name: "Visitanos", exact: true }).click();
-  await expect(page.locator("#visitanos")).toBeVisible();
+  await page.getByRole("tab", { name: "Cómo te acompañamos", exact: true }).click();
+  await expect(page.locator("#compromiso")).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false, reducedMotion: "reduce", viewport: { width: 320, height: 900 } });
   try {

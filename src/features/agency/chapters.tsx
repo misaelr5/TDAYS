@@ -103,7 +103,7 @@ export function Chapters({ chapters, label }: { chapters: Chapter[]; label: stri
     const onClick = (event: globalThis.MouseEvent) => {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>("a[href]") : null;
-      if (!link || link.hasAttribute("download") || (link.target && link.target !== "_self")) return;
+      if (!link || link.closest("[data-graduates-help]") || link.hasAttribute("download") || (link.target && link.target !== "_self")) return;
       const url = new URL(link.href);
       if (url.origin !== location.origin || url.pathname !== location.pathname || url.search !== location.search || chapterFor(url.hash).index < 0) return;
       event.preventDefault();

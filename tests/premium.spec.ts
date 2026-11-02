@@ -3,7 +3,7 @@ import { test, expect } from "./fixtures";
 test("los capítulos de Nosotros funcionan como pestañas en el lugar", async ({ page }) => {
   await page.goto("/nosotros");
   const tabs = page.getByRole("tablist", { name: "Conocé la agencia" });
-  await expect(tabs.getByRole("tab")).toHaveText(["Nuestra historia", "El equipo", "Cómo te acompañamos", "Visitanos"]);
+  await expect(tabs.getByRole("tab")).toHaveText(["Nuestra historia", "El equipo", "Cómo te acompañamos", "Viajes escolares"]);
   await expect(page.getByRole("tabpanel")).toHaveCount(1);
   await expect(page.getByRole("tabpanel")).toHaveAttribute("id", "historia");
   await tabs.getByRole("tab", { name: "El equipo" }).click();
@@ -19,7 +19,6 @@ test("los capítulos de Nosotros funcionan como pestañas en el lugar", async ({
   await expect(tabs.getByRole("tab", { name: "Cómo te acompañamos" })).toBeFocused();
   await expect(page.locator("#compromiso")).toBeVisible();
   await expect(page.locator("#equipo")).toBeHidden();
-  await page.goto("/nosotros#visitanos");
-  await expect(page.locator("#visitanos")).toBeInViewport();
-  await expect(tabs.getByRole("tab", { name: "Visitanos" })).toHaveAttribute("aria-selected", "true");
+  await page.goto("/contacto#oficina");
+  await expect(page.locator("#oficina [data-office-map]")).toBeVisible();
 });

@@ -51,8 +51,8 @@ test("Nosotros cuenta historia, respaldo, equipo y compromiso con datos reales",
   await expect(page.getByRole("link", { name: "Conocé la historia" })).toHaveAttribute("href", "#historia");
   for (const link of await narrative.locator('a[href^="https://wa.me/"]').all()) await expect(link).toHaveAttribute("href", /5493544312904/);
   // The live map is third-party: only a local illustration until the visitor asks for it.
-  await page.getByRole("tab", { name: "Visitanos" }).click();
-  const map = narrative.locator("[data-office-map]");
+  await page.goto("/contacto#oficina");
+  const map = page.locator("#oficina [data-office-map]");
   await expect(map.locator("iframe")).toHaveCount(0);
   await expect(map.getByRole("link", { name: "Cómo llegar" })).toHaveAttribute("href", /^https:\/\/www\.google\.com\/maps\/search\/\?api=1&query=/);
   await expect(map.getByRole("button", { name: "Ver mapa interactivo" })).toBeVisible();

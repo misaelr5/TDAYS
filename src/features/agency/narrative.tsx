@@ -8,8 +8,8 @@ import { MediaContent } from "@/features/media/approved-media";
 import { credentials, teamMembers, timeline, training } from "./data";
 import { TeamMemberCard } from "./team-member";
 import { ScrollReveal } from "./scroll-reveal";
-import { OfficeMap } from "./office-map";
 import { Chapters } from "./chapters";
+import { GraduatesGuide } from "@/features/graduates/graduates-guide";
 import styles from "./narrative.module.css";
 
 const journey = [
@@ -28,7 +28,6 @@ const order = (index: number) => ({ "--i": index }) as CSSProperties;
 export function AgencyNarrative() {
   const office = resolveMedia("page:nosotros");
   const storyPhoto = resolveMedia("page:nosotros-historia");
-  const directions = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.address)}`;
   return <div className={styles.narrative} data-agency-narrative>
     <ScrollReveal root="[data-agency-narrative]" />
 
@@ -127,24 +126,7 @@ export function AgencyNarrative() {
           </aside>
         </section>
       </> },
-      { id: "visitanos", label: "Visitanos", content: <>
-        <section className={styles.closing} aria-labelledby="agency-consultation">
-          <div className={styles.closingPanel} data-reveal="">
-            <div className={styles.closingCopy}>
-              <h2 id="agency-consultation">Pasá por la oficina o escribinos.</h2>
-              <p className={styles.closingLead}>Contanos qué viaje tenés en mente. Te responde alguien del equipo, con nombre y apellido.</p>
-              <dl className={styles.contactList}>
-                <div><dt>Horarios</dt><dd>{site.hours}</dd></div>
-                <div><dt>WhatsApp</dt><dd>{site.phone}</dd></div>
-              </dl>
-              <div className={styles.heroActions}>
-                <a className={styles.light} href={whatsappUrl()} target="_blank" rel="noopener noreferrer">Escribinos por WhatsApp <Arrow /></a>
-              </div>
-            </div>
-            <OfficeMap address={site.address} directions={directions} />
-          </div>
-        </section>
-      </> },
+      { id: "viajes-escolares", label: "Viajes escolares", content: <GraduatesGuide /> },
     ]} />
   </div>;
 }

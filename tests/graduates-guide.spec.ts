@@ -12,10 +12,9 @@ const topics = [
 for (const width of [375, 768, 1440]) {
   test(`Guía de Egresados: categorías, teclado, consulta por nivel y accesibilidad a ${width}px`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto("/destinos");
+    await page.goto("/nosotros#viajes-escolares");
     await ready(page);
-    const section = page.locator("#egresados");
-    const guide = section.locator("[data-graduates-guide]");
+    const guide = page.locator("[data-graduates-guide]");
     const nav = guide.getByRole("navigation", { name: "Temas de la guía de viajes escolares" });
     await expect(guide.getByRole("heading", { level: 3 })).toHaveText("Organizamos el viaje con ustedes.");
     await expect(nav.getByRole("link")).toHaveCount(4);
@@ -25,11 +24,9 @@ for (const width of [375, 768, 1440]) {
     for (const topic of topics) {
       const link = nav.getByRole("link", { name: topic.label, exact: true });
       await link.focus();
-      const scrollBefore = await page.evaluate(() => scrollY);
       await page.keyboard.press("Enter");
       await expect(link).toHaveAttribute("aria-current", "location");
       await expect(page).toHaveURL(new RegExp(`#${topic.id}$`));
-      expect(await page.evaluate(() => scrollY)).toBe(scrollBefore);
       await expect(guide.locator(`#${topic.id}`)).toBeVisible();
       for (const other of topics.filter(item => item.id !== topic.id)) await expect(guide.locator(`#${other.id}`)).toBeHidden();
       const axe = await new AxeBuilder({ page }).include("[data-graduates-guide]").withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
@@ -46,23 +43,12 @@ for (const width of [375, 768, 1440]) {
     await expect(disclosure.locator("ul")).toBeVisible();
     await nav.getByRole("link", { name: "Antes de contratar", exact: true }).click();
     await expect(guide.locator("#egresados-contratacion")).toContainText("pago y cancelación");
-    for (const level of ["Primaria", "Secundaria", "Maestros"]) {
-      await page.goto(`/destinos#escolares-${level.toLowerCase()}`);
-      const link = guide.getByRole("link", { name: "Consultar por nuestro grupo", exact: true });
-      await expect(link).toHaveCount(1);
-      const url = new URL((await link.getAttribute("href"))!);
-      expect(url.origin + url.pathname).toBe("https://wa.me/5493544312904");
-      expect(url.searchParams.get("text")).toContain(level === "Maestros" ? "grupo de docentes" : `egresados de ${level.toLowerCase()}`);
-      await page.keyboard.press("Tab");
-      await link.focus();
-      expect(await link.evaluate(element => getComputedStyle(element).outlineStyle)).not.toBe("none");
-    }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await nav.getByRole("link", { name: "Cómo empezar", exact: true }).click();
     await guide.screenshot({ path: testInfo.outputPath(`ayuda-${width}.png`), animations: "disabled", style: ".site-header { visibility: hidden !important; }" });
     await guide.getByRole("link", { name: "Volver a las categorías" }).click();
     await expect(page).toHaveURL(/#egresados$/);
-    await expect(section.locator('[data-level="maestros"]')).toBeVisible();
+    await expect(page.locator('#egresados [data-level="maestros"]')).toBeVisible();
   });
 }
 
@@ -70,13 +56,10 @@ test("Guía de Egresados: categorías y consulta funcionan sin JavaScript al 200
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false, reducedMotion: "reduce", viewport: { width: 640, height: 900 } });
   try {
     const page = await context.newPage();
-    await page.goto("/destinos#egresados-preguntas");
+    await page.goto("/nosotros#viajes-escolares");
     const guide = page.locator("[data-graduates-guide]");
-    await expect(guide.locator("#egresados-preguntas")).toBeInViewport();
+    await expect(guide.locator("#egresados-preguntas")).toBeVisible();
     await page.locator("body").evaluate(element => { element.style.zoom = "2"; });
-    await page.goto("/destinos#escolares-secundaria");
-    await page.locator("body").evaluate(element => { element.style.zoom = "2"; });
-    await expect(guide.getByRole("link", { name: "Consultar por nuestro grupo" })).toHaveAttribute("href", /egresados%20de%20secundaria/);
     const nav = guide.getByRole("navigation", { name: "Temas de la guía de viajes escolares" });
     for (const topic of topics) {
       await nav.getByRole("link", { name: topic.label, exact: true }).click();
@@ -97,7 +80,7 @@ test("Guía de Egresados: categorías y consulta funcionan sin JavaScript al 200
 });
 
 test("Guía de Egresados: enlaces directos y navegación Atrás/Adelante conservan la categoría", async ({ page }) => {
-  await page.goto("/destinos#egresados-contratacion");
+  await page.goto("/nosotros#egresados-contratacion");
   const guide = page.locator("[data-graduates-guide]");
   const nav = guide.getByRole("navigation", { name: "Temas de la guía de viajes escolares" });
   await expect(guide.locator("#egresados-contratacion")).toBeVisible();

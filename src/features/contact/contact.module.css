@@ -120,3 +120,7 @@
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   .switcher { background: #13253d; border-color: #ffffff59; }
 }
+
+.panel.officePanel { padding: 0; border: 0; background: transparent; }
+.officeExtraLinks { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 20px; font-size: 13px; }
+.officeExtraLinks a { color: #fff; }
