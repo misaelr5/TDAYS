@@ -20,7 +20,7 @@
 .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; font-size: 12px; line-height: 1.4; }
 .category { display: inline-flex; min-height: 26px; align-items: center; padding: 4px 11px; border: 1px solid #ffffff38; border-radius: 40px; background: linear-gradient(140deg, #ffffff2e, #ffffff0d 55%, #ffffff1a); box-shadow: inset 0 1px 0 #ffffff59, inset 0 -1px 0 #ffffff14; backdrop-filter: blur(22px) saturate(180%); font-weight: 500; }
 .location { color: #ffffffe6; text-shadow: 0 1px 2px #0c1b3099; }
-.copy h3 { max-width: 12ch; margin-top: 14px; font-family: var(--font-body); font-size: 30px; line-height: 1.04; font-weight: 500; letter-spacing: -.045em; text-wrap: balance; text-shadow: 0 1px 2px #0c1b3066; }
+.copy h3 { max-width: 12ch; margin-top: 14px; font-size: 30px; line-height: 1.04; text-wrap: balance; text-shadow: 0 1px 2px #0c1b3066; }
 .cta { display: inline-flex; align-items: center; gap: 10px; min-height: 40px; margin-top: 18px; padding: 8px 10px 8px 16px; border: 1px solid #ffffffb3; border-radius: 40px; background: linear-gradient(140deg, #ffffffeb, #ffffffbf); box-shadow: inset 0 1px 0 #fff, 0 10px 28px -18px #0c1b3099; backdrop-filter: blur(20px) saturate(170%); color: var(--ink); font-size: 13px; font-weight: 500; }
 .cta svg { width: 16px; height: 16px; transition: translate .35s var(--expand); }
 
@@ -76,4 +76,9 @@
   .slide, .visual img, .shade::after, .rail, .copy > *, .cta svg, .controls button { transition: none !important; }
   .card:hover .visual img, .slide[data-active] .visual img { transform: none; }
   .carousel[data-reveal] .slide, .carousel[data-reveal] .controls { animation: none; opacity: 1; translate: none; }
+}
+/* Reduced transparency or more contrast: solid chips instead of glass over the photo. */
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .category { background: #13253d; border-color: #ffffff59; }
+  .cta { background: #fff; }
 }

@@ -5,16 +5,14 @@ import { credentials, training } from "@/features/agency/data";
 import { resolveMedia } from "@/features/media/files";
 import { MediaContent } from "@/features/media/approved-media";
 import { graduates } from "./data";
-import { GraduatesExplorer } from "./graduates-explorer";
+import { GraduatesPrograms } from "./graduates-programs";
 import { GraduatesScene } from "./graduates-scene";
-import { GraduatesPreview } from "./graduates-preview";
 import { GraduatesHelpCenter } from "./graduates-help-center";
 import styles from "./graduates.module.css";
 
 export function GraduatesSection({ expanded = false }: { expanded?: boolean }) {
   const levels = graduates.levels.map(({ message, mediaSlot, ...level }) => {
-    // Resolve each category separately: a photo's approval never assigns it to
-    // another audience. Only public presentation data crosses the client boundary.
+    // Resolve each audience separately; render only approved public derivatives.
     const media = (expanded && level.id === "primaria" && resolveMedia("school:primaria-detail")) || resolveMedia(mediaSlot);
     return {
       ...level,
@@ -22,26 +20,16 @@ export function GraduatesSection({ expanded = false }: { expanded?: boolean }) {
       caption: media ? (level.id === "maestros" ? level.caption : "Viajes escolares · archivo de Travel Days")
         : (level.id === "maestros" ? "Ilustración · una salida por conversar" : level.caption),
       photographic: media !== null,
-      visual: media ? <MediaContent asset={media} sizes="(max-width: 767px) 90vw, (max-width: 1300px) 50vw, 680px" />
+      visual: media ? <MediaContent asset={media} allowVideo={level.id === "secundaria"} sizes="(max-width: 767px) 90vw, (max-width: 1300px) 50vw, 680px" />
         : <GraduatesScene variant={level.id === "primaria" ? "morning" : "sunset"} framing="landscape" />,
     };
   });
 
-  if (!expanded) return <GraduatesPreview levels={levels} />;
-
   return (
-    <section id="egresados" className={`${styles.section} section-pad`} aria-labelledby="graduates-title" data-graduates="expanded">
-      <header className={styles.intro}>
-        <div>
-          <p className={styles.eyebrow}>Viajes escolares</p>
-          <h2 id="graduates-title">Estudiantes, familias y docentes.</h2>
-        </div>
-        <p className={styles.introAside}>Primaria, secundaria o El Maestrazo. Cada grupo tiene sus preguntas; empecemos por las de ustedes.</p>
-      </header>
+    <section id="egresados" className={`${styles.section} section-pad`} aria-labelledby="graduates-title" data-graduates={expanded ? "expanded" : "preview"}>
+      <GraduatesPrograms levels={levels} expanded={expanded} />
 
-      <GraduatesExplorer levels={levels} expanded />
-
-      <section className={styles.guide} aria-labelledby="graduates-guide-title" data-graduates-guide>
+      {expanded && <section className={styles.guide} aria-labelledby="graduates-guide-title" data-graduates-guide>
         <header className={styles.guideHeading}>
           <p className={styles.eyebrow}>Antes de viajar</p>
           <h3 id="graduates-guide-title">Organizamos el viaje con ustedes.</h3>
@@ -102,7 +90,7 @@ export function GraduatesSection({ expanded = false }: { expanded?: boolean }) {
             <a className={styles.backLink} href="#egresados">Volver a las categorías <span aria-hidden="true">↑</span></a>
           </div>
         </div>
-      </section>
+      </section>}
     </section>
   );
 }

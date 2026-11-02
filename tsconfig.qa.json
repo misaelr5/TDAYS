@@ -8,5 +8,5 @@
     ".next-qa/types/**/*.ts",
     ".next-qa/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", ".next", "output"]
+  "exclude": ["node_modules", ".next", "output", ".open-next", ".wrangler"]
 }

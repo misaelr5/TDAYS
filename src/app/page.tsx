@@ -9,8 +9,8 @@ export default function Home() {
   return (
     <main id="contenido">
       <Hero />
-      <Destinations />
       <GraduatesSection />
+      <Destinations />
       <ConsultationSection />
       <ChinaSection />
     </main>

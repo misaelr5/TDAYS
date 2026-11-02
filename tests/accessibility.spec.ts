@@ -1,7 +1,29 @@
 import AxeBuilder from "@axe-core/playwright";
 import { test, expect, routes, ready } from "./fixtures";
+import { indexingEnabled, publicUrl } from "../src/config/seo";
 
-test("metadatos sociales son propios de cada ruta y se conserva el modo de revisión", async ({ page }) => {
+for (const transparency of ["reduce", "no-preference"] as const) {
+  for (const width of [390, 1440]) {
+    test(`catálogo con transparencia ${transparency}: contraste y captura a ${width}px`, async ({ page, browserName }, testInfo) => {
+      test.skip(browserName !== "chromium", "Emulación de transparencia mediante CDP exclusiva de Chromium; Axe general se prueba en los tres motores.");
+      await page.setViewportSize({ width, height: 900 });
+      const session = await page.context().newCDPSession(page);
+      await session.send("Emulation.setEmulatedMedia", { features: [
+        { name: "prefers-reduced-transparency", value: transparency },
+        { name: "prefers-reduced-motion", value: "reduce" },
+        { name: "prefers-contrast", value: "no-preference" },
+      ] });
+      await page.goto("/destinos");
+      await ready(page);
+      const violations = await new AxeBuilder({ page }).include("#destinos").withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
+      expect(violations.violations).toEqual([]);
+      await expect(page.locator("#brasil").getByText("Consultar por WhatsApp", { exact: true })).toBeVisible();
+      await page.screenshot({ path: testInfo.outputPath(`catalogo-${transparency}-${width}.png`), fullPage: true, animations: "disabled" });
+    });
+  }
+}
+
+test("metadatos sociales propios de cada ruta respetan el modo SEO configurado", async ({ page }) => {
   const titles: string[] = [];
   const descriptions: string[] = [];
   for (const route of routes) {
@@ -11,12 +33,12 @@ test("metadatos sociales son propios de cada ruta y se conserva el modo de revis
     descriptions.push((await page.locator('meta[name="description"]').getAttribute("content"))!);
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", title);
     await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute("content", title);
-    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute("content", "summary");
-    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow");
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute("content", "summary_large_image");
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", indexingEnabled ? "index, follow" : "noindex, nofollow");
     const og = await page.locator('meta[property="og:description"]').getAttribute("content");
     expect(og).toBeTruthy();
     if (route !== "/") expect(og).toBe(descriptions.at(-1));
-    await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", publicUrl(route));
   }
   expect(new Set(titles).size).toBe(4);
   expect(new Set(descriptions).size).toBe(4);

@@ -66,7 +66,8 @@ test("enlace de salto y navegación compartida", async ({ page }) => {
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/#contenido$/);
   await page.setViewportSize({ width: 1440, height: 900 });
-  await expect(page.getByRole("navigation", { name: "Navegación principal" }).getByRole("link")).toHaveCount(4);
+  await expect(page.getByRole("navigation", { name: "Navegación principal" }).getByRole("link")).toHaveCount(5);
+  await expect(page.getByRole("navigation", { name: "Navegación principal" }).getByRole("link", { name: "Egresados", exact: true })).toHaveAttribute("href", "/#egresados");
 });
 
 test("línea visual compartida y carrusel utilizable con movimiento reducido", async ({ page }) => {
@@ -94,6 +95,9 @@ test("línea visual compartida y carrusel utilizable con movimiento reducido", a
 test("cuatro rutas, navegación y contacto disponibles sin JavaScript", async ({ browser, baseURL }) => {
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false, reducedMotion: "reduce", viewport: { width: 390, height: 900 } });
   try {
+    // Match the main fixture's uncached requests. Firefox exposes a native 304
+    // when this scenario revisits /destinos after its no-JS navigation.
+    await context.route("**/*", route => route.continue());
     const page = await context.newPage();
     for (const route of routes) {
       expect((await page.goto(route))?.status()).toBe(200);
@@ -113,13 +117,13 @@ test("cuatro rutas, navegación y contacto disponibles sin JavaScript", async ({
       }
     }
     await expect(page.locator("form:visible")).toHaveCount(0);
-    await expect(page.locator('main noscript a[href^="https://wa.me/"]')).toHaveCount(1);
+    await expect(page.locator('main [data-contact-fallback="inquiry"] a[href^="https://wa.me/"]')).toHaveCount(1);
     await expect(page.getByRole("link", { name: "escribinos por WhatsApp", exact: true })).toBeVisible();
     await page.getByRole("navigation", { name: "Elegí cómo podemos ayudarte" }).getByRole("link", { name: "Mi experiencia" }).click();
     await expect(page.locator("#experiencia")).toBeVisible();
     await expect(page.locator("#consulta")).toBeHidden();
     await expect(page.getByRole("link", { name: "Dejar una reseña en Google", exact: true })).toHaveAttribute("href", "https://share.google/1j7Yivr2gGxjZ16Xe");
-    for (const link of await page.locator("main noscript a").all()) {
+    for (const link of await page.locator("main [data-contact-fallback] a").all()) {
       await expect(link).toHaveAttribute("href", /^https:\/\/wa\.me\/5493544312904\?text=/);
     }
   } finally {

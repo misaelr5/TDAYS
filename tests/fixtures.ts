@@ -29,7 +29,10 @@ export const test = base.extend<{ networkGuard: void }>({
       }
     });
     context.on("requestfailed", request => {
-      if (["image", "font", "stylesheet", "script"].includes(request.resourceType()) && request.failure()?.errorText !== "net::ERR_ABORTED") {
+      // Navigation may cancel a prefetch in any engine. HTTP failures and other
+      // network failures remain errors; only explicit cancellation codes differ.
+      const cancelled = ["net::ERR_ABORTED", "NS_BINDING_ABORTED", "cancelled", "Load request cancelled"].includes(request.failure()?.errorText ?? "");
+      if (["image", "font", "stylesheet", "script"].includes(request.resourceType()) && !cancelled) {
         failedAssets.push(`${request.failure()?.errorText} ${request.url()}`);
       }
     });
@@ -44,7 +47,9 @@ export const test = base.extend<{ networkGuard: void }>({
 export { expect };
 
 export async function ready(page: Page) {
-  await page.evaluate(() => document.fonts.ready.then(() => undefined));
+  // Firefox with scripts disabled can expose loaded fonts while never running a
+  // page-side Promise callback. Poll the native state without requiring JS jobs.
+  await expect.poll(() => page.evaluate(() => document.fonts.status)).toBe("loaded");
   await expect(page.locator("h1")).toHaveCount(1);
   // Trigger real lazy loading before judging images or capturing the whole page.
   for (const image of await page.locator("img").all()) {

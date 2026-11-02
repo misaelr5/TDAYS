@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties, type MouseEvent, type ReactNode } from "react";
+import { decodeFragment } from "@/lib/fragment";
 import styles from "./expand-group.module.css";
 
 export type ExpandItem = { key: string; content: ReactNode };
@@ -37,7 +38,12 @@ export function ExpandGroup({ items, className, label }: { items: ExpandItem[]; 
         requestAnimationFrame(() => { delete list.dataset.instant; });
       });
     };
-    const fromHash = () => open(decodeURIComponent(location.hash.slice(1)), true);
+    const fromHash = () => {
+      const id = decodeFragment(location.hash);
+      const target = id ? document.getElementById(id) : null;
+      if (target && list.contains(target)) open(id, true);
+      else setCurrent(0);
+    };
     const fromEvent = (event: Event) => open(String((event as CustomEvent<string>).detail ?? ""), false);
     const frame = requestAnimationFrame(fromHash);
     window.addEventListener("hashchange", fromHash);

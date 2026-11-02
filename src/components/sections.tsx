@@ -4,6 +4,7 @@ import { whatsappUrl } from "@/config/site";
 import { Arrow } from "./icons";
 import { ScenicHero } from "@/features/hero/scenic-hero";
 import { SiteFooter } from "./site-footer";
+import { Sticker } from "./stickers";
 import styles from "./sections.module.css";
 
 export function Hero() {
@@ -38,6 +39,7 @@ export function ConsultationSection() {
     <div className={styles.consultationInner}>
       <div>
         <div className={styles.servicesIntro}>
+          <Sticker kind="pin" at={{ top: "-26px", right: "0" }} tilt={12} size="clamp(40px, 4vw, 56px)" />
           <h2 id="consultation-title">Más formas de viajar.<br />La misma cercanía.</h2>
           <p>Además de egresados, hay más formas de viajar con nosotros. Elegí tu opción y conversemos por WhatsApp.</p>
         </div>

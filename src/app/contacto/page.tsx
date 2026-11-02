@@ -4,17 +4,22 @@ import { Arrow } from "@/components/icons";
 import { ContactExplorer } from "@/features/contact/contact-explorer";
 import { ContactForm } from "@/features/contact/contact-form";
 import { publishedDestinations } from "@/features/destinations/data";
+import { Sticker, TextSticker } from "@/components/stickers";
 import styles from "@/features/contact/contact.module.css";
 
-export const metadata = pageMetadata("Contacto", "Hablá con Travel Days por WhatsApp o visitanos en Felipe Erdman 222, Villa Dolores, Córdoba.");
+export const metadata = pageMetadata("Contacto", "Hablá con Travel Days por WhatsApp o visitanos en Felipe Erdman 222, Villa Dolores, Córdoba.", "/contacto");
 
 export default function ContactPage() {
   const destinations = publishedDestinations.flatMap(destination => destination.name ? [destination.name] : []);
   const directions = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.address)}`;
   return (
     <main id="contenido" className={`interior-page ${styles.page}`}>
-      <header className={styles.intro}>
-        <h1>Hablemos.</h1>
+      <header className={styles.intro} data-intro-group>
+        <div className={styles.introTitle}>
+          <h1>Hablemos.</h1>
+          <TextSticker at={{ top: "-6px", right: "0" }} tilt={10} size="clamp(14px, 1.6vw, 20px)">¡Hola!</TextSticker>
+          <Sticker kind="plane" at={{ bottom: "-8px", left: "0" }} tilt={-18} size="clamp(42px, 5vw, 72px)" />
+        </div>
         <p>Un viaje por venir. Un recuerdo para compartir.</p>
       </header>
 

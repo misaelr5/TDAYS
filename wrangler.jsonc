@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Review deployment: workers.dev only. No routes or custom domains are configured here;
+  // traveldays.tur.ar is attached only after explicit launch approval (see docs/12).
+  "name": "travel-days-preview",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-29",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  // next/image optimization through Cloudflare Images (free tier: 5,000 unique transformations/month).
+  "images": {
+    "binding": "IMAGES"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

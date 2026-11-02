@@ -16,7 +16,7 @@ export default defineConfig({
     ["json", { outputFile: "output/playwright/results.json" }],
   ],
   updateSnapshots: "none",
-  snapshotPathTemplate: "{testDir}/__screenshots__/{projectName}/{arg}{ext}",
+  snapshotPathTemplate: "{testDir}/__screenshots__/{projectName}/current/{arg}{ext}",
   expect: { toHaveScreenshot: { animations: "disabled", maxDiffPixels: 0 } },
   use: {
     baseURL,
@@ -28,7 +28,12 @@ export default defineConfig({
     screenshot: "only-on-failure",
     serviceWorkers: "block",
   },
-  projects: [{ name: "chromium", use: { browserName: "chromium" } }],
+  projects: [
+    { name: "chromium", use: { browserName: "chromium" } },
+    // Keep the approved pixel baselines in Chromium; other engines verify behavior.
+    { name: "firefox", testIgnore: /visual\.spec\.ts/, use: { browserName: "firefox" } },
+    { name: "webkit", testIgnore: /visual\.spec\.ts/, use: { browserName: "webkit" } },
+  ],
   webServer: {
     command: "node scripts/qa.mjs serve",
     url: baseURL,

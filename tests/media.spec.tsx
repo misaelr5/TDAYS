@@ -17,7 +17,7 @@ const image: ImageAsset = {
 };
 
 test("autorización: vacío, pendiente, rechazado y evidencia incompleta mantienen fallback", () => {
-  expect(Object.keys(mediaManifest).sort()).toEqual(["destination:bayahibe", "destination:brasil", "destination:caribe", "destination:carnavales-de-jujuy", "destination:cataratas-del-iguazu", "destination:festival-de-jesus-maria", "destination:los-tuneles", "destination:valeria-del-mar", "hero", "page:inicio", "page:nosotros", "school:maestros", "school:primaria", "school:primaria-detail", "school:secundaria", "team:azul-barrera", "team:daiana-dascon", "team:dj-mosca", "team:ezequiel-grego", "team:javier-garay", "team:jorge-angelina", "team:karoll-tello"]);
+  expect(Object.keys(mediaManifest).sort()).toEqual(["destination:bayahibe", "destination:brasil", "destination:caribe", "destination:carnavales-de-jujuy", "destination:cataratas-del-iguazu", "destination:festival-de-jesus-maria", "destination:los-tuneles", "destination:valeria-del-mar", "hero", "page:inicio", "page:nosotros", "page:nosotros-historia", "school:maestros", "school:primaria", "school:primaria-detail", "school:secundaria", "team:azul-barrera", "team:daiana-dascon", "team:dj-mosca", "team:ezequiel-grego", "team:javier-garay", "team:jorge-angelina", "team:karoll-tello"]);
   expect(approvedMedia("hero", {})).toBeNull();
   for (const status of ["pending", "rejected"] as const) {
     expect(resolveMedia("hero", { hero: { ...image, authorization: { status } } })).toBeNull();
@@ -48,6 +48,7 @@ test("archivo inexistente bloquea publicación y verificación", () => {
 });
 
 test("un enlace del filesystem no puede escapar de public/media", () => {
+  mkdirSync(resolve("output/migration"), { recursive: true });
   const root = mkdtempSync(resolve("output/migration/media-fixtures-"));
   mkdirSync(join(root, "media"));
   mkdirSync(join(root, "outside"));
@@ -90,22 +91,76 @@ test("video exige poster válido y respeta movimiento, red y ahorro de datos", (
 test("verificador real y hooks de build usan el manifiesto", () => {
   const result = spawnSync(process.execPath, ["--disable-warning=MODULE_TYPELESS_PACKAGE_JSON", "scripts/verify-media.mjs"], { encoding: "utf8", windowsHide: true });
   expect(result.status).toBe(0);
-  expect(result.stdout).toContain("Medios aprobados verificados: 38");
+  expect(result.stdout).toContain("Medios aprobados verificados: 42");
   expect(verifyManifest({ hero: image })).toEqual({ files: 2, errors: [] });
   const pkg = JSON.parse(readFileSync("package.json", "utf8"));
   expect(pkg.scripts.prebuild).toBe("npm run verify:media");
 });
 
-test("Home muestra fotografías licenciadas de destinos y solo el video decorativo del hero", async ({ page }) => {
+test("solo la primera imagen visible del catálogo tiene prioridad alta", async ({ page }) => {
+  await page.goto("/destinos", { waitUntil: "networkidle" });
+  const images = page.locator("[data-destination-consultation] img");
+  await expect(images).toHaveCount(8);
+  await expect(images.first()).toHaveAttribute("loading", "eager");
+  await expect(images.first()).toHaveAttribute("fetchpriority", "high");
+  for (const image of (await images.all()).slice(1)) await expect(image).toHaveAttribute("loading", "lazy");
+  await page.goto("/", { waitUntil: "networkidle" });
+  for (const image of await page.locator("[data-destination-carousel] img").all()) await expect(image).toHaveAttribute("loading", "lazy");
+});
+
+for (const width of [390, 1440]) {
+  test(`el video reutiliza el póster responsive aunque la imagen tarde a ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    const requests: string[] = [];
+    page.on("request", request => { requests.push(request.url()); });
+    let releasePoster!: () => void;
+    const posterReady = new Promise<void>(resolve => { releasePoster = resolve; });
+    await page.route(/\/_next\/image\?.*maestrazo-florio/, async route => {
+      await posterReady;
+      await route.continue();
+    });
+    try {
+      await page.goto("/nosotros", { waitUntil: "commit" });
+      const hero = page.locator("#historia figure:has(video)");
+      await hero.scrollIntoViewIfNeeded();
+      const video = hero.locator("video");
+      await expect(hero.getByRole("button", { name: "Reproducir video de fondo" })).toBeVisible();
+      await expect(video).not.toHaveAttribute("src");
+      releasePoster();
+      await expect(hero.getByRole("button", { name: "Pausar video de fondo" })).toBeVisible();
+      const selected = await hero.locator("picture img").evaluate(image => (image as HTMLImageElement).currentSrc);
+      expect(selected).toContain(`maestrazo-florio-${width < 768 ? "mobile" : "desktop"}`);
+      expect(await video.evaluate(element => (element as HTMLVideoElement).poster)).toBe(selected);
+      const posters = requests.filter(url => /maestrazo-florio.*webp/.test(url));
+      expect(posters).toEqual([selected]);
+      await hero.getByRole("button", { name: "Pausar video de fondo" }).click();
+      await expect.poll(() => video.evaluate(element => (element as HTMLVideoElement).paused)).toBe(true);
+    } finally { releasePoster(); }
+  });
+}
+
+test("un póster fallido no impide reproducir el video", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.route(/\/_next\/image\?.*maestrazo-florio/, route => route.fulfill({ status: 200, contentType: "image/webp", body: "invalid image fixture" }));
+  await page.goto("/nosotros");
+  await page.locator("#historia figure:has(video)").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("button", { name: "Pausar video de fondo" })).toBeVisible();
+  await expect.poll(() => page.locator("#historia video").evaluate(element => !(element as HTMLVideoElement).paused)).toBe(true);
+});
+
+test("Home conserva el video anterior del hero y los ocho destinos", async ({ page }) => {
   const videos: string[] = [];
   page.on("request", request => { if (/\.(mp4|webm)(?:[?#]|$)/.test(request.url())) videos.push(new URL(request.url()).pathname); });
   await page.goto("/");
-  const video = page.locator("video");
+  const video = page.locator("[data-scenic-hero] video");
   await expect(video).toHaveCount(1);
-  await expect(page.locator("[data-scenic-hero] video")).toHaveCount(1);
-  for (const [name, value] of [["aria-hidden", "true"], ["preload", "none"], ["tabindex", "-1"]]) await expect(video).toHaveAttribute(name, value);
-  expect(await video.evaluate(element => (element as HTMLVideoElement).muted && (element as HTMLVideoElement).loop)).toBe(true);
-  // With reduced motion (the suite's default) only the poster shows and nothing is downloaded.
+  const hero = page.locator("[data-scenic-hero] picture img");
+  await expect(hero).toHaveAttribute("src", /maestrazo-termas/);
+  await expect(hero).toHaveAttribute("loading", "eager");
+  await expect(hero).toHaveAttribute("fetchpriority", "high");
+  await expect(video).toHaveAttribute("aria-hidden", "true");
+  await expect(video).toHaveAttribute("preload", "none");
   await expect(page.getByRole("button", { name: /video de fondo/ })).toHaveCount(0);
   await expect(page.locator("[data-destination-carousel] .postcard-photo img")).toHaveCount(8);
   await expect(page.locator("[data-destination-carousel] .landscape")).toHaveCount(0);
@@ -114,14 +169,19 @@ test("Home muestra fotografías licenciadas de destinos y solo el video decorati
   for (const source of sources) expect(source).toContain("/_next/image?url=%2Fmedia%2Fdestinations%2F");
   expect(videos).toEqual([]);
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await expect(page.getByRole("button", { name: "Pausar video de fondo" })).toBeVisible();
+  const pause = page.getByRole("button", { name: "Pausar video de fondo" });
+  await expect(pause).toBeVisible();
   await expect.poll(() => video.evaluate(element => !(element as HTMLVideoElement).paused)).toBe(true);
-  expect([...new Set(videos)]).toEqual([expect.stringMatching(/^\/media\/travel-days\/trips\/maestrazo-termas-(desktop|mobile)\.mp4$/)]);
+  const source = new URL(await video.evaluate(element => (element as HTMLVideoElement).currentSrc)).pathname;
+  expect(source).toMatch(/^\/media\/travel-days\/trips\/maestrazo-termas-(desktop|mobile)\.mp4$/);
+  expect(videos.every(path => path === source)).toBe(true);
+  await pause.click();
+  await expect.poll(() => video.evaluate(element => (element as HTMLVideoElement).paused)).toBe(true);
 });
 
 test("las copias públicas son WebP optimizadas y no incluyen EXIF, XMP ni perfiles privados", () => {
   const paths = readdirSync("public/media/travel-days", { recursive: true }).map(String).filter(path => path.endsWith(".webp"));
-  expect(paths).toHaveLength(34);
+  expect(paths).toHaveLength(38);
   for (const path of paths) {
     const data = readFileSync(resolve("public/media/travel-days", path));
     expect(data.length, path).toBeLessThan(110_000);
@@ -140,10 +200,11 @@ test("Nosotros muestra oficina y retratos autorizados con carga responsive y sin
   const videos: string[] = [];
   page.on("request", request => { if (/\.(mp4|webm)(?:[?#]|$)/.test(request.url())) videos.push(request.url()); });
   await page.goto("/nosotros");
-  const office = page.locator("figure .approved-media-picture img");
+  const office = page.locator('figure .approved-media-picture img[src*="office-consultation"]');
   await expect(office).toHaveAttribute("loading", "eager");
   await expect(office).toHaveAttribute("fetchpriority", "high");
   await expect(office).toHaveAttribute("alt", /Escritorios y sillas/);
+  await expect(page.locator('figure .approved-media-picture img[src*="maestrazo-florio"]')).toHaveAttribute("loading", "lazy");
   await expect(page.locator("[data-team-portrait]")).toHaveCount(7);
   for (const photo of await page.locator("[data-team-portrait] img").all()) {
     await expect(photo).toHaveAttribute("loading", "lazy");

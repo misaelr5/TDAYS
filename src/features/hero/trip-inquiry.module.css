@@ -137,3 +137,9 @@
   .pill { transition: none; }
   .field, .chevron, .submit, .submit svg, .switch, .switch::after, .days button, .slot + .slot::before { transition: none; }
 }
+/* Reduced transparency or more contrast: the search bar and its results turn solid. */
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .search::before, .catalogLink, .draft { background: #13253d; border-color: #ffffff59; }
+  .catalogLink, .search .field { text-shadow: none; }
+  .panel { background: #fff; }
+}

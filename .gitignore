@@ -12,3 +12,7 @@ test-results/
 /src/fotos videos y contenido traveldays/
 # Local design reference recordings; not application assets.
 /src/inspo/
+# Cloudflare (OpenNext/Wrangler) build output and local state.
+.open-next/
+.wrangler/
+.dev.vars*

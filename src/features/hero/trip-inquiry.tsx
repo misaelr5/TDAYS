@@ -28,7 +28,7 @@ const travelersText = (value: Travelers) => value === "grupo" ? "Un grupo" : val
 
 /** `catalog` maps each destination name to its card in /destinos. */
 export function TripInquiry({ destinations, catalog = {} }: { destinations: readonly string[]; catalog?: Readonly<Record<string, string>> }) {
-  const options = [...destinations, "Egresados"];
+  const options = ["Egresados", ...destinations];
   const router = useRouter();
   const id = useId();
   const [open, setOpen] = useState<Panel | null>(null);
@@ -94,8 +94,14 @@ export function TripInquiry({ destinations, catalog = {} }: { destinations: read
   }
 
   return <div className={styles.inquiry}>
-    <div className={styles.bar} ref={bar} data-trip-inquiry onBlur={event => { if (open && !bar.current?.contains(event.relatedTarget as Node)) setOpen(null); }}>
-      <form className={styles.search} onSubmit={prepare} aria-label="Prepará tu consulta de viaje" data-open={open ?? undefined} ref={search}>
+    <div className={styles.bar} ref={bar} data-trip-inquiry onBlur={event => {
+      // Safari does not focus month buttons on pointer clicks. Replacing the
+      // focused day can emit blur(null) before the calendar focuses its new day.
+      // Close for an actual focus destination outside; outside pointerdown is
+      // already handled above, including clicks on non-focusable elements.
+      if (open && event.relatedTarget instanceof Node && !bar.current?.contains(event.relatedTarget)) setOpen(null);
+    }}>
+      <form className={styles.search} onSubmit={prepare} aria-label="Prepará tu consulta de viaje" data-inquiry-form data-open={open ?? undefined} ref={search}>
         <span className={styles.pill} data-glide-pill aria-hidden="true" />
         <DestinationField
           id={`${id}-destination`}
@@ -118,7 +124,7 @@ export function TripInquiry({ destinations, catalog = {} }: { destinations: read
       </form>
     </div>
 
-    {draft ? <div className={styles.draft} role="status" tabIndex={-1} ref={result}>
+    {draft ? <div className={styles.draft} role="status" tabIndex={-1} ref={result} data-inquiry-draft>
       <div className={styles.draftHead}>
         <span className={styles.check} aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg></span>
         <p>Tu consulta está lista para revisar.</p>
@@ -129,7 +135,7 @@ export function TripInquiry({ destinations, catalog = {} }: { destinations: read
         <button type="button" onClick={() => { setDraft(null); triggers.current.destination?.focus(); }}>Editar consulta</button>
       </div>
     </div> : destination && catalog[destination] ? <p className={styles.helper} data-trip-help>
-      <Link className={styles.catalogLink} href={`/destinos#${catalog[destination]}`} onClick={event => goToDestination(event, router, catalog[destination], event.currentTarget, "chip")}>
+      <Link className={styles.catalogLink} data-page-slide="off" href={`/destinos#${catalog[destination]}`} onClick={event => goToDestination(event, router, catalog[destination], event.currentTarget, "chip")}>
         Ver {destination} en el catálogo <Arrow />
       </Link>
     </p> : <p className={styles.helper} data-trip-help>Elegí lo que tengas definido. Consultamos las opciones con vos.</p>}
@@ -264,14 +270,22 @@ function DatePanel({ id, value, onSelect, onClose }: { id: string; value: Date |
 function TravelersPanel({ id, value, onChange, onClose }: { id: string; value: Travelers; onChange: (value: Travelers) => void; onClose: () => void }) {
   const count = typeof value === "number" ? value : 0;
   const group = value === "grupo";
-  const first = useRef<HTMLButtonElement>(null);
-  useEffect(() => { first.current?.focus({ preventScroll: true }); }, []);
+  const panel = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const root = panel.current;
+    const active = document.activeElement;
+    // The minus button starts disabled; group/max-count changes can also disable
+    // the focused control. Keep focus on an enabled control so Escape reaches us.
+    if (root && (!root.contains(active) || (active instanceof HTMLButtonElement && active.disabled))) {
+      root.querySelector<HTMLButtonElement>("button:not(:disabled)")?.focus({ preventScroll: true });
+    }
+  }, [value]);
 
-  return <div className={`${styles.panel} ${styles.panelTravelers}`} role="dialog" id={id} aria-label="Cantidad de viajeros" onKeyDown={event => { if (event.key === "Escape") { event.preventDefault(); onClose(); } }}>
+  return <div ref={panel} className={`${styles.panel} ${styles.panelTravelers}`} role="dialog" id={id} aria-label="Cantidad de viajeros" onKeyDown={event => { if (event.key === "Escape") { event.preventDefault(); onClose(); } }}>
     <div className={styles.stepper} data-disabled={group || undefined}>
       <div><p id={`${id}-people`}>Personas</p><small>Hasta 10 viajeros</small></div>
       <div className={styles.stepperControls} role="group" aria-labelledby={`${id}-people`}>
-        <button type="button" className={styles.iconButton} ref={first} onClick={() => onChange(count > 1 ? count - 1 : null)} disabled={group || count === 0} aria-label="Quitar una persona"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M6 12h12" /></svg></button>
+        <button type="button" className={styles.iconButton} onClick={() => onChange(count > 1 ? count - 1 : null)} disabled={group || count === 0} aria-label="Quitar una persona"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M6 12h12" /></svg></button>
         <output aria-live="polite" aria-label={`${count} ${count === 1 ? "persona" : "personas"}`}>{count}</output>
         <button type="button" className={styles.iconButton} onClick={() => onChange(Math.min(10, count + 1))} disabled={group || count >= 10} aria-label="Sumar una persona"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M12 6v12M6 12h12" /></svg></button>
       </div>

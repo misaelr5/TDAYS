@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore, type MouseEvent, type ReactNode } from "react";
 import { useGlide } from "@/components/use-glide";
+import { slideDirection, slideTabs } from "@/components/tab-slide";
 import styles from "./contact.module.css";
 
 const intents = [
@@ -34,12 +35,15 @@ export function ContactExplorer({ children }: { children: ReactNode }) {
   function choose(event: MouseEvent<HTMLAnchorElement>, id: Intent) {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
-    window.history.replaceState(window.history.state, "", `#${id}`);
-    window.dispatchEvent(new HashChangeEvent("hashchange"));
+    const index = (intent: Intent) => intents.findIndex(item => item.id === intent);
+    slideTabs(slideDirection(index(current ?? "consulta"), index(id)), () => {
+      window.history.replaceState(window.history.state, "", `#${id}`);
+      window.dispatchEvent(new HashChangeEvent("hashchange"));
+    });
   }
 
   return (
-    <div className={styles.workspace} data-contact-explorer data-contact-intent={current ?? undefined}>
+    <div className={styles.workspace} data-intro="2" data-contact-explorer data-contact-intent={current ?? undefined}>
       <nav ref={nav} className={styles.switcher} aria-label="Elegí cómo podemos ayudarte">
         <span className={styles.pill} data-glide-pill aria-hidden="true" />
         {intents.map(intent => (
@@ -50,7 +54,7 @@ export function ContactExplorer({ children }: { children: ReactNode }) {
           </a>
         ))}
       </nav>
-      <div className={styles.panels}>{children}</div>
+      <div className={styles.panels} data-tab-slide-panels>{children}</div>
     </div>
   );
 }

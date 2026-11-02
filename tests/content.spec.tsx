@@ -21,7 +21,7 @@ test("datos comerciales se renderizan solo si están presentes y son válidos", 
 });
 
 test("solo se publican perfiles aprobados con evidencia", () => {
-  expect(teamMembers).toHaveLength(9);
+  expect(teamMembers).toHaveLength(7);
   for (const member of teamMembers) {
     expect(member.publication.status).toBe("approved");
     expect(renderToStaticMarkup(<TeamMemberCard member={member} />)).toContain(member.role);
@@ -40,7 +40,7 @@ test("Nosotros cuenta historia, respaldo, equipo y compromiso con datos reales",
   await expect(narrative.locator("#historia ol li")).toHaveCount(4);
   await expect(page.locator("[data-agency-value]")).toHaveCount(8);
   await expect(narrative.locator("#equipo [data-team-portrait]")).toHaveCount(7);
-  await expect(page.locator(".agency-team-profile")).toHaveCount(9);
+  await expect(page.locator(".agency-team-profile")).toHaveCount(7);
   for (const member of teamMembers) await expect(narrative).toContainText(member.name);
   await expect(narrative).toContainText("18904");
   await expect(narrative).toContainText("Nivel Bronce");

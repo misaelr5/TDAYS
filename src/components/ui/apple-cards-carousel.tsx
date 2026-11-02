@@ -137,6 +137,7 @@ export function Carousel({ items }: { items: CarouselItem[] }) {
             href={item.href}
             aria-label={`Explorar ${item.title} en el catálogo`}
             data-destination-preview
+            data-page-slide="off"
             data-destination-slug={item.slug}
             onFocus={() => { clearTimeout(timer.current); setActive(index); }}
             // The photo travels into its catalog card (see destination-transition).

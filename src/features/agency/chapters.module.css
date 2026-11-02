@@ -13,6 +13,7 @@
 .pill[data-visible="true"] { opacity: 1; }
 
 .panels { min-height: 60vh; }
+.panels > [data-chapter-hidden] { display: none; }
 :global(:root[data-chapter-transition]) .panels { view-transition-name: chapter-panel; }
 
 @media (max-width: 767px) {
@@ -21,4 +22,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .tabs a, .pill { transition: none; }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .tabs { background: #13253d; border-color: #ffffff59; }
 }

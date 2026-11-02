@@ -26,13 +26,27 @@ export function AmbientVideo({ asset, children }: { asset: PublicVideo; children
     const video = ref.current;
     if (!video || mode === "off" || !window.IntersectionObserver) return;
     const source = mode === "mobile" ? asset.mobile ?? asset.desktop : asset.desktop;
-    video.src = source.src;
+    // Wait for responsive selection instead of falling back to the original:
+    // currentSrc can still be empty at hydration on a cold or slow connection.
+    const poster = video.parentElement?.querySelector<HTMLImageElement>("picture img");
+    let visible = false;
+    const prepare = () => {
+      if (poster?.currentSrc && poster.naturalWidth > 0) video.poster = poster.currentSrc;
+      video.src = source.src;
+      if (visible && !pausedByUser.current) void video.play().catch(() => {});
+    };
+    if (!poster || poster.complete) prepare();
+    else {
+      poster.addEventListener("load", prepare, { once: true });
+      poster.addEventListener("error", prepare, { once: true });
+    }
     const observer = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) video.pause();
-      else if (!pausedByUser.current) void video.play().catch(() => {});
+      visible = entry.isIntersecting;
+      if (!visible) video.pause();
+      else if (!pausedByUser.current && video.hasAttribute("src")) void video.play().catch(() => {});
     });
     observer.observe(video);
-    return () => { observer.disconnect(); video.pause(); video.removeAttribute("src"); video.load(); };
+    return () => { observer.disconnect(); poster?.removeEventListener("load", prepare); poster?.removeEventListener("error", prepare); video.pause(); video.removeAttribute("src"); video.load(); };
   }, [mode, asset]);
   const focal = (mode === "mobile" ? asset.mobile ?? asset.desktop : asset.desktop).poster.focal;
   return <div className={`approved-media-video${hasFrame && mode !== "off" ? " has-frame" : ""}`}>

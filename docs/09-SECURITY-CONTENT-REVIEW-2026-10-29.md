@@ -1,0 +1,66 @@
+# Revisión de seguridad, contenido y medios — 29/10/2026
+
+Inspección inicial del working tree recibido y correcciones posteriores identificadas abajo. No se modificaron originales privados, permisos de medios ni hosting. No acredita una publicación, un pentest ni una auditoría jurídica. El usuario volvió a confirmar Felipe Erdman 222 durante esta entrega del 29/10. Las pruebas de navegador, la optimización de fuentes y las dependencias de esta entrega se registran en el informe general de QA; aquí se documentan las comprobaciones de seguridad y contenido.
+
+## Resultado y prioridades
+
+**Hallazgo posterior corregido: P1 de envío nativo antes de hidratación.** Con JavaScript habilitado y bundles bloqueados, el formulario original podía enviar `POST /contacto` antes de activar su `onSubmit`. Se reprodujo con datos sintéticos y la petición se interceptó/abortó antes de salir: no se probó almacenamiento del body ni una fuga a terceros. CSP `form-action 'self'` permite ese destino y `<noscript>` no se activa en ese escenario. El replay de formularios de React 19 para `action` de función no cubre este `onSubmit`.
+
+`src/features/contact/contact-form.tsx` ahora mantiene el formulario `inert` y el submit deshabilitado hasta que `useSyncExternalStore` cambia del snapshot servidor=false al cliente=true. Un enlace directo a WhatsApp fuera del formulario permanece accesible con bundles rotos, carga retrasada o JavaScript desactivado. No agrega backend ni simula un envío. La selección `contact-hydration.spec.ts` + `contact.spec.ts` dio **33/33 aprobadas**, tres motores, exit0; nueve casos cubren específicamente la nueva guarda. El resultado completo posterior se registra en 11.
+
+**Dependencias concurrentes y remediación:** la incorporación de OpenNext/Wrangler en otro hilo cambió el lock durante esta entrega. `npm audit` pasó de cero a cuatro HIGH propagadas por una sola alerta de la CLI `glob -c/--cmd` (GHSA-5j98-mcp5-4vw2), no cuatro fallos explotables demostrados en páginas públicas. Se integró un override dirigido `@node-minify/core -> glob 10.5.0` tras validarlo en copia aislada. Instalación raíz exit0; auditorías actuales completa y producción exit0, **cero alertas** (`audit-remediated.json`, `audit-production-remediated.json`). La versión 10.x imprime advertencia de deprecación: el override es deuda temporal hasta actualización compatible de la cadena upstream. No se ejecutó `audit fix --force` ni se degradó el adaptador. Ver el alcance y la validación de build en 08/11.
+
+No se identificó una vulnerabilidad explotable alta/crítica en la superficie de aplicación examinada. Persisten bloqueos comerciales y legales antes de publicación: exclusividad, alcance de acreditaciones y condiciones contractuales. Mantener el modo de revisión hasta resolverlos. No se justifica añadir autenticación, base de datos, CAPTCHA, CSRF ni rate limiting de formularios para una aplicación que actualmente no recibe consultas en un servidor.
+
+| ID | Prioridad / naturaleza | Evidencia actual | Acción concreta |
+|---|---|---|---|
+| CONT-01 | P0 publicación / legal | `src/features/legal/terms.ts:14` atribuye el legajo al Ministerio y presenta Ley 18.829 como marco operativo; `:77` atribuye intermediación al Decreto 2182/72 | Javier y asesoría deben aprobar razón social, atribución del registro y marco aplicable. El DNU 70/2023 derogó Ley 18.829; la Resolución 1/2024 lo confirma expresamente. No sustituir contratos completos mediante inferencia técnica. |
+| CONT-02 | P0 publicación / factual | `src/features/hero/scenic-hero.tsx:16` dice “La única agencia”; `src/features/hero/trust-cards.tsx:34` dice “Pioneros”; `src/features/china/china-section.tsx:22` dice “primera empresa” y afirma un convenio | Exigir respaldo de alcance/vigencia o aprobar las alternativas descriptivas ya propuestas en `07-CLIENT-PENDING-DECISIONS.md`. Se preservan los textos existentes en esta revisión; no se certifican. |
+| CONT-03 | P0 publicación / acreditaciones | `src/features/agency/narrative.tsx:87` dice agencia habilitada; `:92` y `src/features/hero/trust-cards.tsx:28` dicen legajo oficial. `src/features/graduates/graduates-section.tsx:92` muestra el legajo en el contexto escolar | Confirmar rol de organizador/comercializador y documentación aplicable. RNAV y Bronce no se deben equiparar automáticamente a autorización de turismo estudiantil. Ausencia de un documento en la carpeta no demuestra incumplimiento. |
+| CONT-04 | P0 publicación / condiciones | `src/features/legal/terms.ts` incluye aceptación por navegación, reservas, pagos, cancelación, responsabilidad y cesión a prestadores | Revisión comercial y jurídica del funcionamiento real. La web prepara mensajes y no cobra ni reserva. No convertir estos textos en políticas aprobadas por el mero hecho de compilar. |
+| CONT-05 | Dirección resuelta / integración externa pendiente | `src/config/site.ts:7` publica Felipe Erdman 222; el sitio público consultado el 29/10 sigue mostrando Luis Laje 681 | El usuario confirmó nuevamente el 29/10: “Sí, esa dirección está confirmada”. Felipe Erdman 222 es el domicilio aprobado. Conservar validación final del NAP al publicar el artefacto correcto; actualizar fichas externas requiere autorización y acceso. |
+| CONT-06 | P1 / privacidad y alcance | `src/features/legal/terms.ts:90` describe uso/cesión de datos por la agencia; el formulario dice que esta web no guarda datos | Confirmar retención y acceso en WhatsApp/email antes de aprobar la política. La ausencia de persistencia en la web no describe el tratamiento en servicios externos. |
+| SEC-01 | Media / defensa residual | `src/config/security.ts:7` conserva `script-src 'self' 'unsafe-inline'` y `:8` estilos inline | CSP compatible con prerender e interacción existente; no constituye una defensa completa contra inyección de scripts inline. Evitar nuevos sinks de HTML. Reevaluar política estricta al introducir contenido externo, sesiones o portal. Un nonce por petición exige render dinámico según la guía Next instalada; no cambiar toda la arquitectura sin necesidad. |
+| SEC-02 | Baja / operación | `.env*`, originales y `output/` están ignorados; noindex depende de build (`src/config/seo.ts:11`) | Verificar los headers del hosting y proteger previews si contienen información privada. Robots/noindex no controla acceso. Nunca compartir el ZIP de recuperación o evidencia privada como artefacto público. |
+| UX-01 | P2 / claridad de consulta | `src/features/contact/contact-form.tsx:63` etiqueta “Tu nombre”; `:102` resume “Sumar destino y teléfono”, aunque el desplegable también contiene mes/año, pasajeros y localidad | Los seis campos pedidos existen; cinco están en un bloque opcional y el mensaje libre es obligatorio. Validar con el cliente si “contemplar” exige obligatoriedad; no endurecer el formulario sin decisión de conversión. Propuesta pequeña: “Nombre y apellido” y resumen que anuncie todos los datos del viaje. |
+
+Las prioridades P0 anteriores son bloqueos de publicación y exactitud comercial; no se presentan como vulnerabilidades remotas críticas de software.
+
+## Controles técnicos observados
+
+- No hay Route Handlers propios, API routes, Server Actions, DB, autenticación, sesiones, cookies, pagos ni subidas en `src/app/`/`src/`. La falta de validación de servidor no es un defecto actual de un endpoint inexistente; será obligatoria si se introduce uno.
+- `src/features/contact/messages.ts:16` valida datos en tiempo de ejecución, límites, teléfono, formato de mes y pasajeros enteros entre 1 y 999. No confiar solamente en TypeScript ni en atributos HTML. La preparación es síncrona y local: no existe una operación de red cuya carga, reintento o envío duplicado deba simularse.
+- `src/features/contact/contact-form.tsx:140` muestra “Mensaje preparado. Falta enviarlo”; `:144` ofrece handoff explícito a WhatsApp, y editar datos invalida el borrador. No se afirma recepción ni reserva. `src/config/site.ts:24` usa `encodeURIComponent` sobre texto bien formado y un destinatario constante.
+- El único `dangerouslySetInnerHTML` encontrado en aplicación es JSON-LD constante en `src/app/layout.tsx:44`; escapa `<`. No se hallaron `eval`, `new Function`, `innerHTML`, `document.write`, almacenamiento web ni fetch de datos introducidos por el visitante.
+- `src/features/contact/contact-events.tsx:17` emite solamente nombre de evento, ruta permitida y slug permitido. No serializa teléfono, borrador, URL de WhatsApp, query/hash ni referrer. No hay proveedor externo de analítica conectado.
+- `next.config.ts` conserva CSP en producción, nosniff, política de referente, bloqueo de framing y permisos restringidos; no anuncia powered-by. La aplicación no demuestra por sí sola la política del CDN.
+- `src/features/media/files.ts:17` usa rutas reales y contención en `public/media` para evitar traversal/junction; `:38` elimina procedencia, autorizaciones e identificadores antes de entregar medios al cliente. Las importaciones de estos metadatos son de servidor; los componentes cliente usan tipos públicos mediante `import type`.
+
+## Reconciliación actual de medios
+
+Inventario recursivo ejecutado el 29/10: **340 archivos, 1.720.402.925 bytes**: 146 JPG, 21 PNG, 4 HEIC, 167 MP4 y 2 PDF. Se calcularon hashes del material inventariado: los **339 paths presentes en los CSV históricos coinciden** con sus SHA-256; cero modificaciones detectadas en esos archivos.
+
+El archivo adicional `egresados y fotos varisa/IMG_E2648.JPG` no tiene fila propia en esos CSV. Es una **copia binaria exacta de P130**, `Fotos/FIESTA DIA DEL MAESTRO/IMG_E2648.JPG`, SHA-256 `9b61f5203e5f0704742d3ad830e1a2631b77348c317a5836fd92986ca31fb998`. No es un recurso nuevo ni amplía su autorización. No se borró ni movió la copia.
+
+El manifiesto actual contiene **23 slots aprobados, 42 variantes/archivos públicos únicos**, con evidencia no vacía. La llamada actual a `verifyManifest()` devuelve **42, errors: []**. El conteo no implica 42 fotografías distintas. `git ls-files` no devuelve originales privados, PDFs originales ni `.env` reales.
+
+Permisos registrados: retratos individuales y oficina; P168–P170 para ambos niveles escolares; P130 exclusivamente para la foto elegida de Maestros; V067 para el fragmento elegido de historia; fragmento del hero con registro previo de permiso de adultos. No se extiende permiso a otros grupos, acompañantes, fiesta o videos. La existencia de una cadena en el manifiesto es trazabilidad de una aprobación previa, no una validación independiente de consentimiento.
+
+Las ocho fotos de destinos mantienen atribuciones y licencias comerciales de Wikimedia Commons documentadas en `docs/Media-Destinos.md`. En esta revisión se comprobó que `src/components/destination-cards.tsx:87` consume créditos y los muestra; no se volvió a resolver independientemente cada licencia externa ni se modificó la sección aprobada.
+
+Los dos PDF privados coinciden por hash con `output/production-readiness/certificate-review.json` del 28/10. Se conserva el resultado histórico de lectura/render registrado en documento 07: RNAV y Bronce tienen respaldo local. No se hizo una segunda lectura visual, autenticación contra emisor ni comprobación individual de vigencia registral en esta revisión.
+
+## Escaneo de secretos
+
+Se examinaron **297 archivos de texto** tracked/untracked no ignorados (excluyendo binarios y archivos de más de 2 MB) y el diff textual de todo el historial Git accesible con `git log --all -p`. Patrones: claves privadas PEM/OpenSSH, tokens GitHub, access keys AWS y claves OpenAI de formato conocido. **Cero rutas coincidentes en working tree y cero patrones coincidentes en historial**. No se imprimieron valores sensibles. No constituye prueba de ausencia absoluta de secretos, no escanea originales ignorados ni credenciales del hosting y no valida cuentas externas.
+
+No se repitieron builds, navegador ni npm audit desde esta revisión paralela para evitar interferir con QA del agente principal. Tomar resultados actuales de esos controles del informe de cierre, no de los números históricos del 28/10.
+
+## Fuentes oficiales y límites
+
+- [Texto oficial DNU 70/2023](https://www.argentina.gob.ar/normativa/nacional/decreto-70-2023-395521/texto), art. 349. La apertura inicial fue correcta; una segunda consulta de líneas agotó timeout. La derogación también figura expresamente en la resolución siguiente.
+- [Resolución 1/2024, turismo estudiantil](https://www.argentina.gob.ar/normativa/nacional/resoluci%C3%B3n-1-2024-402532/texto): se consultó el texto original oficial, que distingue el régimen estudiantil de la derogación general. No se afirma revisión exhaustiva de normativa posterior ni cumplimiento individual de Travel Days.
+- [Sitio público Travel Days](https://traveldays.tur.ar/), consultado el 29/10: conserva dirección Luis Laje 681 y número 3544 312904.
+- Guías de la versión Next instalada: `node_modules/next/dist/docs/01-app/02-guides/content-security-policy.md` y `data-security.md`; criterios de revisión Next/React/frontend de la skill `security-best-practices`.
+
+No se enviaron mensajes, formularios públicos, reseñas ni solicitudes a personas; no se modificaron DNS, producción ni cuentas. Mantener fuera del sitio público los originales, certificados y evidencias internas de aprobación.

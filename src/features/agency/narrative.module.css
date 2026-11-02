@@ -1,13 +1,13 @@
 .narrative { --expand: cubic-bezier(.22, 1, .36, 1); overflow-wrap: anywhere; background: var(--paper); color: var(--ink); }
 .narrative section { padding: clamp(56px, 7vw, 112px) var(--gutter); }
-.narrative h2 { max-width: 16em; font-size: clamp(30px, 3.4vw, 50px); line-height: 1.08; letter-spacing: -.045em; font-weight: 500; text-wrap: balance; }
-.narrative h3 { font-weight: 500; letter-spacing: -.025em; }
+.narrative h2 { max-width: 16em; font-size: clamp(30px, 3.4vw, 50px); line-height: 1.08; text-wrap: balance; }
 
 /* Hero */
 .hero.hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 80px); align-items: center; max-width: 1440px; margin-inline: auto; padding-top: clamp(48px, 6vw, 88px); padding-bottom: clamp(40px, 5vw, 72px); }
 .eyebrow { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 22px; color: #526275; font-size: 13px; }
 .eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand-orange); }
-.heroCopy h1 { max-width: 11.5em; font-size: clamp(42px, 5.5vw, 84px); line-height: .98; letter-spacing: -.06em; font-weight: 500; text-wrap: balance; }
+.heroCopy { position: relative; }
+.heroCopy h1 { max-width: 11.5em; font-size: clamp(42px, 5.5vw, 84px); line-height: .98; text-wrap: balance; }
 .heroLead { max-width: 52ch; margin-top: clamp(22px, 2.6vw, 34px); font-size: clamp(16px, 1.3vw, 19px); line-height: 1.65; color: #435268; }
 .heroActions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-top: 32px; }
 .primary, .light { display: inline-flex; align-items: center; gap: 14px; min-height: 48px; padding: 12px 24px; border-radius: 999px; font-size: 13px; font-weight: 500; transition: background .2s, transform .3s var(--ease); }
@@ -32,7 +32,10 @@
 .quote p::before { content: "“"; } .quote p::after { content: "”"; }
 .quote footer { margin-top: 10px; font-size: 13px; color: #536174; }
 .storyPhoto { position: relative; justify-self: end; width: min(100%, 400px); margin: 0; aspect-ratio: 4 / 5; overflow: hidden; border-radius: 28px; box-shadow: var(--glass-shadow); }
-.storyPhoto :global(.approved-media-picture) { position: absolute; inset: 0; }
+.storyPhoto :global(.approved-media-picture), .storyPhoto :global(.approved-media-video) { position: absolute; inset: 0; }
+/* The story video's pause control: the hero's dark glass pill, tucked into the card corner. */
+.storyPhoto :global(.approved-media-video) button { left: auto; right: 14px; bottom: 14px; min-height: 36px; padding: 8px 16px; border: 1px solid #ffffff38; border-radius: 40px; background: linear-gradient(140deg, #1a2d48b3, #0c1b3099 55%, #1a2d48b3); box-shadow: inset 0 1px 0 #ffffff40, 0 10px 26px -16px #0c1b3099; backdrop-filter: blur(18px) saturate(170%); color: #fff; font-size: 11px; font-weight: 500; cursor: pointer; }
+.storyPhoto :global(.approved-media-video) button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 .photoFrame { position: absolute; inset: 0; display: grid; place-items: center; background: radial-gradient(90% 70% at 30% 20%, #ffffff 0%, #e3eeff 45%, #cfe0f6 100%); }
 .photoFrame::before { content: ""; position: absolute; inset: 16px; border: 1.5px dashed #9fbde6; border-radius: 20px; }
 .photoFrame svg { width: 34%; max-width: 140px; color: #fff; filter: drop-shadow(0 18px 24px #0053c740); rotate: 35deg; }
@@ -102,7 +105,7 @@
 /* Closing: invitation + office map */
 .closingPanel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(24px, 4vw, 56px); align-items: stretch; max-width: 1400px; margin-inline: auto; padding: clamp(28px, 4vw, 56px); border-radius: 32px; background: linear-gradient(135deg, #0053c7, #003a8f); color: #fff; overflow: hidden; }
 .closingCopy { align-self: center; }
-.closingPanel h2 { max-width: 12em; font-size: clamp(32px, 4vw, 60px); line-height: 1.02; letter-spacing: -.055em; }
+.closingPanel h2 { max-width: 12em; font-size: clamp(32px, 4vw, 60px); line-height: 1.02; }
 .closingLead { max-width: 44ch; margin-top: 18px; font-size: 16px; line-height: 1.6; color: #dce8fb; }
 .contactList { display: grid; gap: 16px; margin: 32px 0 0; padding-top: 24px; border-top: 1px solid #ffffff33; }
 .contactList dt { font-size: 12px; color: #c4d7f5; }
@@ -171,6 +174,8 @@
   .backingPanel, .closingPanel { border-radius: 24px; }
   .map { min-height: 440px; }
   .pin { top: 30%; }
+  /* The wide crop puts the group along the bottom edge; the control moves to the wall above. */
+  .storyPhoto :global(.approved-media-video) button { top: 12px; bottom: auto; right: 12px; }
 }
 @media (max-width: 480px) {
   .facts > div { padding: 16px; }
@@ -187,3 +192,7 @@
   .narrative [data-reveal] *, .narrative [data-reveal] { animation: none !important; opacity: 1 !important; translate: none !important; clip-path: none !important; }
 }
 @media (max-width: 359px) { .facts { grid-template-columns: 1fr; } }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .office, .mapCard { background: #fff; }
+  .storyPhoto :global(.approved-media-video) button { background: #13253d; border-color: #ffffff59; }
+}

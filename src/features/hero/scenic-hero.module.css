@@ -1,29 +1,37 @@
-.hero { position: relative; padding-bottom: 65px; background: var(--paper); color: #191919; }
-.frame { position: relative; display: grid; align-content: center; min-height: min(88svh, 860px); padding: 150px var(--gutter) 175px; overflow-x: clip; border-radius: 0 0 18px 18px; background: #35545c; color: #fff; }
+.hero { position: relative; background: #fff; color: #191919; }
+.frame { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); align-content: center; container-type: inline-size; min-height: min(88svh, 860px); padding: 150px var(--gutter) 175px; overflow-x: clip; border-radius: 0 0 18px 18px; background: #35545c; color: #fff; }
 .background, .shade { position: absolute; z-index: 0; inset: 0; overflow: hidden; border-radius: inherit; pointer-events: none; }
-/* No stacking context: the pause control can rise above the shade while the media stays under it. */
+/* The video control sits above the shade and remains operable. */
 .background { z-index: auto; }
 .background > svg { width: 100%; height: 100%; }
 .background img { object-fit: cover; }
-/* The background ignores the pointer; only its pause control takes clicks. */
-.background :global(.approved-media-video) button { left: auto; right: var(--gutter); bottom: 128px; z-index: 3; min-height: 36px; padding: 8px 16px; border: 1px solid #ffffff38; border-radius: 40px; background: linear-gradient(140deg, #1a2d48b3, #0c1b3099 55%, #1a2d48b3); box-shadow: inset 0 1px 0 #ffffff40, 0 10px 26px -16px #0c1b3099; backdrop-filter: blur(18px) saturate(170%); color: #fff; font-size: 11px; font-weight: 500; pointer-events: auto; cursor: pointer; }
-.background :global(.approved-media-video) button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.background :global(.approved-media-video) button { left: auto; right: var(--gutter); bottom: 128px; z-index: 3; min-height: 44px; padding: 8px 16px; border: 1px solid #ffffff73; border-radius: 40px; background: #13253d; color: #fff; font-size: 12px; pointer-events: auto; cursor: pointer; }
+.background :global(.approved-media-video) button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .shade { background: linear-gradient(180deg, #0c171d80 0%, #111c2480 40%, #0d242252 72%, #10272c6b 100%); }
-.content { position: relative; z-index: 2; width: 100%; max-width: 1160px; margin: 0 auto; text-align: center; }
-.content h1 { font-size: clamp(40px, 5.1vw, 82px); font-weight: 500; letter-spacing: -.055em; line-height: 1.08; text-wrap: balance; }
-.content > p { margin-top: 20px; font-size: clamp(13px, 1.25vw, 18px); line-height: 1.6; }
+.content { position: relative; z-index: 2; width: 100%; min-width: 0; max-width: 1160px; margin: 0 auto; container-type: inline-size; text-align: center; }
+/* The page's loudest moment: one giant word, the levels as stickers, a plane crossing it. */
+.lead { font-size: clamp(14px, 1.35vw, 19px); font-weight: 550; line-height: 1.4; letter-spacing: -.01em; text-shadow: 0 1px 2px #0c1b3066; }
+.content h1 { display: grid; justify-items: center; min-width: 0; margin-top: 6px; text-shadow: 0 2px 18px #0c1b3059; }
+/* Container units also follow the available width under browser/text zoom. */
+.word { position: relative; display: block; min-width: 0; max-width: 100%; overflow-wrap: anywhere; font-family: var(--font-heading); font-size: min(13.5vw, 166px, 14.2cqw); font-weight: var(--heading-weight); line-height: .95; letter-spacing: var(--heading-tracking); text-transform: uppercase; }
+.flight { position: absolute; z-index: -1; top: -.52em; right: -.12em; width: 1.9em; }
+.levels { display: block; min-width: 0; max-width: 100%; margin-top: clamp(10px, 1.4vw, 20px); font-size: clamp(22px, 2.6vw, 40px); line-height: 1.3; }
+.chip { display: inline-block; margin-inline: .12em; padding: .06em .5em .14em; border: 3px solid #fff; border-radius: 40px; font-weight: 750; letter-spacing: -.035em; text-shadow: none; box-shadow: 0 10px 20px -10px #0c1b3099; }
+.chip[data-tone="orange"] { rotate: -3deg; background: var(--brand-orange); color: var(--ink); }
+.chip[data-tone="blue"] { rotate: 2.5deg; background: var(--brand-blue); color: #fff; }
+.values { margin-top: 20px; font-size: clamp(13px, 1.25vw, 18px); line-height: 1.6; }
 .bottom { position: absolute; z-index: 1; bottom: 80px; left: var(--gutter); right: var(--gutter); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; font-size: 10px; line-height: 1.6; }
 .bottom a { display: flex; align-items: center; gap: 15px; min-height: 36px; }
 .illustration { position: absolute; bottom: -30px; right: 0; font-size: 9px; color: #e1e6df; }
 @media (min-width: 1700px) { .frame { min-height: 860px; } }
-@media (max-width: 1100px) {
-  .content h1 { font-size: clamp(42px, 5.7vw, 65px); }
-}
 @media (max-width: 767px) {
-  .hero { padding-bottom: 25px; }
   .frame { min-height: 760px; padding: 140px 24px 180px; border-radius: 0 0 16px 16px; }
-  .content h1 { font-size: clamp(37px, 7.4vw, 58px); line-height: 1.08; letter-spacing: -.055em; }
-  .content > p { max-width: 28ch; margin: 20px auto 0; font-size: 13px; }
+  .word { font-size: min(13.7vw, 14.4cqw); }
+  .flight { top: -.78em; right: -.04em; width: 2.1em; }
+  .levels { font-size: clamp(19px, 5.6vw, 26px); }
+  .chip { border-width: 2.5px; }
+  .lead { max-width: 24ch; margin-inline: auto; font-size: 14px; }
+  .values { max-width: 28ch; margin: 20px auto 0; font-size: 13px; }
   .bottom { left: 24px; right: 24px; bottom: 110px; justify-content: center; }
   .bottom > span:first-child { display: none; }
   .bottom a { font-size: 11px; }

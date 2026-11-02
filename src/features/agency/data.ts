@@ -83,8 +83,6 @@ export const owner: TeamMember = { id: "javier-garay", name: "Javier Garay", rol
 export const teamMembers: TeamMember[] = [
   owner,
   { id: "daiana-dascon", name: "Daiana D'Ascón", role: "Administración", area: "administracion", publication: approval },
-  { id: "susana-romero", name: "Susana Romero", role: "Ventas", area: "ventas", publication: approval },
-  { id: "jorge-picatto", name: "Jorge Picatto", role: "Ventas", area: "ventas", publication: approval },
   { id: "jorge-angelina", name: "Jorge Angelina", role: "Operaciones y coordinación general", area: "operacion", publication: approval },
   { id: "azul-barrera", name: "Azul Barrera", role: "Paramédica en viaje y destino", area: "asistencia", publication: approval },
   { id: "karoll-tello", name: "Karoll Tello", role: "Coordinación", area: "operacion", publication: approval },

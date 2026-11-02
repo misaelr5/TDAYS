@@ -106,7 +106,9 @@ export function Header() {
     const morphing = document.documentElement.dataset.menuTransition === "open";
     gsap.timeline({ defaults: { ease: "power3.out" } })
       .from("[data-menu-item]", { y: 26, autoAlpha: 0, filter: "blur(6px)", duration: .6, stagger: .055, delay: morphing ? .18 : 0, clearProps: "filter" })
-      .from("[data-menu-foot]", { y: 14, autoAlpha: 0, duration: .5, stagger: .06 }, "-=.35");
+      .from("[data-menu-foot]", { y: 14, autoAlpha: 0, duration: .5, stagger: .06 }, "-=.35")
+      // Stickers pop in on their own clock, alongside the links.
+      .from("[data-menu-sticker]", { scale: .4, rotate: -24, autoAlpha: 0, duration: .55, stagger: .1, ease: "back.out(2.2)" }, morphing ? .35 : .15);
   }, { scope: panel, dependencies: [open], revertOnUpdate: true });
 
   return (
@@ -115,12 +117,13 @@ export function Header() {
         ref={header}
         className={`site-header ${styles.header} ${scrolled || pathname !== "/" ? "header-solid" : ""}`}
       >
-        <nav className={styles.nav} aria-label="Navegación principal" ref={nav} style={{ "--sheen-x": 50, "--sheen-y": 0 } as CSSProperties}>
+        <nav className={styles.nav} data-intro-drop="1" aria-label="Navegación principal" ref={nav} style={{ "--sheen-x": 50, "--sheen-y": 0 } as CSSProperties}>
           <span className={styles.pill} data-glide-pill aria-hidden="true" />
           {navigation.map((link) => (
             <Link
               key={link.href}
               href={link.href}
+              data-nav-egresados={link.label === "Egresados" || undefined}
               aria-current={pathname === link.href ? "page" : undefined}
               data-glide-item
               data-glide-active={pathname === link.href || undefined}
@@ -129,7 +132,7 @@ export function Header() {
             </Link>
           ))}
         </nav>
-        <Link href="/" className={styles.brand} aria-label="Travel Days, inicio">
+        <Link href="/" className={styles.brand} data-intro-drop="0" aria-label="Travel Days, inicio">
           <Image
             className={styles.logo}
             src="/media/logos/travel-days-color.png"
@@ -139,13 +142,14 @@ export function Header() {
             priority
           />
         </Link>
-        <Link className={styles.contact} href="/contacto#consulta">
+        <Link className={styles.contact} data-intro-drop="2" href="/contacto#consulta">
           Hablemos <Arrow />
         </Link>
         <button
           type="button"
           ref={opener}
           className={`menu-toggle ${styles.toggle}`}
+          data-intro-drop="2"
           onClick={() => setMenu(true)}
           // Shared with the panel: only one element may carry the name at a time.
           style={{ viewTransitionName: open ? "none" : "menu-surface" }}
@@ -156,7 +160,7 @@ export function Header() {
         </button>
         <noscript>
           <style>{".site-header>button.menu-toggle{display:none!important}"}</style>
-          <a className={`menu-toggle ${styles.toggle}`} href="#navegacion">Menú <span aria-hidden="true">＋</span></a>
+          <a className={`menu-toggle ${styles.toggle}`} data-intro-drop="2" href="#navegacion">Menú <span aria-hidden="true">＋</span></a>
         </noscript>
       </header>
       <dialog
@@ -186,6 +190,7 @@ export function Header() {
         <div ref={panel} className={styles.panel} style={{ viewTransitionName: "menu-surface" }}>
           <div className={styles.panelTop}>
             <Image src="/media/logos/travel-days-color.png" alt="Travel Days" width={126} height={52} loading="eager" />
+            <FlightSticker />
             <button type="button" className={styles.close} onClick={() => setMenu(false)} aria-label="Cerrar menú">
               <span aria-hidden="true">×</span>
             </button>
@@ -195,17 +200,22 @@ export function Header() {
               <Link
                 key={link.href}
                 href={link.href}
+                data-nav-egresados={link.label === "Egresados" || undefined}
                 data-menu-item
                 aria-current={pathname === link.href ? "page" : undefined}
                 onClick={() => setMenu(false)}
               >
-                <span>{link.label}</span>
+                <span className={styles.menuLabel}>
+                  <span>{link.label}{pathname === link.href && <PinSticker />}</span>
+                  {link.label === "Egresados" && <small>Primaria y secundaria</small>}
+                </span>
                 <Arrow />
               </Link>
             ))}
           </nav>
           <div className={styles.panelFoot}>
             <p data-menu-foot>{site.address}</p>
+            <StampSticker />
             <a data-menu-foot className={styles.whatsapp} href={whatsappUrl()} target="_blank" rel="noreferrer">
               Consultanos por WhatsApp <Arrow />
             </a>
@@ -217,4 +227,28 @@ export function Header() {
       </dialog>
     </>
   );
+}
+
+// Decorative travel stickers for the mobile menu; the current page is still announced by aria-current.
+function PinSticker() {
+  return <svg className={styles.pin} viewBox="0 0 24 30" aria-hidden="true" data-menu-sticker>
+    <path d="M12 28s-9-9.2-9-16a9 9 0 0 1 18 0c0 6.8-9 16-9 16Z" />
+    <circle cx="12" cy="12" r="3.4" />
+  </svg>;
+}
+
+function FlightSticker() {
+  return <svg className={styles.flight} viewBox="0 0 140 44" aria-hidden="true" data-menu-sticker>
+    <path className={styles.trail} d="M4 38C30 38 44 12 72 16s34 14 50 4" />
+    <path className={styles.plane} d="m118 8 14-4c2-.6 3 1.4 1.6 2.6L122 15l1.6 9-3 1-4.4-8-6.8 3.2-.6 4-2.4.8-.6-6.6-5-4.6 2.4-.8 3.4 2.2 6.6-3.4-6-6.4 3-1Z" />
+  </svg>;
+}
+
+function StampSticker() {
+  return <svg className={styles.stamp} viewBox="0 0 92 92" aria-hidden="true" data-menu-sticker>
+    <circle cx="46" cy="46" r="42" />
+    <circle cx="46" cy="46" r="34" />
+    <text x="46" y="42" textAnchor="middle">VILLA DOLORES</text>
+    <text x="46" y="56" textAnchor="middle">TRASLASIERRA</text>
+  </svg>;
 }

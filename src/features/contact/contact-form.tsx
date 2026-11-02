@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
 import { whatsappUrl } from "@/config/site";
 import { Arrow } from "@/components/icons";
 import { contactLimits, prepareMessage, type ContactField, type MessageKind } from "./messages";
@@ -11,9 +11,15 @@ function isContactControl(target: EventTarget): target is HTMLInputElement | HTM
   return target instanceof HTMLInputElement || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement;
 }
 
+const subscribeToHydration = () => () => {};
+const clientReady = () => true;
+const serverReady = () => false;
+
 export function ContactForm({ kind, destinations }: { kind: MessageKind; destinations: readonly string[] }) {
   const inquiry = kind === "inquiry";
   const prefix = inquiry ? "inquiry" : "experience";
+  // The SSR form must not submit personal data before its local handler exists.
+  const ready = useSyncExternalStore(subscribeToHydration, clientReady, serverReady);
   const [draft, setDraft] = useState<string | null>(null);
   const [error, setError] = useState<{ field: ContactField; message: string } | null>(null);
   const errorId = `${prefix}-error`;
@@ -65,7 +71,12 @@ export function ContactForm({ kind, destinations }: { kind: MessageKind; destina
   </div>;
 
   return <>
-    <form ref={formElement} method="post" className={`${styles.form} contact-message-form`}
+    {!ready && <p className={styles.privacy} data-contact-fallback={prefix}>
+      Para {inquiry ? "consultar por un viaje" : "compartir tu experiencia"},{" "}
+      <a className="text-link" href={whatsappUrl(inquiry ? "Hola Travel Days, quiero organizar un viaje." : "Hola Travel Days, ya viajé con ustedes y quiero compartir mi experiencia.")}
+        target="_blank" rel="noopener noreferrer">escribinos por WhatsApp<Arrow /></a>.
+    </p>}
+    <form ref={formElement} method="post" inert={!ready} className={`${styles.form} contact-message-form`} data-inquiry-form={inquiry || undefined}
       aria-label={inquiry ? "Consulta de viaje" : "Compartir experiencia de viaje"}
       aria-describedby={`${prefix}-privacy`} onSubmit={prepare}
       onInvalid={event => {
@@ -114,6 +125,20 @@ export function ContactForm({ kind, destinations }: { kind: MessageKind; destina
               {...accessibility("phone", "inquiry-phone-help")} />
             <p id="inquiry-phone-help">Incluí el código de área.</p>
           </div>}
+          {inquiry && <>
+            <div className={styles.field}>
+              <label htmlFor={`${prefix}-month`}>Mes y año aproximados <span>(opcional)</span></label>
+              <input id={`${prefix}-month`} name="month" type="month" {...accessibility("month")} />
+            </div>
+            <div className={styles.field}>
+              <label htmlFor={`${prefix}-passengers`}>Cantidad de pasajeros <span>(opcional)</span></label>
+              <input id={`${prefix}-passengers`} name="passengers" type="number" min={1} max={999} step={1} inputMode="numeric" {...accessibility("passengers")} />
+            </div>
+            <div className={styles.field}>
+              <label htmlFor={`${prefix}-origin`}>Localidad de origen <span>(opcional)</span></label>
+              <input id={`${prefix}-origin`} name="origin" autoComplete="address-level2" maxLength={contactLimits.origin} {...accessibility("origin")} />
+            </div>
+          </>}
         </div>
       </details>
 
@@ -121,9 +146,9 @@ export function ContactForm({ kind, destinations }: { kind: MessageKind; destina
         {inquiry ? "Esta web prepara tu consulta; no guarda tus datos." : "Tu opinión es privada. Esta web no la guarda ni la publica."}{" "}
         Revisás el mensaje antes de enviarlo por WhatsApp.
       </p>
-      <button className={styles.submit} type="submit">{inquiry ? "Preparar mi consulta" : "Preparar mi opinión"}<Arrow /></button>
+      <button className={styles.submit} type="submit" disabled={!ready}>{inquiry ? "Preparar mi consulta" : "Preparar mi opinión"}<Arrow /></button>
       {error && <p id={errorId} className={styles.error} role="alert">{error.message}</p>}
-      {draft && <div className={styles.draft} ref={result} tabIndex={-1} role="status" aria-live="polite">
+      {draft && <div className={styles.draft} ref={result} tabIndex={-1} role="status" aria-live="polite" data-inquiry-draft={inquiry || undefined}>
         <strong>Mensaje preparado. Falta enviarlo.</strong>
         <p>Revisá los datos y continuá a WhatsApp para confirmar el envío.</p>
         <details><summary>Revisar mi mensaje</summary><p className={styles.preview}>{draft}</p></details>
@@ -132,10 +157,6 @@ export function ContactForm({ kind, destinations }: { kind: MessageKind; destina
     </form>
     <noscript>
       <style>{".contact-message-form{display:none}"}</style>
-      <p>Para {inquiry ? "consultar por un viaje" : "compartir tu experiencia"} sin JavaScript,{" "}
-        <a className="text-link" href={whatsappUrl(inquiry ? "Hola Travel Days, quiero organizar un viaje." : "Hola Travel Days, ya viajé con ustedes y quiero compartir mi experiencia.")}
-          target="_blank" rel="noopener noreferrer">escribinos por WhatsApp<Arrow /></a>.
-      </p>
     </noscript>
   </>;
 }

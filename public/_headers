@@ -1,0 +1,8 @@
+# Cloudflare Workers Static Assets headers (not served as a file).
+# HTML pages are rendered by the Worker and receive the headers from next.config.ts.
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

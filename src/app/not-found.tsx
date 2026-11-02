@@ -1,6 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./not-found.module.css";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { robots: { index: false, follow: false }, alternates: { canonical: null } };
 
 export default function NotFound() {
   return (

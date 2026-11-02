@@ -1,0 +1,17 @@
+/* Paper stickers: a white die-cut border, a short shadow as if barely lifted off the page. */
+.sticker { position: relative; display: inline-block; width: var(--size, 56px); rotate: var(--tilt, 0deg); pointer-events: none; filter: drop-shadow(0 6px 7px #0c1b302e) drop-shadow(0 1px 1px #0c1b3040); }
+.sticker svg { display: block; width: 100%; height: auto; overflow: visible; }
+.label { position: relative; display: inline-block; padding: .38em .85em .42em; border: 3px solid #fff; border-radius: 40px; font-size: var(--size, 15px); font-weight: 800; line-height: 1.1; letter-spacing: -.025em; white-space: nowrap; rotate: var(--tilt, 0deg); pointer-events: none; box-shadow: 0 8px 16px -8px #0c1b3073, 0 1px 1px #0c1b3026; }
+.label[data-tone="orange"] { background: var(--brand-orange); color: var(--ink); }
+.label[data-tone="blue"] { background: var(--brand-blue); color: #fff; }
+.label[data-tone="white"] { background: #fff; color: var(--action); border-color: #e6eef8; }
+.placed { position: absolute; z-index: 3; }
+
+.flight { display: block; width: 100%; height: auto; overflow: visible; color: #ffffffd9; }
+@media (prefers-reduced-motion: no-preference) {
+  .flight { animation: flight-draw 1.3s var(--ease) .45s backwards; }
+}
+@keyframes flight-draw { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+
+@media (min-width: 768px) { :is(.sticker, .label)[data-only="mobile"] { display: none; } }
+@media (max-width: 767px) { :is(.sticker, .label)[data-only="desktop"] { display: none; } }

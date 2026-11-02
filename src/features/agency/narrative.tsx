@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { Arrow, Plane } from "@/components/icons";
+import { Sticker } from "@/components/stickers";
 import { site, whatsappUrl } from "@/config/site";
 import { ScenicLandscape } from "@/features/hero/scenic-landscape";
 import { resolveMedia } from "@/features/media/files";
@@ -18,7 +19,7 @@ const journey = [
 ];
 
 // Short labels for the flight stops; the full texts stay in data.ts.
-const stops = ["Vende viajes de egresados en las puertas de los colegios.", "Ventas, coordinación, operación, supervisión y gerencia.", "Nace la agencia propia en Villa Dolores.", "Un equipo de nueve personas y una oficina abierta."];
+const stops = ["Vende viajes de egresados en las puertas de los colegios.", "Ventas, coordinación, operación, supervisión y gerencia.", "Nace la agencia propia en Villa Dolores.", "Un equipo de siete personas y una oficina abierta."];
 
 const profileClasses = { profile: styles.profile, monogram: styles.monogram, portrait: styles.portrait, body: styles.profileBody };
 const order = (index: number) => ({ "--i": index }) as CSSProperties;
@@ -32,7 +33,8 @@ export function AgencyNarrative() {
     <ScrollReveal root="[data-agency-narrative]" />
 
     <section className={styles.hero} aria-labelledby="about-title">
-      <div className={styles.heroCopy}>
+      <div className={styles.heroCopy} data-intro-group>
+        <Sticker kind="camera" at={{ top: "-18px", right: "4%" }} tilt={10} size="clamp(46px, 4.4vw, 66px)" />
         <p className={styles.eyebrow}>Nosotros · Villa Dolores, Córdoba</p>
         <h1 id="about-title">Detrás de cada viaje hay personas que podés conocer.</h1>
         <p className={styles.heroLead}>Somos una agencia de Traslasierra. Desde {credentials.founded} organizamos viajes nacionales, internacionales, receptivos, educativos y de egresados, con una oficina abierta donde te atiende el equipo.</p>
@@ -41,7 +43,7 @@ export function AgencyNarrative() {
           <a className="text-link" href="#historia">Conocé la historia <Arrow /></a>
         </div>
       </div>
-      <figure className={styles.heroVisual}>
+      <figure className={styles.heroVisual} data-intro-zoom>
         {office ? <MediaContent asset={office} sizes="(max-width: 767px) 92vw, 40vw" eager /> : <ScenicLandscape />}
         <figcaption className={styles.office}>
           <span>Nuestra oficina</span>
@@ -56,14 +58,14 @@ export function AgencyNarrative() {
           <div className={styles.storyIntro} data-reveal="">
             <h2 id="history-heading">De la puerta de los colegios a una agencia propia.</h2>
             <p className={styles.lead}>A los 17 años, Javier Garay empezó a promocionar viajes de egresados en las puertas de los colegios. Pasó por ventas, coordinación, operación y gerencia: hoy suma 23 años de experiencia personal en turismo.</p>
-            <p>En 2018 fundó la agencia en Villa Dolores. Hoy la sostiene un equipo de nueve personas.</p>
+            <p>En 2018 fundó la agencia en Villa Dolores. Hoy la sostiene un equipo de siete personas.</p>
             <blockquote className={styles.quote}>
               <p>Que el pasajero pueda sentarse frente al dueño, plantear sus dudas y recibir la misma atención antes y durante el viaje.</p>
               <footer>La idea con la que Javier Garay fundó Travel Days</footer>
             </blockquote>
           </div>
           <figure className={styles.storyPhoto} data-reveal="" data-photo-slot={storyPhoto ? undefined : "page:nosotros-historia"}>
-            {storyPhoto ? <MediaContent asset={storyPhoto} sizes="(max-width: 899px) 92vw, 34vw" /> : <span className={styles.photoFrame} aria-hidden="true"><Plane /></span>}
+            {storyPhoto ? <MediaContent asset={storyPhoto} sizes="(max-width: 899px) 92vw, 34vw" allowVideo /> : <span className={styles.photoFrame} aria-hidden="true"><Plane /></span>}
           </figure>
           <div className={styles.flight} data-reveal="">
             <svg className={styles.route} viewBox="0 0 1000 120" preserveAspectRatio="none" aria-hidden="true">
@@ -105,7 +107,7 @@ export function AgencyNarrative() {
         <section className={styles.team} aria-labelledby="team-heading">
           <div className={styles.sectionHead} data-reveal="">
             <h2 id="team-heading">Quiénes te van a atender.</h2>
-            <p>Nueve personas, una misma oficina. Las conocés cuando venís.</p>
+            <p>Siete personas, una misma oficina. Las conocés cuando venís.</p>
           </div>
           <div className={styles.teamGrid} data-reveal="">
             {teamMembers.map((member, index) => <TeamMemberCard key={member.id} member={member} index={index} classes={profileClasses} />)}

@@ -12,12 +12,19 @@ for (const width of widths) {
     expect(bounds!.x).toBe(0);
     expect(bounds!.y).toBe(0);
     expect(bounds!.width).toBe(width);
-    await expect(hero.getByRole("heading", { level: 1 })).toHaveText("La única agencia de egresados de Traslasierra.");
+    await expect(hero.getByRole("heading", { level: 1 })).toHaveText("Egresados de primaria y secundaria");
+    const titleLines = await hero.locator("h1 > span").first().evaluate(element => {
+      const text = [...element.childNodes].find(node => node.nodeType === Node.TEXT_NODE && node.textContent?.trim());
+      const range = document.createRange();
+      range.selectNodeContents(text!);
+      return [...range.getClientRects()].filter(rect => rect.width > 1 && rect.height > 1).length;
+    });
+    expect(titleLines, "Egresados debe ocupar un solo renglón al tamaño de lectura normal").toBe(1);
     await expect(hero.getByRole("form", { name: "Prepará tu consulta de viaje" })).toBeVisible();
     const cards = hero.locator("[data-trust-card]");
     await expect(cards).toHaveCount(4);
     await expect(cards.nth(0)).toContainText("+23 años");
-    await expect(cards.nth(0)).not.toContainText("Trayectoria de Javier Garay");
+    await expect(cards.nth(0)).toContainText("Experiencia en turismo");
     await expect(cards.nth(1)).toContainText("N.º 18904");
     await expect(cards.nth(2)).toContainText("En turismo estudiantil habilitado en Traslasierra");
     await expect(cards.nth(2)).not.toContainText("Afirmación sujeta al respaldo documental");
@@ -33,6 +40,23 @@ for (const width of widths) {
   });
 }
 
+test("viajeros conserva foco y Escape con controles deshabilitados", async ({ page }) => {
+  await page.goto("/");
+  const trigger = page.getByRole("button", { name: /^Viajeros/ });
+  const panel = page.getByRole("dialog", { name: "Cantidad de viajeros" });
+  await trigger.click();
+  await expect(panel.getByRole("button", { name: "Sumar una persona" })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(panel).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+  await trigger.click();
+  await panel.getByRole("switch", { name: /Viajamos en grupo/ }).click();
+  await expect(panel.getByRole("switch")).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(panel).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+});
+
 test("navbar transparente con vidrio sobre el paisaje y al bajar, accesible", async ({ page }) => {
   await page.goto("/");
   await ready(page);
@@ -44,7 +68,10 @@ test("navbar transparente con vidrio sobre el paisaje y al bajar, accesible", as
   await expect(header).toHaveClass(/header-solid/);
   // Liquid glass: the bar stays transparent; the navigation pill carries the tinted glass.
   expect(await header.evaluate(element => getComputedStyle(element).backgroundColor)).toBe("rgba(0, 0, 0, 0)");
-  expect(await header.locator("nav").evaluate(element => getComputedStyle(element).backdropFilter)).toContain("blur");
+  const reducedTransparency = await page.evaluate(() => matchMedia("(prefers-reduced-transparency: reduce)").matches || matchMedia("(prefers-contrast: more)").matches);
+  const backdrop = await header.locator("nav").evaluate(element => getComputedStyle(element).backdropFilter);
+  if (reducedTransparency) expect(backdrop).toBe("none");
+  else expect(backdrop).toContain("blur");
   expect((await new AxeBuilder({ page }).include(".site-header").withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze()).violations).toEqual([]);
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
   await expect(header).not.toHaveClass(/header-solid/);
@@ -93,8 +120,8 @@ test("sin JavaScript el hero ofrece consulta directa y el footer enlaza las cuat
     const hero = page.locator("[data-scenic-hero]");
     await expect(hero.getByRole("form")).toBeHidden();
     await expect(hero.getByRole("link", { name: "Consultá por tu viaje", exact: true })).toHaveAttribute("href", "/contacto#consulta");
-    await hero.getByRole("link", { name: "Explorá destinos", exact: true }).first().click();
-    await expect(page).toHaveURL(/\/(?:#destinos|destinos)$/);
+    await hero.getByRole("link", { name: "Conocé los viajes de egresados", exact: true }).click();
+    await expect(page).toHaveURL(/\/#egresados$/);
     for (const href of ["/", "/destinos", "/nosotros", "/contacto"]) await expect(page.locator(`footer a[href="${href}"]`).first()).toBeVisible();
   } finally { await context.close(); }
 });

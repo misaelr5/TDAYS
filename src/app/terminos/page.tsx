@@ -6,19 +6,19 @@ import { termsSections, termsUpdated } from "@/features/legal/terms";
 import { TermsIndex } from "@/features/legal/terms-index";
 import styles from "@/features/legal/terms.module.css";
 
-export const metadata = pageMetadata("Términos y condiciones", "Condiciones de uso del sitio de Travel Days, consultas, reservas, cancelaciones y tratamiento de datos personales.");
+export const metadata = pageMetadata("Términos y condiciones", "Condiciones de uso del sitio de Travel Days, consultas, reservas, cancelaciones y tratamiento de datos personales.", "/terminos");
 
 export default function TermsPage() {
   return (
     <main id="contenido" className={`interior-page ${styles.page}`}>
-      <header className={styles.intro}>
+      <header className={styles.intro} data-intro-group>
         <p className={styles.eyebrow}>Legal</p>
         <h1>Términos y condiciones</h1>
         <p>Lo que necesitás saber antes de consultar o viajar con nosotros, escrito en simple.</p>
         <p className={styles.updated}>Última actualización: <time dateTime={termsUpdated.iso}>{termsUpdated.label}</time></p>
       </header>
 
-      <div className={styles.layout}>
+      <div className={styles.layout} data-intro="4">
         <aside className={styles.aside}>
           <TermsIndex sections={termsSections.map(({ id, title }) => ({ id, title }))} />
         </aside>

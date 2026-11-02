@@ -4,6 +4,9 @@ export const contactLimits = {
   phone: 25,
   destination: 100,
   message: 1500,
+  month: 7,
+  passengers: 3,
+  origin: 100,
 } as const;
 export type ContactField = keyof typeof contactLimits | "rating";
 type DraftResult =
@@ -20,6 +23,9 @@ export function prepareMessage(data: FormData, kind: MessageKind): DraftResult {
   const destination = read("destination");
   const message = read("message");
   const rating = read("rating");
+  const month = kind === "inquiry" ? read("month") : "";
+  const passengers = kind === "inquiry" ? read("passengers") : "";
+  const origin = kind === "inquiry" ? read("origin") : "";
   if (kind === "inquiry" && !hasVisibleText(name))
     return {
       ok: false,
@@ -31,6 +37,9 @@ export function prepareMessage(data: FormData, kind: MessageKind): DraftResult {
     phone,
     destination,
     message,
+    month,
+    passengers,
+    origin,
   })) {
     if (value.length > contactLimits[field as keyof typeof contactLimits])
       return {
@@ -51,6 +60,10 @@ export function prepareMessage(data: FormData, kind: MessageKind): DraftResult {
       error:
         "Revisá el teléfono: incluí entre 7 y 15 dígitos, con código de área.",
     };
+  if (month && !/^[1-9]\d{3}-(0[1-9]|1[0-2])$/.test(month))
+    return { ok: false, field: "month", error: "Elegí un mes y un año válidos." };
+  if (passengers && !/^[1-9]\d{0,2}$/.test(passengers))
+    return { ok: false, field: "passengers", error: "Indicá una cantidad entera entre 1 y 999 pasajeros." };
   if (kind === "experience" && rating && !/^[1-5]$/.test(rating))
     return {
       ok: false,
@@ -74,6 +87,9 @@ export function prepareMessage(data: FormData, kind: MessageKind): DraftResult {
         : "Hola Travel Days, ya viajé con ustedes y quiero compartir mi experiencia.",
       name ? `Nombre: ${name}` : null,
       kind === "inquiry" && phone ? `Teléfono de contacto: ${phone}` : null,
+      month ? `Mes y año aproximados: ${month.split("-").reverse().join("/")}` : null,
+      passengers ? `Cantidad de pasajeros: ${passengers}` : null,
+      origin ? `Localidad de origen: ${origin}` : null,
       destination
         ? `${kind === "inquiry" ? "Destino que me interesa" : "Viaje realizado"}: ${destination}`
         : null,

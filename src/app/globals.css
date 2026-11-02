@@ -19,7 +19,12 @@
   --glass-shadow: 0 18px 50px -32px rgba(20, 35, 51, .3);
   --radius-card: 24px;
   --gutter: clamp(24px, 4.2vw, 88px);
-  --font-body: var(--font-inter), Arial, sans-serif;
+  --font-body: var(--font-inter), var(--font-inter-extended), Arial, sans-serif;
+  --font-heading: var(--font-body);
+  --heading-weight: 850;
+  --subheading-weight: 750;
+  --heading-tracking: -.05em;
+  --section-title-size: clamp(2rem, 1.25rem + 2.5vw, 3.5rem);
   --ease: cubic-bezier(.16, 1, .3, 1);
 }
 @theme inline {
@@ -38,6 +43,14 @@ button, input, select, textarea { font: inherit; }
 button { border: 0; background: transparent; color: inherit; cursor: pointer; }
 button:disabled { cursor: default; }
 p, h1, h2, h3, h4, figure { margin: 0; }
+/* Egresados sets the shared title style; module sizes preserve the hierarchy. */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: var(--heading-weight);
+  letter-spacing: var(--heading-tracking);
+  text-wrap: balance;
+}
+h3, h4, h5, h6 { font-weight: var(--subheading-weight); }
 svg { display: block; }
 ::selection { background: #fbd9bf; color: var(--ink); }
 a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--action); outline-offset: 5px; }
@@ -56,7 +69,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-v
 .site-header { position: fixed; inset: 0 0 auto; z-index: 30; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; background: transparent; transition: background .25s, height .25s; }
 .interior-page { padding-top: 72px; }
 .interior-title { padding: 64px var(--gutter) 0; background: var(--paper); color: var(--ink); }
-.interior-title h1 { font-size: clamp(36px, 4.5vw, 64px); font-weight: 500; line-height: 1.1; letter-spacing: -.05em; }
+.interior-title h1 { font-size: clamp(36px, 4.5vw, 64px); line-height: 1.1; }
 .postcard-photo { position: relative; width: 100%; height: 100%; }
 .postcard-photo img { object-fit: cover; }
 .landscape { width: 100%; height: 100%; object-fit: cover; }
@@ -65,6 +78,37 @@ a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-v
 @media (max-width: 767px) {
   .interior-page { padding-top: 66px; }
   .interior-title { padding-top: 44px; }
+}
+/* Page intro: every page opens with a short, CSS-only entrance that ships with the server
+   HTML (no JS wait). Only opacity and transform animate, so it stays on the compositor;
+   `backwards` releases each element as soon as it lands, leaving hover transforms intact.
+   - data-intro-group: its direct children rise in sequence (75 ms apart).
+   - data-intro="1".."4": a single element rising at that step.
+   - data-intro-drop="0".."2": header controls settling from above (first load only: the header persists).
+   - data-intro-zoom: the media inside eases back from a slight zoom.
+   Fades start at .02, not 0: Chrome skips fully transparent elements as LCP candidates,
+   so a headline fading from 0 reported its paint a second or more late. */
+@keyframes intro-rise { from { opacity: .02; transform: translate3d(0, var(--intro-shift), 0); } }
+@keyframes intro-drop { from { opacity: .02; transform: translate3d(0, -12px, 0); } }
+@keyframes intro-zoom { from { transform: scale(1.06); } }
+@media (prefers-reduced-motion: no-preference) {
+  :root { --intro-shift: 22px; }
+  [data-intro-group] > *, [data-intro] { --intro-step: 0; animation: intro-rise .7s var(--ease) calc(40ms + var(--intro-step) * 75ms) backwards; }
+  [data-intro-group] > :nth-child(2), [data-intro="1"] { --intro-step: 1; }
+  [data-intro-group] > :nth-child(3), [data-intro="2"] { --intro-step: 2; }
+  [data-intro-group] > :nth-child(4), [data-intro="3"] { --intro-step: 3; }
+  [data-intro-group] > :nth-child(n + 5), [data-intro="4"] { --intro-step: 4; }
+  [data-intro-drop] { animation: intro-drop .6s var(--ease) backwards; }
+  [data-intro-drop="1"] { animation-delay: 70ms; }
+  [data-intro-drop="2"] { animation-delay: 140ms; }
+  [data-intro-zoom] :is(img, video) { animation: intro-zoom 1.6s var(--ease) backwards; }
+}
+@media (max-width: 767px) { :root { --intro-shift: 14px; } }
+
+/* Liquid glass needs blur to stay legible; when people ask for less transparency or more
+   contrast, every glass surface drops its blur and the modules swap in opaque fills. */
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  *, *::before, *::after, ::backdrop { backdrop-filter: none !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -88,15 +132,43 @@ a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-v
 }
 
 /* Mobile menu: the glass toggle morphs into the menu sheet and back. */
-/* Nosotros chapters slide sideways in the direction of travel; the rest of the page stays still. */
-:root[data-chapter-transition] { --chapter-shift: 72px; }
-:root[data-chapter-transition="back"] { --chapter-shift: -72px; }
-:root[data-chapter-transition]::view-transition-old(root), :root[data-chapter-transition]::view-transition-new(root) { animation: none; }
-::view-transition-group(chapter-panel) { overflow: clip; animation-duration: .48s; animation-timing-function: var(--ease); }
-::view-transition-old(chapter-panel) { animation: chapter-out .3s ease-in both; }
-::view-transition-new(chapter-panel) { animation: chapter-in .48s var(--ease) .06s both; }
-@keyframes chapter-out { to { opacity: 0; translate: calc(var(--chapter-shift) * -1) 0; } }
-@keyframes chapter-in { from { opacity: 0; translate: var(--chapter-shift) 0; } }
+/* Tabbed panels slide edge to edge, like the page itself: the old panel leaves whole toward
+   one side while the new one enters from the other, clipped to the panel box, no crossfade.
+   Nosotros chapters (agency/chapters) name `chapter-panel`; school levels and contact
+   intents (components/tab-slide) name `tab-panels`. */
+:root[data-chapter-transition], :root[data-tab-slide] { --panel-shift: 100%; }
+:root[data-chapter-transition="back"], :root[data-tab-slide="back"] { --panel-shift: -100%; }
+:root[data-chapter-transition]::view-transition-old(root), :root[data-chapter-transition]::view-transition-new(root),
+:root[data-tab-slide]::view-transition-old(root), :root[data-tab-slide]::view-transition-new(root) { animation: none; }
+:root[data-tab-slide] [data-tab-slide-panels] { view-transition-name: tab-panels; }
+::view-transition-group(chapter-panel), ::view-transition-group(tab-panels) { overflow: clip; animation-duration: .5s; animation-timing-function: cubic-bezier(.65, 0, .35, 1); }
+::view-transition-old(chapter-panel), ::view-transition-old(tab-panels) { animation: panel-out .5s cubic-bezier(.65, 0, .35, 1) both; }
+::view-transition-new(chapter-panel), ::view-transition-new(tab-panels) { animation: panel-in .5s cubic-bezier(.65, 0, .35, 1) both; }
+@keyframes panel-out { to { translate: calc(var(--panel-shift) * -1) 0; } }
+@keyframes panel-in { from { translate: var(--panel-shift) 0; } }
+@media (max-width: 767px) {
+  ::view-transition-old(chapter-panel), ::view-transition-new(chapter-panel),
+  ::view-transition-old(tab-panels), ::view-transition-new(tab-panels), ::view-transition-group(tab-panels), ::view-transition-group(chapter-panel) { animation-duration: .42s; }
+}
+
+/* Page changes (components/page-slide): the whole page slides sideways like switching
+   macOS Spaces, in menu order, while the header stays anchored on top. Old and new pages
+   travel together edge to edge, so the viewport is never empty. Clicks pass through. */
+:root[data-page-slide] { --page-shift: 100%; }
+:root[data-page-slide="back"] { --page-shift: -100%; }
+:root[data-page-slide] .site-header { view-transition-name: site-header; }
+:root[data-page-slide]::view-transition { pointer-events: none; }
+:root[data-page-slide]::view-transition-old(root) { animation: page-out .56s cubic-bezier(.65, 0, .35, 1) both; }
+:root[data-page-slide]::view-transition-new(root) { animation: page-in .56s cubic-bezier(.65, 0, .35, 1) both; }
+:root[data-page-slide]::view-transition-group(site-header) { animation: none; z-index: 1; }
+:root[data-page-slide]::view-transition-old(site-header) { display: none; }
+:root[data-page-slide]::view-transition-new(site-header) { animation: none; }
+@keyframes page-out { to { translate: calc(var(--page-shift) * -1) 0; } }
+@keyframes page-in { from { translate: var(--page-shift) 0; } }
+@media (max-width: 767px) {
+  :root[data-page-slide]::view-transition-old(root), :root[data-page-slide]::view-transition-new(root) { animation-duration: .44s; }
+}
+
 
 ::view-transition-group(menu-surface) { animation-duration: .52s; animation-timing-function: cubic-bezier(.22, 1, .36, 1); }
 ::view-transition-old(menu-surface), ::view-transition-new(menu-surface) { width: 100%; height: 100%; object-fit: cover; object-position: 100% 0; }

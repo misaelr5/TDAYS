@@ -17,7 +17,7 @@ type TrustCard = {
 const cards: readonly TrustCard[] = [
   {
     title: `+${credentials.experienceYears} años`,
-    subtitle: "Experiencia en turismo nacional e internacional",
+    subtitle: "Experiencia en turismo",
     href: "/nosotros#historia",
     value: credentials.experienceYears,
     prefix: "+",

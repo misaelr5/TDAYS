@@ -11,9 +11,10 @@ import { ExpandGroup } from "./expand-group";
 import { ApprovedMedia } from "@/features/media/approved-media";
 import { DestinationDetails } from "@/features/destinations/destination-details";
 import { approvedMedia } from "@/config/media";
+import { Sticker } from "./stickers";
 import styles from "./destination-cards.module.css";
 
-export function DestinationCard({ destination, details = false }: { destination: Destination; details?: boolean }) {
+export function DestinationCard({ destination, details = false, eager = false }: { destination: Destination; details?: boolean; eager?: boolean }) {
   const Title = details ? "h2" : "h3";
   return (
     <a
@@ -28,7 +29,7 @@ export function DestinationCard({ destination, details = false }: { destination:
       {/* Arrival point of the photo morph from the home gallery (destination-transition). */}
       <div className={styles.visual} data-destination-photo>
         {destination.category && <span className={styles.category}>{destination.category}</span>}
-        <ApprovedMedia slot={`destination:${destination.slug}`} sizes="(max-width: 639px) 100vw, (max-width: 1100px) 45vw, 25vw"><Landscape kind={destination.artwork} /></ApprovedMedia>
+        <ApprovedMedia slot={`destination:${destination.slug}`} sizes="(max-width: 639px) 100vw, (max-width: 1100px) 45vw, 25vw" eager={eager}><Landscape kind={destination.artwork} /></ApprovedMedia>
       </div>
       <div className={styles.body}>
         <div className={styles.meta}>
@@ -51,7 +52,9 @@ export function Destinations({ full = false }: { full?: boolean }) {
       data-destinations={full ? "catalog" : "preview"}
       aria-labelledby="destination-heading"
     >
-      <div className={styles.heading}>
+      <div className={styles.heading} data-intro-group={full || undefined}>
+        <Sticker kind="plane" at={{ bottom: "clamp(4px, 4vw, 56px)", right: "calc(var(--gutter) + 6px)" }} tilt={-8} size="clamp(50px, 5vw, 72px)" />
+        <Sticker kind="pin" at={{ bottom: "8px", right: "calc(var(--gutter) + 76px)" }} tilt={10} size="38px" only="mobile" />
         <Heading id="destination-heading">
           {full ? "Destinos para tu próxima historia." : "Tu próximo destino."}
         </Heading>
@@ -64,7 +67,7 @@ export function Destinations({ full = false }: { full?: boolean }) {
         <ExpandGroup
           className={`destination-grid ${styles.grid}`}
           label="Catálogo de destinos"
-          items={publishedDestinations.map(destination => ({ key: destination.slug, content: <DestinationCard destination={destination} details /> }))}
+          items={publishedDestinations.map((destination, index) => ({ key: destination.slug, content: <DestinationCard destination={destination} details eager={index === 0} /> }))}
         />
       ) : (
         <Carousel items={publishedDestinations.map(destination => ({

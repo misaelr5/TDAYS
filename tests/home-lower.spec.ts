@@ -9,7 +9,7 @@ for (const width of [375, 768, 1440]) {
     const graduates = page.locator("#egresados");
     const services = page.locator("#consulta");
     const positions = await page.locator("#destinos, #egresados, #consulta, #turismo-chino, footer").evaluateAll(elements => elements.map(element => ({ id: element.id, top: element.getBoundingClientRect().top, bottom: element.getBoundingClientRect().bottom })));
-    expect(positions.map(position => position.id)).toEqual(["destinos", "egresados", "consulta", "turismo-chino", "navegacion"]);
+    expect(positions.map(position => position.id)).toEqual(["egresados", "destinos", "consulta", "turismo-chino", "navegacion"]);
     for (let index = 1; index < positions.length; index++) {
       expect(Math.abs(positions[index].top - positions[index - 1].bottom)).toBeLessThanOrEqual(1);
     }
@@ -22,17 +22,15 @@ for (const width of [375, 768, 1440]) {
       expect(url.origin + url.pathname).toBe("https://wa.me/5493544312904");
       expect(url.searchParams.get("text")).toContain(messages[index]);
     }
-    for (const level of ["Primaria", "Secundaria", "Maestros"]) {
-      const radio = graduates.getByRole("tab", { name: level, exact: true });
-      await radio.click();
-      await page.keyboard.press("Tab");
-      await radio.focus();
-      expect(await radio.evaluate(element => getComputedStyle(element).outlineStyle)).not.toBe("none");
-      await expect(graduates.locator(`[data-level="${level.toLowerCase()}"]`)).toBeVisible();
-      await expect(graduates.getByRole("link", { name: /^Consultar por/ })).toHaveCount(1);
+    for (const level of ["primaria", "secundaria", "maestros"]) {
+      const proposal = graduates.locator(`[data-level="${level}"]`);
+      await expect(proposal).toBeVisible();
+      const consultation = proposal.getByRole("link", { name: /^Consultar por/ });
+      await consultation.focus();
+      expect(await consultation.evaluate(element => getComputedStyle(element).outlineStyle)).not.toBe("none");
       const axe = await new AxeBuilder({ page }).include("#egresados").include("#consulta").withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
       expect(axe.violations).toEqual([]);
-      await graduates.screenshot({ path: testInfo.outputPath(`egresados-${level.toLowerCase()}-${width}.png`), animations: "disabled", style: ".site-header { visibility: hidden !important; }" });
+      await graduates.screenshot({ path: testInfo.outputPath(`egresados-${level}-${width}.png`), animations: "disabled", style: ".site-header { visibility: hidden !important; }" });
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   });
@@ -44,7 +42,8 @@ test("Home inferior: selección con teclado sin JavaScript y reflow a 200%", asy
     const page = await context.newPage();
     await page.goto("/");
     const section = page.locator("#egresados");
-    await section.getByRole("navigation", { name: "Categorías de viajes escolares" }).getByRole("link", { name: "Secundaria", exact: true }).click();
+    await expect(section.locator('[data-level="primaria"]')).toBeVisible();
+    await expect(section.locator('[data-level="secundaria"]')).toBeVisible();
     await expect(section.getByRole("link", { name: "Consultar por secundaria" })).toBeVisible();
     await page.locator("body").evaluate(element => { element.style.zoom = "2"; });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

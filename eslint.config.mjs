@@ -10,6 +10,8 @@ export default defineConfig([
     ".next/**",
     ".next-qa/**",
     ".next-qa-*/**",
+    ".open-next/**",
+    ".wrangler/**",
     "next-env.d.ts",
     "test-results/**",
     "playwright-report/**",

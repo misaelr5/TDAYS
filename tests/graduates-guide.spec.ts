@@ -47,7 +47,7 @@ for (const width of [375, 768, 1440]) {
     await nav.getByRole("link", { name: "Antes de contratar", exact: true }).click();
     await expect(guide.locator("#egresados-contratacion")).toContainText("pago y cancelación");
     for (const level of ["Primaria", "Secundaria", "Maestros"]) {
-      await section.getByRole("tab", { name: level, exact: true }).click();
+      await page.goto(`/destinos#escolares-${level.toLowerCase()}`);
       const link = guide.getByRole("link", { name: "Consultar por nuestro grupo", exact: true });
       await expect(link).toHaveCount(1);
       const url = new URL((await link.getAttribute("href"))!);
@@ -62,7 +62,7 @@ for (const width of [375, 768, 1440]) {
     await guide.screenshot({ path: testInfo.outputPath(`ayuda-${width}.png`), animations: "disabled", style: ".site-header { visibility: hidden !important; }" });
     await guide.getByRole("link", { name: "Volver a las categorías" }).click();
     await expect(page).toHaveURL(/#egresados$/);
-    await expect(section.getByRole("tab", { name: "Maestros", exact: true })).toHaveAttribute("aria-selected", "true");
+    await expect(section.locator('[data-level="maestros"]')).toBeVisible();
   });
 }
 
@@ -74,7 +74,8 @@ test("Guía de Egresados: categorías y consulta funcionan sin JavaScript al 200
     const guide = page.locator("[data-graduates-guide]");
     await expect(guide.locator("#egresados-preguntas")).toBeInViewport();
     await page.locator("body").evaluate(element => { element.style.zoom = "2"; });
-    await page.locator("#egresados").getByRole("navigation", { name: "Categorías de viajes escolares" }).getByRole("link", { name: "Secundaria", exact: true }).click();
+    await page.goto("/destinos#escolares-secundaria");
+    await page.locator("body").evaluate(element => { element.style.zoom = "2"; });
     await expect(guide.getByRole("link", { name: "Consultar por nuestro grupo" })).toHaveAttribute("href", /egresados%20de%20secundaria/);
     const nav = guide.getByRole("navigation", { name: "Temas de la guía de viajes escolares" });
     for (const topic of topics) {

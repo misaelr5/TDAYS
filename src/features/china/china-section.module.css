@@ -5,7 +5,7 @@
 .copy { display: flex; flex-direction: column; align-items: flex-start; }
 .badge { display: inline-flex; align-items: center; gap: 10px; padding: 5px 14px 5px 5px; border: 1px solid var(--line); border-radius: 40px; background: var(--paper-white); font-size: 12px; line-height: 1.5; font-weight: 550; }
 .badge span { display: inline-flex; align-items: center; justify-content: center; min-width: 30px; height: 26px; padding-inline: 8px; border-radius: 40px; background: var(--brand-orange); color: var(--deep); font-weight: 650; }
-.copy h2 { max-width: 16ch; margin-top: 18px; font-size: clamp(28px, 3.2vw, 42px); font-weight: 500; line-height: 1.1; letter-spacing: -.05em; text-wrap: balance; }
+.copy h2 { max-width: 16ch; margin-top: 18px; font-size: clamp(28px, 3.2vw, 42px); line-height: 1.1; text-wrap: balance; }
 .lead { max-width: 44ch; margin-top: 14px; color: #536276; font-size: 14px; line-height: 1.7; }
 .welcome { margin-top: 14px; color: var(--action); font-size: 13px; line-height: 1.5; font-weight: 550; }
 .proof { display: flex; flex-direction: column; align-items: flex-start; gap: 22px; }

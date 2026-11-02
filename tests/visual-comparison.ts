@@ -1,82 +1,66 @@
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import sharp from "sharp";
 import type { Page, TestInfo } from "@playwright/test";
 
-const output = "output/migration/visual";
-export function recordUnchanged(name: string) {
-  mkdirSync(output, { recursive: true });
-  writeFileSync(join(output, `${name}.json`), JSON.stringify({ reference: name, fullPageIdentical: true, changedPixels: 0 }, null, 2) + "\n");
+/** Load real lazy media, then restore initial scroll positions. No DOM replacement. */
+export async function prepareVisual(page: Page) {
+  // References include the approved opaque fallback, independent of the host's
+  // accessibility settings. The normal transparency path has its own Axe tests.
+  const session = await page.context().newCDPSession(page);
+  await session.send("Emulation.setEmulatedMedia", { features: [
+    { name: "prefers-reduced-motion", value: "reduce" },
+    { name: "prefers-reduced-transparency", value: "reduce" },
+    { name: "prefers-contrast", value: "no-preference" },
+  ] });
+  await page.evaluate(() => document.fonts.ready.then(() => undefined));
+  for (const image of await page.locator("img").all()) {
+    if (!(await image.isVisible())) continue;
+    await image.scrollIntoViewIfNeeded();
+    await image.evaluate(element => (element as HTMLImageElement).decode());
+  }
+  await page.locator("[data-carousel-viewport]").evaluateAll(elements => elements.forEach(element => element.scrollTo({ left: 0, behavior: "instant" })));
+  await page.mouse.move(0, 0);
+  await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
+  await page.waitForFunction(() => scrollY === 0);
+  await page.waitForFunction(() => location.pathname !== "/" || !document.querySelector(".site-header")?.classList.contains("header-solid"));
 }
 
-export async function compareExtendedPage(page: Page, route: "/" | "/nosotros" | "/destinos", width: number, testInfo: TestInfo) {
+/** Historical differences are evidence, never a claim the old design is current. */
+export async function compareHistorical(name: string, current: Buffer, testInfo: TestInfo) {
+  const output = testInfo.outputPath("history");
   mkdirSync(output, { recursive: true });
-  const name = `${route === "/" ? "inicio" : route.slice(1)}-${width}`;
-  const expected = readFileSync(`tests/__screenshots__/chromium/${name}.png`);
-  const current = await page.screenshot({ fullPage: true, animations: "disabled", timeout: 20_000 });
+  const reference = `tests/__screenshots__/chromium/${name}.png`;
   writeFileSync(join(output, `${name}-actual.png`), current);
+  if (!existsSync(reference)) {
+    await testInfo.attach("historia", { body: JSON.stringify({ reference: null, note: "Sin captura histórica; se valida el diseño actual." }), contentType: "application/json" });
+    return;
+  }
+  const expected = readFileSync(reference);
   const before = await sharp(expected).metadata();
   const after = await sharp(current).metadata();
-  if (before.width !== after.width) throw new Error(`Cambió el ancho de ${name}`);
-  const commonHeight = Math.min(before.height!, after.height!);
-  const region = { left: 0, top: 0, width, height: commonHeight };
+  const width = Math.min(before.width!, after.width!);
+  const height = Math.min(before.height!, after.height!);
+  const region = { left: 0, top: 0, width, height };
   const left = await sharp(expected).extract(region).ensureAlpha().raw().toBuffer();
   const right = await sharp(current).extract(region).ensureAlpha().raw().toBuffer();
   const diff = Buffer.alloc(left.length);
   let changedPixels = 0;
   for (let offset = 0; offset < left.length; offset += 4) {
     const changed = left[offset] !== right[offset] || left[offset + 1] !== right[offset + 1] || left[offset + 2] !== right[offset + 2] || left[offset + 3] !== right[offset + 3];
-    if (changed) {
-      changedPixels++;
-    }
-    const gray = Math.round((left[offset] + left[offset + 1] + left[offset + 2]) / 3 * 0.3 + 175);
+    if (changed) changedPixels++;
+    const gray = Math.round((left[offset] + left[offset + 1] + left[offset + 2]) / 3 * .3 + 175);
     diff[offset] = changed ? 231 : gray;
     diff[offset + 1] = changed ? 98 : gray;
     diff[offset + 2] = changed ? 74 : gray;
     diff[offset + 3] = 255;
   }
-  await sharp(diff, { raw: { width, height: commonHeight, channels: 4 } }).png().toFile(join(output, `${name}-diff.png`));
+  await sharp(diff, { raw: { width, height, channels: 4 } }).png().toFile(join(output, `${name}-diff.png`));
   const report = {
-    reference: `${name}.png`, fullPageIdentical: false,
-    expectedChange: route === "/nosotros" ? "Narrativa institucional agregada y rótulo de Ubicación retirado" : route === "/destinos" ? "Descripciones reales y campos comerciales condicionales bajo las postales" : "Hero de paisaje y footer de referencia solicitados, con módulo de Egresados",
-    referenceHeight: before.height, currentHeight: after.height,
-    changedPixelsInCommonArea: changedPixels, addedRows: after.height! - before.height!,
-    legacyCompositionIdentical: false,
+    reference, purpose: "Historia informativa; regresión contra current/ sin normalizar el DOM.",
+    originalSize: [before.width, before.height], currentSize: [after.width, after.height], changedPixelsInCommonArea: changedPixels,
+    fullPageIdentical: before.width === after.width && before.height === after.height && changedPixels === 0,
   };
-  writeFileSync(join(output, `${name}.json`), JSON.stringify(report, null, 2) + "\n");
-  await testInfo.attach("comparacion-original", { body: JSON.stringify(report, null, 2), contentType: "application/json" });
-  return report;
-}
-
-export function recordNormalized(name: string, report: Awaited<ReturnType<typeof compareExtendedPage>>) {
-  writeFileSync(join(output, `${name}.json`), JSON.stringify({ ...report, legacyCompositionIdentical: true, normalizedComparison: "Referencia original completa; máximo cero píxeles distintos según Playwright" }, null, 2) + "\n");
-}
-
-export async function normalizeAuthorizedChanges(page: Page, route: "/" | "/nosotros" | "/destinos") {
-  // Test-only DOM normalization. Real captures/differences are saved first.
-  // Source files and the 29 original baseline PNGs are never rewritten.
-  if (route === "/") {
-    // Historical composition only. The real new hero is captured first and
-    // independently checked by hero.spec.ts; original baselines stay immutable.
-    await page.locator("[data-scenic-hero]").evaluate((element, html) => {
-      element.outerHTML = html;
-    }, readFileSync("tests/fixtures/hero-before-sunlight.html", "utf8"));
-  }
-  await page.evaluate(route => {
-    if (route === "/nosotros") document.querySelector("[data-agency-narrative]")?.remove();
-    if (route === "/destinos") {
-      document.querySelectorAll(".destination-details").forEach(element => element.remove());
-      document.querySelectorAll(".destination-meta h2").forEach(element => {
-        const heading = document.createElement("h3");
-        heading.textContent = element.textContent;
-        element.replaceWith(heading);
-      });
-    }
-    if (route === "/") {
-      const label = document.createElement("p");
-      label.className = "section-index";
-      label.textContent = "/ CADA VIAJE, UNA NUEVA HISTORIA";
-      document.querySelector(".hero-copy")?.prepend(label);
-    }
-  }, route);
+  writeFileSync(join(output, `${name}.json`), JSON.stringify(report, null, 2));
+  await testInfo.attach("historia", { body: JSON.stringify(report), contentType: "application/json" });
 }

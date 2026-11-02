@@ -1,82 +1,86 @@
-# Travel Days · recreación del video
+# Travel Days
 
-Frontend local creado en `C:\Users\misael\Desktop\RECREAR`. El video original se conserva. El proyecto de `D:\TRABAJOS\TravelDays` se consultó como fuente de contenido, contactos, logos, fuente Inter y versiones; no se editó desde esta tarea.
+Revisión vigente del 01/11: [video anterior restaurado y nuevo módulo de Egresados](docs/14-REVISION-EGRESADOS-Y-VIDEO-2026-11-01.md). El [informe previo](docs/13-AUDITORIA-DISENO-2026-11-01.md) se conserva como antecedente. Trabajo local, sin publicación.
 
-## Abrir
+Revisión actual del 29/10: [entrega, validación y pendientes](docs/11-ENTREGA-2026-10-29.md), con [evaluación Cloudflare](docs/08-CLOUDFLARE-EVALUATION-2026-10-29.md). Los informes del 28/10 se conservan como antecedentes.
 
-Node.js 24 y npm. La vista local utiliza **http://127.0.0.1:3210** para no interferir con otros proyectos.
+Web de consulta de la agencia de Villa Dolores, Córdoba. RECREAR es la base definitiva; el material y las referencias históricas se conservan. El origen de producción confirmado es **https://traveldays.tur.ar**, sin `www`. Este trabajo es local: no acredita despliegue ni configuración del dominio.
 
-La migración usa RECREAR como base definitiva y se revisa por etapas. Ver
-[respaldo, pruebas y referencia visual de la etapa 1](docs/Migracion-Etapa-1.md).
-La continuación está documentada en [migración de etapas 2–5](docs/Migracion-Etapas-2-5.md)
-y en la [bitácora](docs/Bitacora.md).
-`npm test` construye QA en `.next-qa/` y usa el puerto 3211; ejecutar los checks
-secuencialmente. No ejecutarlo al mismo tiempo que otro build o generación de tipos.
+## Desarrollo y arquitectura
+
+Node 24 (`.nvmrc`) y npm con lockfile. Next 16.4.2 App Router, React 19.3.1, TypeScript estricto y Tailwind 4. La interacción reutiliza Motion, GSAP, controles nativos y CSS Modules. No se añadieron dependencias en la estabilización.
 
 ```powershell
 npm ci
 npm run dev
 ```
 
-Para producción local, detener primero el servidor de esta carpeta:
+El servidor de desarrollo utiliza `http://127.0.0.1:3210`. No ejecutar builds sobre `.next` mientras un servidor sirve ese directorio. QA usa `.next-qa`, `tsconfig.qa.json`, un puerto separado y un lock; build y generación de tipos deben ejecutarse secuencialmente.
 
-```powershell
-npm run lint
-npm run typecheck
-npm run build
-npm run start
-```
+| Área | Ubicación |
+|---|---|
+| Páginas, layout y metadata de archivos | `src/app/` |
+| Origen, rutas públicas e interruptor SEO | `src/config/seo.ts` |
+| Metadata por página | `src/config/metadata.ts` |
+| Contactos y redes publicados | `src/config/site.ts` |
+| Permisos, procedencia y créditos de medios | `src/config/media.ts` |
+| Catálogo tipado de ocho destinos | `src/features/destinations/` |
+| Capítulos y equipo de Nosotros | `src/features/agency/` |
+| Viajes escolares y guía para grupos | `src/features/graduates/` |
+| Borradores y validación de contacto | `src/features/contact/` |
+| Decodificación segura de fragmentos | `src/lib/fragment.ts` |
+| Build aislado y pruebas | `scripts/qa.mjs`, `tests/` |
 
-No construir sobre `.next` mientras esté sirviendo una versión anterior con `next start`: sus rutas pueden conservar referencias a chunks que el build reemplaza. Reiniciar el servidor después de cada build.
+El contenido y el catálogo se renderizan en servidor. Componentes cliente añaden navegación, paneles, carrusel y animación. La URL determina el capítulo de Nosotros, incluidos enlaces a encabezados internos; los enlaces conservan alternativas sin JavaScript. Inter se carga localmente, sin peticiones a Google Fonts.
 
-## Implementado
+## Páginas y consultas
 
-- Hero inspirado en `src/inspo`: paisaje, título centrado, navegación translúcida, barra de consulta y cuatro tarjetas superpuestas con información real. El fondo es una ilustración temporal hasta recibir la foto original. Ver [diseño y validación](docs/Hero-Paisaje.md).
-- Carrusel claro de ocho destinos inspirado en Apple Cards Carousel: tarjetas verticales redondeadas, título breve, ilustración y enlace a cada destino del catálogo. Scroll táctil, flechas y teclado; sin reproducción automática ni modal.
-- Módulo de Viajes escolares en Inicio y versión ampliada debajo de los ocho destinos: Primaria, Secundaria y Maestros, consultas específicas y guía para grupos y familias. Primaria y Secundaria utilizan las tres fotografías escolares autorizadas; El Maestrazo reutiliza el fotograma autorizado de un viaje. Las fotos adicionales de la fiesta siguen sujetas a permiso. Ver [implementación, medios y validación](docs/School-Travel-Redesign.md).
-- Footer oscuro de cuatro columnas inspirado en la misma referencia, con contactos, dirección y horarios reales, enlaces útiles y consulta por WhatsApp.
-- Línea visual compartida en las cuatro páginas: Inter, superficies glass, cápsulas, radios de 24 px y los colores del logo original azul `#006CF9`, naranja `#F58634` y blanco. Ver [implementación y diferencias con el componente pegado](docs/Linea-Visual.md).
-- Nosotros conserva el relato institucional y Contacto sus formularios y privacidad con el diseño unificado. Se retiraron la tipografía manuscrita, pasaportes, sellos, recibo e impresora. El cierre ofrece una consulta por WhatsApp.
-- Menú móvil fullscreen con Escape, ciclo de foco, restauración de foco y bloqueo de scroll.
-- Rutas `/`, `/destinos`, `/nosotros`, `/contacto`, 404 y robots. El catálogo completo se renderiza en servidor.
+- `/`: hero con el video autorizado original y su póster responsive, consulta con borrador, propuestas visibles de Egresados de primaria y secundaria, ocho destinos, otras formas de viajar y turismo receptivo desde China.
+- `/destinos`: catálogo para consulta y módulo escolar ampliado con Primaria, Secundaria y Maestros/El Maestrazo.
+- `/nosotros`: oficina, historia, respaldo declarado, equipo, acompañamiento y mapa de Google que solo carga tras solicitarlo.
+- `/contacto`: Mi viaje (formulario), La agencia (ubicación y horarios) y Mi experiencia (enlace a la ficha de Google para reseñas).
+- `/terminos`: condiciones existentes, pendientes de revisión comercial/legal. No fueron reescritas en esta etapa.
+- `/quienes-somos` está retirada y devuelve **404**: no es alias ni redirección y no figura en el sitemap.
 
-## Arquitectura
+El formulario prepara un mensaje revisable y abre WhatsApp cuando el visitante lo decide. Editar los datos invalida el borrador. No hay persistencia de formularios, backend, cuentas, reservas, pagos o administración. Preparar un borrador o abrir WhatsApp no confirma envío, reserva ni compra. La reseña se escribe y publica en Google, no en la web. Su apertura definitiva debe comprobarse manualmente; no se envían mensajes ni reseñas desde las pruebas.
 
-```text
-src/app/                      Rutas, layout, metadatos, fuentes y estilos
-src/components/sections.tsx    Composición de secciones en servidor
-src/components/site-footer.tsx  Footer de referencia con enlaces y contactos reales
-src/components/travel-objects.tsx  Ilustración Landscape conservada
-src/components/destination-cards.tsx  Catálogo y tarjetas en servidor
-src/components/ui/apple-cards-carousel.tsx  Scroll, teclado y enlaces del carrusel
-src/components/destination-cards.module.css  Encabezado y tarjetas del catálogo
-src/components/header.tsx     Cabecera y diálogo móvil
-src/components/motion.tsx     RevealText y configuración de Motion
-src/config/                   Contactos, metadata, motion y manifiesto de medios
-src/features/agency/          Historia, valores, formación y perfiles condicionados
-src/features/media/           Resolución en servidor y presentación audiovisual
-src/features/destinations/    Datos tipados de los ocho destinos
-src/features/graduates/       Egresados compartido entre Inicio y Destinos
-src/features/hero/            Hero de paisaje y consulta con borrador de WhatsApp
-public/media/logos/           Logotipo original utilizado
-docs/                        Análisis de referencia y validación
-output/reference/             Fotogramas del video, sólo para revisión
-output/playwright/            Capturas, script de auditoría y resultados
-```
+## Medios
 
-Se reutilizan Next.js 16.4.2, React 19.3.1, TypeScript estricto, Tailwind 4 y npm con lockfile. Motion 14.6.0 aporta el hover del carrusel y los revelados existentes. La adaptación de Apple Cards no incorpora dependencias nuevas: utiliza enlaces reales, scroll nativo y SVG propios. CSS Modules aísla cada módulo y los tokens de marca están en globals.css. `axe-core` es una herramienta de validación de desarrollo.
+El estado conservado del manifiesto registra 42 variantes aprobadas: fotografías licenciadas de los ocho destinos con créditos visibles, oficina, siete retratos, fotos escolares, la foto de Maestros y videos/posters del hero y la historia. Ese número incluye variantes y recursos compartidos; no significa 42 fotos diferentes. La incorporación concurrente de la foto P130 y el video V067 tiene autorizaciones específicas del 28/10/2026 registradas en el manifiesto; no la realizó la estabilización.
 
-Inter se carga localmente mediante `next/font/local`. Caveat ya no se carga; el archivo y su licencia histórica se conservan. No hay llamadas a Google Fonts durante la navegación.
+Los originales privados están excluidos de Git y del bundle. Las fotos escolares P168–P170 tienen autorización registrada. La autorización de P130 no se extiende al resto de fotos de la fiesta. Dos perfiles del equipo conservan fallbacks mientras no haya retratos aprobados. Historia utiliza el recurso de V067; con movimiento reducido muestra solo su poster. Ver [medios](docs/Medios.md), [destinos y licencias](docs/Media-Destinos.md) y [viajes escolares](docs/School-Travel-Redesign.md); los documentos históricos pueden describir permisos anteriores al manifiesto actual.
 
-## Medios y contenido
+`src/app/opengraph-image.jpg` es una composición estática de 1200×630 hecha con la fotografía de oficina ya aprobada (`page:nosotros`) y texto existente. Next la sirve como metadata de archivo. Puede reproducirse con `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/generate-social-image.mjs`; usa el procesador de imágenes instalado por Next, sin añadir dependencias. Revisar visualmente cualquier regeneración.
 
-**Las postales son ilustraciones temporales, no fotografías de destinos.** El manifiesto incorpora una foto real de oficina y cuatro retratos autorizados en Nosotros. La [auditoría audiovisual de 336 archivos](docs/Media-Audit.md) incluye inventario, selección, mapa por módulo y permisos pendientes. El [flujo de medios autorizados](docs/Medios.md) valida permisos documentados, procedencia, rutas, archivos, variantes y focos antes del build. `ApprovedMedia` resuelve en servidor y entrega sólo datos públicos; sin recurso aprobado conserva la ilustración. No se incorporaron fotos externas o generadas.
+## SEO preparado, apagado por defecto
 
-Los destinos no acreditan disponibilidad. No se agregaron precios, fechas, testimonios, certificaciones o servicios incluidos. Los contactos proceden de la configuración actual de Travel Days. Se conserva `noindex` y `Disallow: /`; dominio, canonical, sitemap y datos estructurados comerciales requieren información confirmada antes de publicación.
+`src/config/seo.ts` centraliza `https://traveldays.tur.ar` y las cinco rutas públicas. Todas tienen canonical y metadata social con URLs absolutas. El sitemap incluye únicamente esas rutas y omite fechas de modificación no documentadas. JSON-LD describe una `TravelAgency` con nombre, URL, teléfono, email, dirección estructurada, horarios y redes ya publicados; no agrega calificaciones, ofertas o certificaciones.
 
-Nosotros incorpora la trayectoria declarada de Javier, historia, valores, áreas y formación. Los perfiles personales pendientes no se renderizan. El catálogo muestra las ocho descripciones existentes y admite campos comerciales opcionales sólo cuando existan datos confirmados.
+La indexación exige `SITE_INDEXING=true` y entorno de build `production`. `VERCEL_ENV` tiene precedencia sobre `SITE_ENV`; una preview sigue bloqueada aunque se configure el flag. Fuera de Vercel, usar `SITE_ENV=production` únicamente para el lanzamiento aprobado. Ausente, `false` o cualquier otro valor mantiene revisión:
 
-## Pruebas reproducibles
+| Configuración del build | HTML | robots.txt | Headers |
+|---|---|---|---|
+| Ausente / distinta de `true` | `noindex, nofollow` | `Disallow: /`, sin referencia al sitemap | `X-Robots-Tag: noindex, nofollow` en todas las rutas |
+| `SITE_INDEXING=true` en entorno production | `index, follow` en páginas públicas | `Allow: /` y sitemap absoluto | Sin bloqueo global de indexación |
+| Flag true en preview/development/review | `noindex, nofollow` | `Disallow: /` | Bloqueo global |
+
+El sitemap existe en ambos modos. En revisión queda cubierto por el header y no se anuncia en robots. Las 404 siguen sin canonical y con `noindex` aunque el resto del sitio esté habilitado.
+
+La metadata y estas rutas se prerenderizan: **cambiar una variable sin reconstruir no actualiza los archivos generados**. Usar el mismo valor durante build y ejecución. Nunca habilitarlo en previews. `.env.example` documenta el valor seguro; no se creó un `.env` que active indexación.
+
+Bloquear rastreo impide que Google lea el `noindex` HTML. Esta combinación preserva el modo de revisión pedido y añade el header, pero **no es un control de privacidad**. Las previews privadas requieren protección de acceso en el hosting. [Guía de Google](https://developers.google.com/search/docs/crawling-indexing/block-indexing).
+
+### Activación futura en producción
+
+1. Cerrar la revisión legal y comercial y resolver las validaciones pendientes de [Estabilización y SEO](docs/Estabilizacion-SEO.md).
+2. Verificar en el hosting que el proyecto apunta a esta web y que `traveldays.tur.ar` tiene DNS correcto y certificado HTTPS válido.
+3. Configurar redirección permanente de HTTP a HTTPS y de `www.traveldays.tur.ar` al origen sin `www`, conservando ruta y query. El control del 28/10 confirmó HTTPS pero www sigue respondiendo 200; el dominio sirve una versión anterior. Ver [checklist actual](docs/05-DEPLOYMENT-CHECKLIST.md).
+4. Mantener `SITE_INDEXING=false` o ausente en previews. Establecer `SITE_INDEXING=true` **solo** en Production aprobada; fuera de Vercel, agregar `SITE_ENV=production`.
+5. Hacer un build y despliegue nuevo con ese valor, sin reutilizar un build de revisión. Este repositorio no se publicó en esta etapa.
+6. En el dominio real revisar las cinco páginas, canonical, OG/Twitter e imagen social, JSON-LD, `/sitemap.xml`, `/robots.txt`, 404 y headers efectivos. Confirmar que el hosting no añade otro `noindex` y conserva los headers de seguridad.
+7. Verificar la propiedad en Search Console y enviar el sitemap después de autorizar el lanzamiento. No se accedió a Search Console en este trabajo.
+
+## Validación local
 
 ```powershell
 npm run lint
@@ -85,28 +89,26 @@ npm run verify:media
 npm test
 ```
 
-`npm test` verifica hashes, medios, build de producción aislado y Playwright/Axe.
-`npm run test:visual` ejecuta las 29 comparaciones. Las referencias originales son
-inmutables; no existe comando de actualización automática. En páginas ampliadas se
-guardan capturas reales y diferencias antes de normalizar exclusivamente el DOM de
-prueba para comparar la composición previa. Ver el informe para límites y evidencias.
+`npm test` construye producción aislada, valida medios y hashes y ejecuta Playwright/Axe. El puerto predeterminado es 3211; puede cambiarse con `RECREAR_TEST_PORT` a otro libre distinto de 3210. No borrar un `qa.lock` sin identificar su proceso propietario.
 
-## Validación y diferencias
+```powershell
+# Prueba local del modo indexable; no configura ningún hosting.
+$env:SITE_INDEXING = 'true'
+$env:SITE_ENV = 'production'
+$env:RECREAR_TEST_PORT = '3212'
+npm test -- tests/seo.spec.ts
+Remove-Item Env:SITE_INDEXING
+Remove-Item Env:SITE_ENV
+# Reconstruye revisión y ejecuta la suite completa antes de cerrar.
+npm test
+```
 
-Ver [navegación y formularios vigentes](docs/Contacto-Navegacion.md), [análisis de referencia](docs/Referencia.md) y [validación inicial](docs/Validacion.md). La adaptación conserva la secuencia y los recursos compositivos del video, pero **no es una copia píxel por píxel**: cambia café por turismo, marca, objetos y contenido; las fotos siguen pendientes. Mobile y menú fullscreen son adaptaciones propias porque no aparecen en el video.
+Las 29 capturas originales y sus hashes permanecen como historia. Las 36 referencias en `tests/__screenshots__/chromium/current/` cubren cinco páginas en siete anchos y el menú. Su procedencia y los ajustes concurrentes preservados se registran en `tests/current-visual-reference.json`. Se fija transparencia reducida para esa comparación y se prueba el catálogo en ambos modos de transparencia con Axe. La suite compara el DOM real y guarda diferencias históricas informativas; no sustituye el hero, no elimina la narrativa ni compara rotaciones retiradas. Ver [estrategia visual](docs/Referencias-Visuales.md).
 
-No se implementaron backend, autenticación, Supabase, reservas, pagos o administración. No se hizo commit, push ni deploy.
+El estado de Release 1.0 se detalla en [preparación de producción](docs/01-PRODUCTION-READINESS.md), con [QA actual](docs/04-QA-RESULTS.md), [seguridad](docs/03-SECURITY-AUDIT.md), [SEO/GEO](docs/02-SEO-GEO-AUDIT.md), [decisiones del cliente](docs/07-CLIENT-PENDING-DECISIONS.md) y [arquitectura futura](docs/06-FUTURE-PLATFORM-ARCHITECTURE.md). [Estabilizacion-SEO](docs/Estabilizacion-SEO.md) conserva resultados históricos.
 
-## Conceptos para aprender
+La consulta permite mes/año, pasajeros y localidad opcionales sin guardar datos. `traveldays:measurement` emite eventos locales con nombres/rutas/slugs permitidos; no hay proveedor, cookies ni transmisión externa de analítica. La CSP de producción conserva prerender y animaciones; los scripts inline necesarios siguen permitidos. CI y monitorización externa siguen pendientes.
 
-1. **Composición servidor/cliente:** el reel recibe los datos mínimos y los paisajes ya renderizados desde el servidor; la interacción no envía la resolución de archivos ni las autorizaciones de medios al navegador.
-2. **Mejora progresiva:** títulos, tarjetas y enlaces existen antes de ejecutar JavaScript. Motion añade comportamiento y se desactiva según las preferencias de movimiento.
-3. **Contenido y presentación:** los destinos y contactos se mantienen fuera de la lógica de animación; sustituir medios no requiere reescribir las secciones.
+Playwright incluye Chromium, Firefox y WebKit; instalar sus motores con `npx playwright install chromium firefox webkit` si faltan. Las referencias de píxeles se comparan solo en Chromium. WebKit automatizado no acredita Safari/iPhone físico, indexación real ni rendimiento de usuarios.
 
-## Navegación y Contacto
-
-La navegación pública queda limitada a Inicio (`/`), Destinos (`/destinos`), Nosotros (`/nosotros`) y Contacto (`/contacto`). La antigua `/quienes-somos` fue retirada y devuelve 404. Inicio y el catálogo conservan su composición y contenido.
-
-Contacto tiene dos módulos: organizar un viaje y compartir una experiencia de un viaje realizado. La consulta pide nombre y mensaje; teléfono y destino son opcionales. La opinión requiere texto; nombre, viaje y puntuación son opcionales. Los botones preparan un borrador que puede revisarse antes de abrir WhatsApp. Editar los datos invalida el borrador anterior. No se almacenan datos en esta web, no se publican opiniones y no se confirma entrega. Sin JavaScript se ofrecen enlaces de contacto directo.
-
-Los campos usan validación HTML y controles adicionales sobre texto vacío, límites, teléfono y puntuación. `src/features/contact/messages.ts` concentra las reglas y el texto del borrador, mientras `contact-form.tsx` mantiene la interacción. No se añadieron dependencias. La navegación compartida está en `src/config/navigation.ts`.
+El historial de migración y las diferencias con el video original siguen disponibles en `docs/Migracion-Etapa-1.md`, `docs/Migracion-Etapas-2-5.md` y `docs/Bitacora.md`.

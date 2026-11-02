@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Arrow, Facebook } from "./icons";
+import { ReacSignature } from "./reac/reac-signature";
 import { site, whatsappUrl } from "@/config/site";
+import { Sticker } from "./stickers";
 import styles from "./site-footer.module.css";
 
 function SocialIcon({ kind }: { kind: "instagram" | "mail" | "chat" }) {
@@ -16,10 +18,11 @@ export function SiteFooter() {
     <div className={styles.panel}>
       <div className={styles.grid}>
         {/* On mobile only this column stays, as one compact row: it is the no-JS menu target. */}
-        <div className={`${styles.column} ${styles.routes}`}><h2>Travel Days</h2><Link href="/">Inicio</Link><Link href="/destinos">Destinos</Link><Link className={styles.extra} href="/destinos#egresados">Viajes escolares</Link><Link href="/nosotros">Nosotros</Link><Link href="/contacto">Contacto</Link></div>
+        <div className={`${styles.column} ${styles.routes}`}><h2>Travel Days</h2><Link href="/">Inicio</Link><Link href="/#egresados">Egresados</Link><Link href="/destinos">Destinos</Link><Link href="/nosotros">Nosotros</Link><Link href="/contacto">Contacto</Link></div>
         <div className={`${styles.column} ${styles.extra}`}><h2>Conversemos</h2><a href={whatsappUrl()} target="_blank" rel="noreferrer">WhatsApp</a><a href={`mailto:${site.email}`}>Email</a><a href={site.instagram} target="_blank" rel="noreferrer">Instagram</a><a href={site.facebook} target="_blank" rel="noreferrer">Facebook</a></div>
         <div className={`${styles.column} ${styles.extra}`}><h2>Tu viaje</h2><Link href="/contacto#consulta">Organizá tu viaje</Link><Link href="/destinos#egresados-preguntas">Preguntas de viajes escolares</Link><Link href="/contacto#experiencia">Compartí tu experiencia</Link><Link href="/nosotros#historia">Nuestra historia</Link></div>
         <div className={styles.contact}>
+          <Sticker kind="plane" at={{ top: "-30px", right: "0" }} tilt={-14} size="clamp(44px, 4vw, 60px)" />
           <h2>Sigamos viajando.</h2>
           <p>El próximo viaje empieza con una charla.<br />Contanos tu idea y la pensamos juntos.</p>
           <a className={styles.contactPill} href={whatsappUrl()} target="_blank" rel="noreferrer"><SocialIcon kind="chat" /><span>Escribinos por WhatsApp</span><span className={styles.pillButton}>Hablemos <Arrow /></span></a>
@@ -32,6 +35,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className={styles.bottom}><span>© {new Date().getFullYear()} Travel Days.</span><Link className={styles.legal} href="/terminos">Términos y condiciones</Link><Link className={styles.extra} href="/#contenido">Volver al inicio <span aria-hidden="true">↑</span></Link></div>
+      <ReacSignature />
     </div>
   </footer>;
 }

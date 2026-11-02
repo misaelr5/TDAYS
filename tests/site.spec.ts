@@ -1,6 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { destinations, publishedDestinations } from "../src/features/destinations/data";
 import { test, expect, routes, widths, ready } from "./fixtures";
+import { indexingEnabled } from "../src/config/seo";
 
 for (const route of routes) {
   for (const width of widths) {
@@ -57,14 +58,14 @@ test("metadatos, bloqueo de indexación, headers y rutas retiradas", async ({ pa
     await page.goto(route);
     await expect(page).toHaveTitle(/Travel Days/);
     await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /.+/);
-    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow");
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", indexingEnabled ? "index, follow" : "noindex, nofollow");
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", /Travel Days/);
     await expect(page.locator("html")).toHaveAttribute("lang", "es-AR");
   }
   const response = await request.get("/");
   expect(response.headers()["x-content-type-options"]).toBe("nosniff");
   expect(response.headers()["x-frame-options"]).toBe("DENY");
-  expect(await (await request.get("/robots.txt")).text()).toContain("Disallow: /");
+  expect(await (await request.get("/robots.txt")).text()).toContain(indexingEnabled ? "Allow: /" : "Disallow: /");
   for (const route of ["/quienes-somos", "/ruta-inexistente-qa"]) {
     expect((await page.goto(route))?.status()).toBe(404);
     await expect(page.getByRole("link", { name: /Volver al inicio/ })).toHaveAttribute("href", "/");

@@ -114,3 +114,6 @@
   .cards, .cards[data-reveal], .card, .card[data-reveal="pending"] { opacity: 1; transform: none; translate: none; scale: none; filter: none; animation: none; transition: none; }
   .cards::after { display: none; }
 }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .cards { background: #fff; }
+}
