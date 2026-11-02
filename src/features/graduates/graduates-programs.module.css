@@ -12,8 +12,7 @@
 .school[data-level="secundaria"] .schoolHeading { background: var(--action); color: #fff; }
 .schoolHeading > span { font-size: 13px; font-weight: 600; line-height: 1.4; }
 .schoolHeading h3 { font-size: clamp(36px, 4.5vw, 66px); font-weight: var(--heading-weight); line-height: 1.05; overflow-wrap: anywhere; }
-.photo { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--deep); }
-.school[data-level="secundaria"] .photo { aspect-ratio: 3 / 2; }
+.photo { position: relative; aspect-ratio: 3 / 2; overflow: hidden; background: var(--deep); }
 .photo :global(.approved-media-video) button { left: auto; right: 12px; bottom: 12px; min-height: 44px; padding: 10px 16px; border: 1px solid #ffffff73; border-radius: 30px; background: #13253de6; color: #fff; font-size: 12px; cursor: pointer; }
 .photo :global(.approved-media-video) button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .photo > picture, .photo > svg, .teacherPhoto > picture, .teacherPhoto > svg { position: absolute; inset: 0; width: 100%; height: 100%; }

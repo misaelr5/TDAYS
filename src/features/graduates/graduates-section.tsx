@@ -13,14 +13,14 @@ import styles from "./graduates.module.css";
 export function GraduatesSection({ expanded = false }: { expanded?: boolean }) {
   const levels = graduates.levels.map(({ message, mediaSlot, ...level }) => {
     // Resolve each audience separately; render only approved public derivatives.
-    const media = (expanded && level.id === "primaria" && resolveMedia("school:primaria-detail")) || resolveMedia(mediaSlot);
+    const media = resolveMedia(mediaSlot);
     return {
       ...level,
       href: whatsappUrl(message),
       caption: media ? (level.id === "maestros" ? level.caption : "Viajes escolares · archivo de Travel Days")
         : (level.id === "maestros" ? "Ilustración · una salida por conversar" : level.caption),
       photographic: media !== null,
-      visual: media ? <MediaContent asset={media} allowVideo={level.id === "secundaria"} sizes="(max-width: 767px) 90vw, (max-width: 1300px) 50vw, 680px" />
+      visual: media ? <MediaContent asset={media} allowVideo={level.id !== "maestros"} sizes="(max-width: 767px) 90vw, (max-width: 1300px) 50vw, 680px" />
         : <GraduatesScene variant={level.id === "primaria" ? "morning" : "sunset"} framing="landscape" />,
     };
   });

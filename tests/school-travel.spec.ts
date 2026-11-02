@@ -47,19 +47,23 @@ for (const route of ["/", "/destinos"]) {
         expect((await consultation.boundingBox())!.height).toBeGreaterThanOrEqual(44);
         const photo = proposal.locator("picture img");
         await photo.scrollIntoViewIfNeeded();
-        await expect(photo).toHaveAttribute("alt", category.id === "secundaria" ? "" : category.id === "maestros" ? /Grupo de El Maestrazo/ : /estudiantes/i);
+        await expect(photo).toHaveAttribute("alt", category.id === "maestros" ? /Grupo de El Maestrazo/ : "");
         await expect.poll(() => photo.evaluate(image => (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth > 0)).toBe(true);
-        expect(await photo.getAttribute("src")).toContain(category.id === "maestros" ? "maestrazo-fiesta" : category.id === "secundaria" ? "secundaria-loop" : route === "/" ? "school-group-building" : "school-group-port");
+        expect(await photo.getAttribute("src")).toContain(category.id === "maestros" ? "maestrazo-fiesta" : category.id === "primaria" ? "primaria-compact" : "secundaria-loop");
       }
       const primary = (await section.locator('[data-level="primaria"]').boundingBox())!;
       const secondary = (await section.locator('[data-level="secundaria"]').boundingBox())!;
-      if (width >= 768) { expect(Math.abs(primary.y - secondary.y)).toBeLessThan(1); expect(secondary.x).toBeGreaterThan(primary.x); }
+      const primaryMedia = (await section.locator('[data-level="primaria"] figure').boundingBox())!;
+      const secondaryMedia = (await section.locator('[data-level="secundaria"] figure').boundingBox())!;
+      expect(Math.abs(primaryMedia.height - secondaryMedia.height)).toBeLessThan(1);
+      expect(Math.abs(primaryMedia.width - secondaryMedia.width)).toBeLessThan(1);
+      if (width >= 768) { expect(Math.abs(primary.y - secondary.y)).toBeLessThan(1); expect(Math.abs(primary.height - secondary.height)).toBeLessThan(1); expect(secondary.x).toBeGreaterThan(primary.x); }
       else expect(secondary.y).toBeGreaterThanOrEqual(primary.y + primary.height);
       const axe = await new AxeBuilder({ page }).include("#egresados").withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
       expect(axe.violations).toEqual([]);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-      await expect(section.locator("video")).toHaveCount(1);
-      await expect(section.locator("video")).not.toHaveAttribute("src");
+      await expect(section.locator("video")).toHaveCount(2);
+      for (const video of await section.locator("video").all()) await expect(video).not.toHaveAttribute("src");
       await expect(page.locator(route === "/" ? "[data-destination-preview]" : ".destination-card")).toHaveCount(8);
       await section.screenshot({ path: testInfo.outputPath(`egresados-${route === "/" ? "inicio" : "destinos"}-${width}.png`), animations: "disabled", style: ".site-header { visibility:hidden !important; }" });
     });

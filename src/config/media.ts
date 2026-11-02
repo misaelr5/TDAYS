@@ -66,12 +66,12 @@ const destinationMedia: MediaManifest = {
 };
 export const mediaManifest: MediaManifest = {
   "school:primaria": {
-    id: "school-group-building", type: "image",
-    alt: "Grupo de estudiantes y acompañantes de Travel Days frente a un edificio de dos torres, durante una salida escolar.",
-    provenance: "P169: egresados y fotos varisa/482197228_1221605856357025_5238093494456184970_n.jpg. SHA-256 baaea4384caff96a1bcdbb1b158e59b1d4f2dc260106cbf91540b7e5cd92bd87. WebP sin metadatos, proporción completa; docs/School-Media-Selection.csv.",
-    authorization: { status: "approved", evidence: "Confirmación explícita del usuario del 27/10/2026: publicar las fotos de los chicos porque tenemos el permiso; identifica la carpeta egresados y fotos varisa y confirma material de ambos niveles. Abarca P168–P170, sus estudiantes y acompañantes; no las fotografías de la fiesta de El Maestrazo." },
-    desktop: { src: "/media/travel-days/schools/school-group-building-desktop.webp", focal: { x: 50, y: 60 } },
-    mobile: { src: "/media/travel-days/schools/school-group-building-mobile.webp", focal: { x: 50, y: 60 } },
+    id: "primaria-loop", type: "video", decorative: true,
+    alt: "",
+    provenance: "Tres fotografías del propietario de egresados y fotos varisa: P169 (edificio), P168 (puerto) y P170 (mirador). Montaje de 10,8 segundos en dos franjas, una foto arriba y otra abajo, con fundidos y acercamiento leve; excluye IMG_E2648.JPG. Hashes y recortes en docs/16-VIDEO-FOTOS-PRIMARIA.md. Sin audio ni metadatos de origen; 02/11/2026.",
+    authorization: { status: "approved", evidence: "Permiso explícito del usuario del 27/10/2026 para publicar P168–P170, incluidos estudiantes y acompañantes. Solicitud del 02/11/2026 en esta conversación: hacer el montaje con las fotos de egresados y fotos varisa, excluir IMG_E2648.JPG y colocarlo en la tarjeta de Primaria. Asignación editorial; no afirma curso ni colegio." },
+    desktop: { src: "/media/travel-days/schools/primaria-compact-desktop.mp4", poster: { src: "/media/travel-days/schools/primaria-compact-desktop.webp", focal: { x: 50, y: 50 } } },
+    mobile: { src: "/media/travel-days/schools/primaria-compact-mobile.mp4", poster: { src: "/media/travel-days/schools/primaria-compact-mobile.webp", focal: { x: 50, y: 50 } } },
   },
   "school:secundaria": {
     id: "secundaria-loop", type: "video", decorative: true,
