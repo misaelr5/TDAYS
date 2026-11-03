@@ -1,98 +1,51 @@
-Alcance: MVP público enfocado en presentar la agencia, mostrar destinos y viajes escolares y transformar interés en consultas a través de WhatsApp. No es un sistema de reservas ni de cobros.
+Travel Days
+Sitio web oficial de Travel Days, agencia de viajes y turismo de Villa Dolores, Córdoba, Argentina.
 
-Estado de dominio al 03/11/2026: la delegación de traveldays.tur.ar se configuró en NIC Argentina; la activación y el funcionamiento del dominio definitivo deben verificarse antes de anunciar el lanzamiento como completado. El repositorio por sí solo no prueba el estado operativo actual.
+Una experiencia digital diseñada para presentar la agencia, acercar sus propuestas de viaje y facilitar el contacto con quienes están planificando su próxima experiencia.
 
-- Dominio objetivo: https://traveldays.tur.ar
-- Repositorio: https://github.com/misaelr5/TDAYS
-- Desarrollo: Reac Studio
-- Documentación complementaria: [`docs/`](docs/)
-1. Qué incluye
-Área	Funcionalidad
-Inicio	Presentación de la agencia con video institucional y accesos a consultas.
-Destinos	Catálogo tipado de 8 propuestas con descripción, imágenes y CTA contextual.
-Viajes escolares	Primaria, Secundaria y Maestros / El Maestrazo, con medios y guías de consulta.
-Testimonios	Videos de pasajeros con reproducción bajo interacción y acceso a reseñas de Google.
-Nosotros	Historia, oficina, equipo, acompañamiento y mapa cargado a demanda.
-Contacto	Formulario que compone un borrador de mensaje y abre WhatsApp para revisión y envío manual.
-Visibilidad	Metadata, canonical, Open Graph, sitemap y JSON-LD TravelAgency.
-Institucional	Información de turismo receptivo desde China, redes y términos y condiciones.
+Sitio web: traveldays.tur.ar
+Repositorio: misaelr5/TDAYS
+Sobre el proyecto
+Travel Days reúne en un mismo espacio la identidad de la agencia, sus destinos, las propuestas de viajes escolares y los canales de consulta.
 
+El sitio combina una presentación visual con fotografías y videos, navegación adaptable a distintos dispositivos y accesos directos a WhatsApp. Su objetivo es convertir el interés de los visitantes en consultas concretas y ofrecer una base organizada para futuras funcionalidades.
+¿Qué incluye?
+- Inicio: presentación de la agencia, contenido audiovisual y acceso a las principales propuestas.
+- Destinos: catálogo de ocho destinos con información e invitaciones a consultar.
+- Viajes escolares: experiencias para primaria, secundaria y docentes (El Maestrazo).
+- Testimonios: videos de pasajeros y acceso a reseñas de Google.
+- Nosotros: historia, equipo, oficina y trayectoria de Travel Days.
+- Contacto: formulario que prepara una consulta para enviar por WhatsApp, además de los datos de contacto y redes sociales.
+- Turismo receptivo: presentación de las propuestas vinculadas con visitantes internacionales, incluido el turismo desde China.
+Diseño y tecnología
+El proyecto prioriza la experiencia móvil, la claridad de navegación, el uso eficiente de recursos multimedia y la facilidad de mantenimiento.
 
-Destinos actuales: Brasil, Caribe, Carnavales de Jujuy, Cataratas del Iguazú, Los Túneles, Festival de Jesús María, Bayahíbe y Valeria del Mar.
-Rutas públicas
-Ruta	Propósito
-/	Inicio y propuesta comercial.
-/destinos	Destinos y escolares.
-/nosotros	Identidad, historia y equipo.
-/contacto	Formulario, datos y reseñas.
-/terminos	Condiciones comerciales, sujetas a revisión jurídica.
+Está desarrollado con Next.js, React, TypeScript y Tailwind CSS, con animaciones e interacciones visuales. Utiliza Cloudflare como plataforma de despliegue y cuenta con una estructura de SEO técnico: metadatos, URLs canónicas, sitemap y datos estructurados de la agencia.
 
+La preparación para buscadores no implica resultados garantizados de posicionamiento.
+Estado actual
+El proyecto corresponde a la primera etapa: un sitio institucional y comercial orientado a consultas.
 
-El formulario no persiste consultas ni datos personales en una base propia y no envía mensajes automáticamente. El usuario debe confirmar el envío en WhatsApp. Abrir un enlace no implica una consulta recibida, una reserva confirmada ni un pago.
-
-2. Tecnologías y arquitectura
-- Runtime: Node.js 24 y npm (package-lock.json).
-- Frontend: Next.js 16.4.2 App Router, React 19.3.1, TypeScript estricto, Tailwind CSS 4 y CSS Modules.
-- Interacciones: Motion, GSAP y controles nativos.
-- Hosting: Cloudflare Workers mediante @opennextjs/cloudflare y Wrangler.
-- QA: Playwright (Chromium, Firefox y WebKit), Axe y validadores internos de medios.
-Organización principal
-src/
-  app/                    # App Router, páginas, layouts y metadata de archivos
-  components/             # Componentes reutilizables
-  config/
-    seo.ts                # URL canónica y política de indexación
-    metadata.ts           # Metadata de cada página
-    site.ts               # Datos publicados de la agencia
-    media.ts              # Procedencia y permisos de medios
-  features/
-    agency/               # Historia, oficina y equipo
-    contact/              # Formulario, validación y borradores
-    destinations/         # Catálogo de destinos
-    graduates/            # Primaria, Secundaria y Maestros
-    media/                # Recursos audiovisuales aprobados
-  lib/                    # Utilidades compartidas
-public/                   # Medios optimizados y recursos públicos
-docs/                     # Auditorías, decisiones y guías
-scripts/                  # Verificación y tareas de build/QA
-tests/                    # Pruebas automatizadas
-wrangler.jsonc            # Cloudflare preview / production
-El sitio separa la presentación pública, los datos de configuración y las funcionalidades. Esta modularidad facilita estudiar una ampliación, pero no significa que ya existan base de datos, APIs de negocio, autenticación o pagos.
-3. Desarrollo local
-Requisitos: Node.js 24, npm y acceso autorizado al repositorio.
+Las personas interesadas pueden explorar viajes y preparar mensajes para contactar a Travel Days por WhatsApp. Esta versión no incluye reservas online, pagos, cuentas de pasajeros ni panel administrativo.
+Una base para seguir creciendo
+La estructura del proyecto permite evaluar nuevas etapas sin tener que replantear toda la presencia digital de la agencia. Entre las funcionalidades posibles se encuentran:
+- Gestión de pasajeros y grupos.
+- Reservas y seguimiento de viajes.
+- Planes de cuotas y pagos mediante proveedores especializados.
+- Panel administrativo y reportes.
+- Automatización de procesos y comunicaciones.
+Estas funcionalidades son propuestas futuras, sujetas a análisis, diseño, presupuesto y desarrollo independiente.
+Desarrollo local
+Requisitos: Node.js 24 y npm.
 git clone https://github.com/misaelr5/TDAYS.git
 cd TDAYS
 npm ci
 npm run dev
-Abrir http://127.0.0.1:3210. Evitar ejecutar simultáneamente dos builds sobre el mismo directorio .next.
-Comandos disponibles
-npm run lint                  # ESLint
-npm run typecheck             # Generación de tipos y TypeScript
-npm run verify:media          # Integridad de medios aprobados
-npm test                      # QA aislado + Playwright
-npm run build                 # Build Next.js
-npm run cf:build              # Build OpenNext para Cloudflare
-npm run cf:preview            # Preview local de OpenNext/Cloudflare
-npm run cf:deploy:production  # Script del repo para despliegue productivo
-Antes de publicar, revisar la implementación de scripts/cf-deploy-production.mjs, las credenciales de Wrangler y el dominio de destino. Ejecutar comandos localmente no verifica por sí solo el sitio publicado. No correr cf:deploy:production sobre una cuenta/proyecto sin autorización.
+El entorno de desarrollo se inicia en http://127.0.0.1:3210.
 
-Variables de entorno
-Copiar .env.example solo cuando el entorno lo requiera. El modo seguro por defecto es revisión:
-SITE_INDEXING=false
-SITE_ENV=review
-El código habilita indexación únicamente si SITE_INDEXING=true y el build se realiza para producción. En Cloudflare, SITE_ENV=production identifica ese entorno; si existe VERCEL_ENV, este tiene prioridad en la lógica vigente. La metadata, robots.txt y otros recursos prerenderizados requieren reconstruir y desplegar después de cambiar variables.
+Para validar cambios, el proyecto dispone de comandos como npm run lint, npm run typecheck y npm test. La configuración de producción y las decisiones técnicas están documentadas en la carpeta docs/.
+Proyecto y créditos
+Cliente: Travel Days · Villa Dolores, Córdoba, Argentina.
+Desarrollo web: Reac Studio.
 
-Nunca activar indexación en previews. Tampoco usar robots.txt o noindex como protección para contenido privado.
-4. Despliegue en Cloudflare
-wrangler.jsonc define dos entornos:
-Entorno	Worker	Dominio
-Revisión	travel-days-preview	workers.dev
-Producción	travel-days	traveldays.tur.ar y www.traveldays.tur.ar mediante Custom Domains
-
-
-10. Entrega, mantenimiento y propiedad operativa
-- El cliente debe conservar acceso a la titularidad del dominio, correo, cuentas de infraestructura, ficha de Google y redes.
-- Los cambios de contenido se solicitan al equipo de desarrollo; no hay CMS ni panel de edición en esta versión.
-- Revisar periódicamente dependencias, medios, enlaces, disponibilidad, backups y vencimiento del dominio.
-- Las condiciones comerciales, derechos de imagen y textos legales deben validarse con Travel Days y sus asesores.
-Responsables de desarrollo: Reac Studio · https://reacstudio.com
+El contenido institucional y los recursos visuales pertenecen a sus respectivos titulares y se utilizan conforme a sus autorizaciones o licencias aplicables. Este repositorio no concede por sí mismo una licencia de reutilización de la marca, las imágenes ni los materiales de la agencia.
