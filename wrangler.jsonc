@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  // Review deployment: workers.dev only. No routes or custom domains are configured here;
-  // traveldays.tur.ar is attached only after explicit launch approval (see docs/12).
+  // Default (no --env): review deployment on workers.dev only. Production lives in
+  // env.production below and is deployed with `npm run cf:deploy:production`.
   "name": "travel-days-preview",
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-10-29",
@@ -18,5 +18,19 @@
   },
   "observability": {
     "enabled": true
+  },
+  "env": {
+    // Requires the traveldays.tur.ar zone to be active in the same Cloudflare account.
+    // Custom domains create their DNS records and certificates; www is redirected in next.config.ts.
+    "production": {
+      "name": "travel-days",
+      "workers_dev": false,
+      "routes": [
+        { "pattern": "traveldays.tur.ar", "custom_domain": true },
+        { "pattern": "www.traveldays.tur.ar", "custom_domain": true }
+      ],
+      "images": { "binding": "IMAGES" },
+      "observability": { "enabled": true }
+    }
   }
 }

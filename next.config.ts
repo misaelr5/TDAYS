@@ -8,6 +8,10 @@ const config: NextConfig = {
   turbopack: { root: process.cwd() },
   outputFileTracingRoot: process.cwd(),
   poweredByHeader: false,
+  // One canonical host: www keeps path and query and lands on the apex domain.
+  async redirects() {
+    return [{ source: "/:path*", has: [{ type: "host", value: "www.traveldays.tur.ar" }], destination: "https://traveldays.tur.ar/:path*", permanent: true }];
+  },
   async headers() {
     return [
       {
