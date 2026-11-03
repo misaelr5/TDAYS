@@ -43,13 +43,15 @@ test("publicación: todos los derivados aprobados responden y los videos admiten
       if ("poster" in variant) paths.add(variant.poster.src);
     }
   }
+  // Static Assets omits Content-Length, which stalls HEAD in Playwright's client for
+  // seconds: images are fetched whole and videos through a small byte range.
   for (const path of paths) {
-    const response = await request.head(path);
-    expect(response.status(), path).toBe(200);
     if (path.endsWith(".mp4")) {
       const range = await request.get(path, { headers: { Range: "bytes=0-63" } });
       expect(range.status(), path).toBe(206);
       expect((await range.body()).length, path).toBe(64);
+    } else {
+      expect((await request.get(path)).status(), path).toBe(200);
     }
   }
 });
