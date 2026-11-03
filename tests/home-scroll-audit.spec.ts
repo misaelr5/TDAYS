@@ -1,11 +1,25 @@
 import AxeBuilder from "@axe-core/playwright";
 import { test, expect } from "./fixtures";
 
-for (const width of [320, 390, 768, 1440]) {
+for (const width of [320, 390, 768, 1440, 1857]) {
   test(`Inicio: espaciado, decoración y accesibilidad a ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
     await page.evaluate(() => document.fonts.ready);
+    const hero = page.locator("[data-scenic-hero]");
+    const destinations = page.locator("#destinos");
+    expect(await hero.evaluate(el => getComputedStyle(el).backgroundColor)).toBe(await destinations.evaluate(el => getComputedStyle(el).backgroundColor));
+    const bandBox = (await page.locator("[data-trust-cards]").boundingBox())!;
+    const heroBox = (await hero.boundingBox())!;
+    expect(heroBox.y + heroBox.height - bandBox.y - bandBox.height).toBeGreaterThanOrEqual(24);
+    const plane = destinations.locator('[data-sticker="plane"]');
+    if (width > 1100) {
+      const decoration = (await plane.boundingBox())!;
+      const section = (await destinations.boundingBox())!;
+      expect(decoration.y).toBeGreaterThanOrEqual(section.y);
+      expect(decoration.x + decoration.width + 8).toBeLessThanOrEqual((await destinations.getByRole("link", { name: "Ver todos los destinos" }).boundingBox())!.x);
+      expect(decoration.x).toBeGreaterThan((await destinations.locator("h2").boundingBox())!.x + (await destinations.locator("h2").boundingBox())!.width);
+    } else await expect(plane).toBeHidden();
     const services = page.locator("#consulta");
     await services.scrollIntoViewIfNeeded();
     const title = services.locator("h2");

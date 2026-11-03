@@ -1,5 +1,5 @@
 export type LocalMediaPath = `/media/${string}`;
-export type MediaSlot = "hero" | "graduates" | "graduates-detail" | `school:${"primaria" | "primaria-detail" | "secundaria" | "maestros"}` | "page:destinos" | "page:inicio" | "page:nosotros" | "page:nosotros-historia" | "page:contacto" | `destination:${string}` | `team:${string}`;
+export type MediaSlot = "hero" | "graduates" | "graduates-detail" | `school:${"primaria" | "primaria-detail" | "secundaria" | "maestros"}` | `testimonial:${"primaria" | "pasajeros-2024"}` | "page:destinos" | "page:inicio" | "page:nosotros" | "page:nosotros-historia" | "page:contacto" | `destination:${string}` | `team:${string}`;
 export type ImageSource = { src: LocalMediaPath; focal: { x: number; y: number } };
 type MediaBase = {
   id: string;
@@ -12,14 +12,14 @@ type MediaBase = {
 export type ImageAsset = MediaBase & { type: "image"; desktop: ImageSource; mobile?: ImageSource };
 export type VideoAsset = MediaBase & {
   type: "video";
-  decorative: true;
+  decorative: boolean;
   desktop: { src: LocalMediaPath; poster: ImageSource };
   mobile?: { src: LocalMediaPath; poster: ImageSource };
 };
 export type MediaAsset = ImageAsset | VideoAsset;
 export type MediaManifest = Partial<Record<MediaSlot, MediaAsset>>;
 export type PublicImage = Pick<ImageAsset, "type" | "alt" | "desktop" | "mobile">;
-export type PublicVideo = Pick<VideoAsset, "type" | "desktop" | "mobile">;
+export type PublicVideo = Pick<VideoAsset, "type" | "decorative" | "desktop" | "mobile">;
 export type PublicMedia = PublicImage | PublicVideo;
 
 // Publication decisions and their evidence are consumed on the server only.
@@ -65,6 +65,20 @@ const destinationMedia: MediaManifest = {
   "destination:valeria-del-mar": commons("valeria-del-mar", "Pasarela de madera entre los médanos con vegetación de Valeria del Mar, en la costa bonaerense.", "Pasarela en valeriadelmar 02.jpg", { author: "Fernando Martello", license: "CC BY-SA 4.0" }, { x: 38, y: 66 }),
 };
 export const mediaManifest: MediaManifest = {
+  "testimonial:primaria": {
+    id: "testimonio-primaria", type: "video", decorative: false,
+    alt: "Testimonio en video sobre viajes de primaria.",
+    provenance: "Original privado: testimonios/Testimonios clientes primaria.mp4. SHA-256 8ccf00013a7307aa07d8be4eb1c0cab2de1182dce869223831bdd47ea2092e04. Video completo (74,68 s), H.264 y audio AAC original, sin recortes ni ampliación; poster de 23,90 s. Derivados sin metadatos de origen, 02/11/2026. docs/AUDITORIA-TESTIMONIOS-UX.md.",
+    authorization: { status: "approved", evidence: "Confirmación del usuario del 02/11/2026 al aprobar el prompt de testimonios: 'usalo, te doy permos' y 'hacelo'. Autoriza el uso web de imagen y voz de los dos archivos de la carpeta testimonios en esta entrega local. Evidencia: declaración del usuario en la conversación; no se aportaron documentos independientes ni verificación de edades. No se extiende a otras carpetas." },
+    desktop: { src: "/media/travel-days/testimonials/primaria.mp4", poster: { src: "/media/travel-days/testimonials/primaria.webp", focal: { x: 50, y: 50 } } },
+  },
+  "testimonial:pasajeros-2024": {
+    id: "testimonio-pasajeros-2024", type: "video", decorative: false,
+    alt: "Testimonios de pasajeros en un entorno de sierras.",
+    provenance: "Original privado: testimonios/Testimonios Pax 2024.mp4. SHA-256 08414faa1ccbd3997b64dcdbaad6340fedccfc572489e20b4e3a8e13974d6847. Video completo (123,72 s), H.264 y AAC, sin recortes ni ampliación; poster de 39,59 s. La referencia 2024 proviene del nombre del archivo, no de una fecha comprobada. Derivados sin metadatos de origen, 02/11/2026. docs/AUDITORIA-TESTIMONIOS-UX.md.",
+    authorization: { status: "approved", evidence: "Misma confirmación del usuario del 02/11/2026 para los dos archivos de testimonios: autoriza el uso web de imagen y voz. El video muestra personas jóvenes; no se verificaron edades. Se registra la declaración del usuario como evidencia, sin atribuirle un consentimiento documental independiente. No autoriza otros recursos ni un deploy." },
+    desktop: { src: "/media/travel-days/testimonials/pasajeros-2024.mp4", poster: { src: "/media/travel-days/testimonials/pasajeros-2024.webp", focal: { x: 50, y: 50 } } },
+  },
   "school:primaria": {
     id: "primaria-tio-joe", type: "video", decorative: true,
     alt: "",
@@ -157,7 +171,8 @@ export function approvedMedia(slot: MediaSlot, manifest: MediaManifest = mediaMa
   if (asset.type === "image") {
     return asset.alt.trim() && validImage(asset.desktop) && (!asset.mobile || validImage(asset.mobile)) ? asset : null;
   }
-  if (asset.type !== "video" || asset.decorative !== true) return null;
+  // Narrated testimonials must never pass as silent, decorative background video.
+  if (asset.type !== "video" || asset.decorative !== !slot.startsWith("testimonial:")) return null;
   const variants = [asset.desktop, ...(asset.mobile ? [asset.mobile] : [])];
   return variants.every(variant => variant && validMediaPath(variant.src, "video") && validImage(variant.poster)) ? asset : null;
 }

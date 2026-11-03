@@ -38,5 +38,5 @@ export function resolveMedia(slot: MediaSlot, manifest: MediaManifest = mediaMan
   // Deliberately omit authorization, provenance and internal identifiers.
   return asset.type === "image"
     ? { type: "image", alt: asset.alt, desktop: asset.desktop, mobile: asset.mobile }
-    : { type: "video", desktop: asset.desktop, mobile: asset.mobile };
+    : { type: "video", decorative: asset.decorative, desktop: asset.desktop, mobile: asset.mobile };
 }

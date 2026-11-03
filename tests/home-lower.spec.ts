@@ -8,8 +8,8 @@ for (const width of [375, 768, 1440]) {
     await ready(page);
     const graduates = page.locator("#egresados");
     const services = page.locator("#consulta");
-    const positions = await page.locator("#destinos, #egresados, #consulta, #turismo-chino, footer").evaluateAll(elements => elements.map(element => ({ id: element.id, top: element.getBoundingClientRect().top, bottom: element.getBoundingClientRect().bottom })));
-    expect(positions.map(position => position.id)).toEqual(["destinos", "egresados", "consulta", "turismo-chino", "navegacion"]);
+    const positions = await page.locator("#destinos, #egresados, #testimonios, #consulta, #turismo-chino, footer").evaluateAll(elements => elements.map(element => ({ id: element.id, top: element.getBoundingClientRect().top, bottom: element.getBoundingClientRect().bottom })));
+    expect(positions.map(position => position.id)).toEqual(["destinos", "egresados", "testimonios", "consulta", "turismo-chino", "navegacion"]);
     for (let index = 1; index < positions.length; index++) {
       expect(Math.abs(positions[index].top - positions[index - 1].bottom)).toBeLessThanOrEqual(1);
     }
@@ -48,6 +48,6 @@ test("Home inferior: selección con teclado sin JavaScript y reflow a 200%", asy
     await page.locator("body").evaluate(element => { element.style.zoom = "2"; });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await section.getByRole("link", { name: "Ver preguntas frecuentes" }).click();
-    await expect(page).toHaveURL(/\/destinos#egresados-preguntas$/);
+    await expect(page).toHaveURL(/\/nosotros#viajes-escolares$/);
   } finally { await context.close(); }
 });

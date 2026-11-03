@@ -123,7 +123,6 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
-              data-nav-egresados={link.label === "Egresados" || undefined}
               aria-current={pathname === link.href ? "page" : undefined}
               data-glide-item
               data-glide-active={pathname === link.href || undefined}

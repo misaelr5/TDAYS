@@ -19,7 +19,7 @@ for (const width of widths) {
       range.selectNodeContents(text!);
       return [...range.getClientRects()].filter(rect => rect.width > 1 && rect.height > 1).length;
     });
-    expect(titleLines, "Egresados debe ocupar un solo renglón al tamaño de lectura normal").toBe(1);
+    expect(titleLines, "Egresados debe ocupar un solo renglón al tamaño normal").toBe(1);
     await expect(hero.getByRole("form", { name: "Prepará tu consulta de viaje" })).toBeVisible();
     const cards = hero.locator("[data-trust-card]");
     await expect(cards).toHaveCount(4);

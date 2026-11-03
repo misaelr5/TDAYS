@@ -29,7 +29,7 @@ export function MediaContent({ asset, allowVideo = false, sizes, eager = false }
   const poster: PublicImage = { type: "image", alt: "", desktop: asset.desktop.poster, mobile: asset.mobile?.poster };
   const image = <ResponsiveImage asset={poster} sizes={sizes} eager={eager} />;
   // Linked postcards use only the poster: no nested pause button inside an anchor.
-  return allowVideo ? <AmbientVideo asset={asset}>{image}</AmbientVideo> : image;
+  return allowVideo && asset.decorative ? <AmbientVideo asset={asset}>{image}</AmbientVideo> : image;
 }
 export function ApprovedMedia({ slot, sizes, eager = false, children }: { slot: MediaSlot; sizes?: string; eager?: boolean; children: ReactNode }) {
   const asset = resolveMedia(slot);

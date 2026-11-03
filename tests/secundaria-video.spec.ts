@@ -14,7 +14,8 @@ for (const level of ["primaria", "secundaria"]) for (const width of [390, 1440])
     // Cold WebKit decoding can outlast the default 5 s while the poster remains visible.
     await expect.poll(() => video.evaluate(v => !(v as HTMLVideoElement).paused && (v as HTMLVideoElement).currentTime > 0), { timeout: 15_000 }).toBe(true);
     expect(await video.evaluate(v => (v as HTMLVideoElement).videoWidth / (v as HTMLVideoElement).videoHeight)).toBeCloseTo(3 / 2, 2);
-    expect(await video.evaluate(v => (v as HTMLVideoElement).muted && (v as HTMLVideoElement).loop && (v as HTMLVideoElement).playsInline)).toBe(true);
+    expect(await video.evaluate(v => (v as HTMLVideoElement).muted && (v as HTMLVideoElement).loop)).toBe(true);
+    await expect(video).toHaveAttribute("playsinline", "");
     await card.getByRole("button", { name: "Pausar video de fondo" }).click();
     await expect.poll(() => video.evaluate(v => (v as HTMLVideoElement).paused)).toBe(true);
     await page.locator("h1").scrollIntoViewIfNeeded();

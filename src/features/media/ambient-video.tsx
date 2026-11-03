@@ -24,7 +24,7 @@ export function AmbientVideo({ asset, children }: { asset: PublicVideo; children
   const [hasFrame, setHasFrame] = useState(false);
   useEffect(() => {
     const video = ref.current;
-    if (!video || mode === "off" || !window.IntersectionObserver) return;
+    if (!video || !asset.decorative || mode === "off" || !window.IntersectionObserver) return;
     const source = mode === "mobile" ? asset.mobile ?? asset.desktop : asset.desktop;
     // Wait for responsive selection instead of falling back to the original:
     // currentSrc can still be empty at hydration on a cold or slow connection.

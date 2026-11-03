@@ -88,7 +88,7 @@ export function AgencyNarrative() {
               <p>Una agencia habilitada, con calidad certificada.</p>
             </div>
             <dl className={styles.facts}>
-              <div style={order(0)}><dt>Experiencia de Javier en turismo</dt><dd><span data-count={credentials.experienceYears}>{credentials.experienceYears}</span> años</dd></div>
+              <div style={order(0)}><dt>Experiencia en turismo</dt><dd><span data-count={credentials.experienceYears}>{credentials.experienceYears}</span> años</dd></div>
               <div style={order(1)}><dt>Fundación de Travel Days</dt><dd>{credentials.founded}</dd></div>
               <div style={order(2)}><dt>Legajo oficial N.º</dt><dd>{credentials.license}</dd></div>
               <div style={order(3)}><dt>Certificación</dt><dd className={styles.factText}>{credentials.quality}</dd></div>
