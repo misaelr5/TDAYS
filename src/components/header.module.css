@@ -35,6 +35,8 @@
 
 .dialog.dialog { inset: 0; width: 100%; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); border: 0; overflow-y: auto; overscroll-behavior: contain; background: transparent; backdrop-filter: none; color: #fff; }
 .dialog::backdrop { background: #0c1b3047; backdrop-filter: blur(10px) saturate(140%); }
+/* The panel covers the phone screen, so a blurred backdrop is pure GPU cost there. */
+@media (max-width: 767px) { .dialog::backdrop { background: #0c1b30b3; backdrop-filter: none; } }
 .panel { display: flex; flex-direction: column; min-height: calc(100svh - 24px); padding: 18px 18px 20px; overflow: hidden; border: 1px solid #ffffff4d; border-radius: 32px; background: var(--action); box-shadow: 0 24px 70px -30px #0c1b30; }
 /* Brand-orange glows sit on the corners, away from the white text. */
 .panel::before { content: ""; position: absolute; z-index: -1; top: -120px; right: -110px; width: 260px; height: 260px; border-radius: 50%; background: radial-gradient(closest-side, #f58634b3, #f5863400); pointer-events: none; }

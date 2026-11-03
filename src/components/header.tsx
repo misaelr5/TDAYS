@@ -16,6 +16,8 @@ import styles from "./header.module.css";
 gsap.registerPlugin(useGSAP);
 
 const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+// Phones skip the full-page view transition: snapshotting the page (and its playing video) is what made the menu stutter.
+const compactViewport = () => matchMedia("(max-width: 767px), (pointer: coarse)").matches;
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -30,7 +32,7 @@ export function Header() {
   // The toggle morphs into the glass panel (and back) through a view transition.
   function setMenu(next: boolean) {
     if (next === open) return;
-    if (typeof document.startViewTransition !== "function" || reducedMotion()) { setOpen(next); return; }
+    if (typeof document.startViewTransition !== "function" || reducedMotion() || compactViewport()) { setOpen(next); return; }
     const root = document.documentElement;
     root.dataset.menuTransition = next ? "open" : "close";
     const transition = document.startViewTransition(() => flushSync(() => setOpen(next)));
@@ -104,8 +106,10 @@ export function Header() {
   useGSAP(() => {
     if (!open || !panel.current || reducedMotion()) return;
     const morphing = document.documentElement.dataset.menuTransition === "open";
-    gsap.timeline({ defaults: { ease: "power3.out" } })
-      .from("[data-menu-item]", { y: 26, autoAlpha: 0, filter: "blur(6px)", duration: .6, stagger: .055, delay: morphing ? .18 : 0, clearProps: "filter" })
+    const timeline = gsap.timeline({ defaults: { ease: "power3.out" } });
+    if (!morphing) timeline.from(panel.current, { y: 18, scale: .985, autoAlpha: 0, duration: .32, clearProps: "transform" }, 0);
+    timeline
+      .from("[data-menu-item]", { y: 22, autoAlpha: 0, duration: .45, stagger: .045, delay: morphing ? .18 : 0 }, morphing ? undefined : .08)
       .from("[data-menu-foot]", { y: 14, autoAlpha: 0, duration: .5, stagger: .06 }, "-=.35")
       // Stickers pop in on their own clock, alongside the links.
       .from("[data-menu-sticker]", { scale: .4, rotate: -24, autoAlpha: 0, duration: .55, stagger: .1, ease: "back.out(2.2)" }, morphing ? .35 : .15);
