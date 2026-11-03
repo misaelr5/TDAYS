@@ -13,6 +13,7 @@
     "build:qa": "node scripts/qa.mjs build",
     "test": "node scripts/qa.mjs test",
     "test:visual": "node scripts/qa.mjs test tests/visual.spec.ts",
+    "test:remote": "playwright test -c playwright.remote.config.ts",
     "cf:build": "opennextjs-cloudflare build",
     "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",

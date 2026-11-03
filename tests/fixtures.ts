@@ -19,7 +19,9 @@ export const test = base.extend<{ networkGuard: void }>({
         await route.continue();
       }
     });
-    context.on("page", page => page.on("pageerror", error => errors.push(error.message)));
+    // WebKit reports an RSC prefetch cancelled by reload/back as an access-control error.
+    const cancelledRsc = /[?&]_rsc=[\w-]+ due to access control checks\.$/;
+    context.on("page", page => page.on("pageerror", error => { if (!cancelledRsc.test(error.message)) errors.push(error.message); }));
     context.on("request", request => {
       if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method())) writes.push(request.url());
     });
