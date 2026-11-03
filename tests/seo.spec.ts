@@ -1,4 +1,4 @@
-import { indexingEnabled, publicOrigin, publicPaths, publicUrl } from "../src/config/seo";
+import { indexingEnabled, publicOrigin, publicPaths, publicUrl, socialImage } from "../src/config/seo";
 import { site } from "../src/config/site";
 import { test, expect } from "./fixtures";
 import { spawnSync } from "node:child_process";
@@ -44,7 +44,7 @@ test(`SEO real: modo ${indexingEnabled ? "indexable" : "revisión"} en las cinco
     const schema = await page.locator('script[type="application/ld+json"]').allTextContents();
     expect(schema).toHaveLength(1);
     const organization = JSON.parse(schema[0]);
-    expect(organization).toEqual({ "@context": "https://schema.org", "@type": "TravelAgency", "@id": `${publicOrigin}/#organization`, name: site.name, url: publicOrigin, telephone: site.phone, email: site.email, address: site.postalAddress, openingHours: site.openingHours, sameAs: [site.instagram, site.facebook] });
+    expect(organization).toEqual({ "@context": "https://schema.org", "@type": "TravelAgency", "@id": `${publicOrigin}/#organization`, name: site.name, url: publicOrigin, image: socialImage.url, telephone: site.phone, email: site.email, address: site.postalAddress, openingHours: site.openingHours, sameAs: [site.instagram, site.facebook] });
     expect(organization).not.toHaveProperty("aggregateRating");
     expect(organization).not.toHaveProperty("offers");
   }

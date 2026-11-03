@@ -5,7 +5,7 @@ import { Footer } from "@/components/sections";
 import { MotionProvider } from "@/components/motion";
 import { PageSlide } from "@/components/page-slide";
 import { pageMetadata } from "@/config/metadata";
-import { publicOrigin } from "@/config/seo";
+import { publicOrigin, socialImage } from "@/config/seo";
 import { site } from "@/config/site";
 import { ContactEvents } from "@/features/contact/contact-events";
 import { ScrollReveal } from "@/features/agency/scroll-reveal";
@@ -30,6 +30,7 @@ const organization = {
   "@id": `${publicOrigin}/#organization`,
   name: site.name,
   url: publicOrigin,
+  image: socialImage.url,
   telephone: site.phone,
   email: site.email,
   address: site.postalAddress,
