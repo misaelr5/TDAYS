@@ -1,6 +1,8 @@
 # Confirmaciones y decisiones de Javier
 
-28/10/2026. No es asesoramiento jurídico definitivo. Publicación e indexación siguen sin autorización.
+28/10/2026. No es asesoramiento jurídico definitivo.
+
+**Actualización 02/11/2026:** según informó el usuario, Javier aprueba los textos vigentes (hero, trust cards, sección China y términos) tal como están publicados, y se autoriza el lanzamiento e indexación en `traveldays.tur.ar`. Observación técnica que se mantiene: los términos citan la Ley 18.829, derogada por el DNU 70/2023 (art. 349); actualizar la cita cuando la asesoría lo indique.
 
 ## Datos contrastados
 
