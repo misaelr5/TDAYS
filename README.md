@@ -1,116 +1,144 @@
-# Travel Days
+Alcance: MVP público enfocado en presentar la agencia, mostrar destinos y viajes escolares y transformar interés en consultas a través de WhatsApp. No es un sistema de reservas ni de cobros.
 
-**Estado vigente (03/11/2026):** ver [docs/entrega/](docs/entrega/): [post-lanzamiento técnico](docs/entrega/POST_LANZAMIENTO.md), [documentación para el cliente](docs/entrega/DOCUMENTACION_CLIENTE.md) y [virtudes](docs/entrega/VIRTUDES_TRAVEL_DAYS.md). La preview está publicada en Cloudflare Workers; la activación en `traveldays.tur.ar` espera la delegación DNS en NIC Argentina. Los párrafos siguientes son antecedentes.
+Estado de dominio al 03/11/2026: la delegación de traveldays.tur.ar se configuró en NIC Argentina; la activación y el funcionamiento del dominio definitivo deben verificarse antes de anunciar el lanzamiento como completado. El repositorio por sí solo no prueba el estado operativo actual.
 
-Revisión vigente del 01/11: [video anterior restaurado y nuevo módulo de Egresados](docs/14-REVISION-EGRESADOS-Y-VIDEO-2026-11-01.md). El [informe previo](docs/13-AUDITORIA-DISENO-2026-11-01.md) se conserva como antecedente. Trabajo local, sin publicación.
+- Dominio objetivo: https://traveldays.tur.ar
+- Repositorio: https://github.com/misaelr5/TDAYS
+- Desarrollo: Reac Studio
+- Documentación complementaria: [`docs/`](docs/)
+1. Qué incluye
+Área	Funcionalidad
+Inicio	Presentación de la agencia con video institucional y accesos a consultas.
+Destinos	Catálogo tipado de 8 propuestas con descripción, imágenes y CTA contextual.
+Viajes escolares	Primaria, Secundaria y Maestros / El Maestrazo, con medios y guías de consulta.
+Testimonios	Videos de pasajeros con reproducción bajo interacción y acceso a reseñas de Google.
+Nosotros	Historia, oficina, equipo, acompañamiento y mapa cargado a demanda.
+Contacto	Formulario que compone un borrador de mensaje y abre WhatsApp para revisión y envío manual.
+Visibilidad	Metadata, canonical, Open Graph, sitemap y JSON-LD TravelAgency.
+Institucional	Información de turismo receptivo desde China, redes y términos y condiciones.
 
-Revisión actual del 29/10: [entrega, validación y pendientes](docs/11-ENTREGA-2026-10-29.md), con [evaluación Cloudflare](docs/08-CLOUDFLARE-EVALUATION-2026-10-29.md). Los informes del 28/10 se conservan como antecedentes.
 
-Web de consulta de la agencia de Villa Dolores, Córdoba. RECREAR es la base definitiva; el material y las referencias históricas se conservan. El origen de producción confirmado es **https://traveldays.tur.ar**, sin `www`. Este trabajo es local: no acredita despliegue ni configuración del dominio.
+Destinos actuales: Brasil, Caribe, Carnavales de Jujuy, Cataratas del Iguazú, Los Túneles, Festival de Jesús María, Bayahíbe y Valeria del Mar.
+Rutas públicas
+Ruta	Propósito
+/	Inicio y propuesta comercial.
+/destinos	Destinos y escolares.
+/nosotros	Identidad, historia y equipo.
+/contacto	Formulario, datos y reseñas.
+/terminos	Condiciones comerciales, sujetas a revisión jurídica.
 
-## Desarrollo y arquitectura
 
-Node 24 (`.nvmrc`) y npm con lockfile. Next 16.4.2 App Router, React 19.3.1, TypeScript estricto y Tailwind 4. La interacción reutiliza Motion, GSAP, controles nativos y CSS Modules. No se añadieron dependencias en la estabilización.
+El formulario no persiste consultas ni datos personales en una base propia y no envía mensajes automáticamente. El usuario debe confirmar el envío en WhatsApp. Abrir un enlace no implica una consulta recibida, una reserva confirmada ni un pago.
 
-```powershell
+2. Tecnologías y arquitectura
+- Runtime: Node.js 24 y npm (package-lock.json).
+- Frontend: Next.js 16.4.2 App Router, React 19.3.1, TypeScript estricto, Tailwind CSS 4 y CSS Modules.
+- Interacciones: Motion, GSAP y controles nativos.
+- Hosting: Cloudflare Workers mediante @opennextjs/cloudflare y Wrangler.
+- QA: Playwright (Chromium, Firefox y WebKit), Axe y validadores internos de medios.
+Organización principal
+src/
+  app/                    # App Router, páginas, layouts y metadata de archivos
+  components/             # Componentes reutilizables
+  config/
+    seo.ts                # URL canónica y política de indexación
+    metadata.ts           # Metadata de cada página
+    site.ts               # Datos publicados de la agencia
+    media.ts              # Procedencia y permisos de medios
+  features/
+    agency/               # Historia, oficina y equipo
+    contact/              # Formulario, validación y borradores
+    destinations/         # Catálogo de destinos
+    graduates/            # Primaria, Secundaria y Maestros
+    media/                # Recursos audiovisuales aprobados
+  lib/                    # Utilidades compartidas
+public/                   # Medios optimizados y recursos públicos
+docs/                     # Auditorías, decisiones y guías
+scripts/                  # Verificación y tareas de build/QA
+tests/                    # Pruebas automatizadas
+wrangler.jsonc            # Cloudflare preview / production
+El sitio separa la presentación pública, los datos de configuración y las funcionalidades. Esta modularidad facilita estudiar una ampliación, pero no significa que ya existan base de datos, APIs de negocio, autenticación o pagos.
+3. Desarrollo local
+Requisitos: Node.js 24, npm y acceso autorizado al repositorio.
+git clone https://github.com/misaelr5/TDAYS.git
+cd TDAYS
 npm ci
 npm run dev
-```
+Abrir http://127.0.0.1:3210. Evitar ejecutar simultáneamente dos builds sobre el mismo directorio .next.
+Comandos disponibles
+npm run lint                  # ESLint
+npm run typecheck             # Generación de tipos y TypeScript
+npm run verify:media          # Integridad de medios aprobados
+npm test                      # QA aislado + Playwright
+npm run build                 # Build Next.js
+npm run cf:build              # Build OpenNext para Cloudflare
+npm run cf:preview            # Preview local de OpenNext/Cloudflare
+npm run cf:deploy:production  # Script del repo para despliegue productivo
+Antes de publicar, revisar la implementación de scripts/cf-deploy-production.mjs, las credenciales de Wrangler y el dominio de destino. Ejecutar comandos localmente no verifica por sí solo el sitio publicado. No correr cf:deploy:production sobre una cuenta/proyecto sin autorización.
 
-El servidor de desarrollo utiliza `http://127.0.0.1:3210`. No ejecutar builds sobre `.next` mientras un servidor sirve ese directorio. QA usa `.next-qa`, `tsconfig.qa.json`, un puerto separado y un lock; build y generación de tipos deben ejecutarse secuencialmente.
+Variables de entorno
+Copiar .env.example solo cuando el entorno lo requiera. El modo seguro por defecto es revisión:
+SITE_INDEXING=false
+SITE_ENV=review
+El código habilita indexación únicamente si SITE_INDEXING=true y el build se realiza para producción. En Cloudflare, SITE_ENV=production identifica ese entorno; si existe VERCEL_ENV, este tiene prioridad en la lógica vigente. La metadata, robots.txt y otros recursos prerenderizados requieren reconstruir y desplegar después de cambiar variables.
 
-| Área | Ubicación |
-|---|---|
-| Páginas, layout y metadata de archivos | `src/app/` |
-| Origen, rutas públicas e interruptor SEO | `src/config/seo.ts` |
-| Metadata por página | `src/config/metadata.ts` |
-| Contactos y redes publicados | `src/config/site.ts` |
-| Permisos, procedencia y créditos de medios | `src/config/media.ts` |
-| Catálogo tipado de ocho destinos | `src/features/destinations/` |
-| Capítulos y equipo de Nosotros | `src/features/agency/` |
-| Viajes escolares y guía para grupos | `src/features/graduates/` |
-| Borradores y validación de contacto | `src/features/contact/` |
-| Decodificación segura de fragmentos | `src/lib/fragment.ts` |
-| Build aislado y pruebas | `scripts/qa.mjs`, `tests/` |
+Nunca activar indexación en previews. Tampoco usar robots.txt o noindex como protección para contenido privado.
+4. Despliegue en Cloudflare
+wrangler.jsonc define dos entornos:
+Entorno	Worker	Dominio
+Revisión	travel-days-preview	workers.dev
+Producción	travel-days	traveldays.tur.ar y www.traveldays.tur.ar mediante Custom Domains
 
-El contenido y el catálogo se renderizan en servidor. Componentes cliente añaden navegación, paneles, carrusel y animación. La URL determina el capítulo de Nosotros, incluidos enlaces a encabezados internos; los enlaces conservan alternativas sin JavaScript. Inter se carga localmente, sin peticiones a Google Fonts.
 
-## Páginas y consultas
+Checklist de salida a producción
+1. Confirmar aprobación de los textos y revisión comercial/jurídica de términos, registro, autorizaciones de imagen/voz y afirmaciones de exclusividad.
+2. Verificar en NIC Argentina la delegación efectiva a los nameservers asignados por Cloudflare; comprobar que la zona aparezca como Active. No confundir DNS configurado con zona activa.
+3. Revisar registros de correo existentes (MX/TXT/SPF/DMARC) antes de cualquier cambio de zona o de DNS.
+4. Comprobar que travel-days sea el Worker correcto y asociar los Custom Domains previstos, sin registros A/AAAA/CNAME en conflicto.
+5. Definir SITE_INDEXING=true y SITE_ENV=production solo cuando se apruebe el lanzamiento; reconstruir y desplegar el artefacto productivo con esas variables.
+6. Comprobar en el dominio real: inicio, 5 rutas, 404, destinos, CTA de WhatsApp, formularios, fotos/videos, mapa, menú responsive y testimonios con audio.
+7. Validar HTTPS, redirección de HTTP a HTTPS, redirección de www al origen principal y preservación de ruta/query.
+8. Auditar headers efectivos, canonical, Open Graph, /robots.txt, /sitemap.xml y JSON-LD en el HTML servido por Cloudflare.
+9. Vincular Search Console y enviar sitemap si corresponde; monitorear errores y rendimiento tras la activación.
+Nota sobre el historial: algunos documentos fechados en octubre o noviembre reflejan estados anteriores del hosting, del sitio antiguo o de los DNS. Contrastarlos con el despliegue actual antes de usarlos como prueba de producción.
+5. SEO / GEO y accesibilidad
+- Canonical principal configurado para https://traveldays.tur.ar, sin www.
+- Títulos, descripciones, OG/Twitter, imagen social y sitemap.xml para las cinco rutas públicas.
+- JSON-LD TravelAgency con datos de la agencia; no se inventan calificaciones, ofertas ni certificaciones.
+- HTML público renderizado y enlaces descriptivos; componentes con alternativas y preferencias de movimiento reducido.
+- Playwright/Axe cubren flujos, navegación, responsive y parte de accesibilidad.
+No se garantizan posiciones en Google ni apariciones en asistentes de IA. La indexación depende de configuración real, rastreo, contenido y herramientas de buscadores; la auditoría de SEO del 28/10 documenta los límites de lo medido.
+6. Medios, privacidad y seguridad
+- Fotos y videos se publican desde un manifiesto de medios aprobados; los originales privados no deben versionarse ni servirse desde public/.
+- Las autorizaciones de imagen y voz, especialmente de menores, deben conservarse y revisarse para cada uso.
+- La web pública no cuenta con base de datos de consultas, usuarios ni pasarela de pagos.
+- La validación local, la CSP y los tests mejoran la seguridad, pero no sustituyen monitoreo, control de permisos o una auditoría integral de producción.
+- La responsabilidad sobre los datos que puedan conservar WhatsApp, Google u otros servicios es diferente de la ausencia de almacenamiento propio del formulario.
+7. Validación y evidencia
+El repositorio contiene pruebas y documentos históricos de revisión. En particular:
+- [`docs/04-QA-RESULTS.md`](docs/04-QA-RESULTS.md): ejecuciones Playwright/Axe fechadas el 28/10/2026. Documenta una suite con 436 aprobadas, 8 omitidas y 0 fallidas antes de la última modificación puntual, seguida de 72 pruebas focalizadas aprobadas. No debe presentarse como auditoría final del despliegue del 03/11.
+- [`docs/02-SEO-GEO-AUDIT.md`](docs/02-SEO-GEO-AUDIT.md): metadata, indexación, JSON-LD y comprobaciones pendientes.
+- [`docs/03-SECURITY-AUDIT.md`](docs/03-SECURITY-AUDIT.md): controles y hallazgos de seguridad.
+- [`docs/07-CLIENT-PENDING-DECISIONS.md`](docs/07-CLIENT-PENDING-DECISIONS.md): aprobaciones y temas comerciales/jurídicos.
+- [`docs/05-DEPLOYMENT-CHECKLIST.md`](docs/05-DEPLOYMENT-CHECKLIST.md): verificaciones del lanzamiento.
+Ejecutar controles sobre el código y el dominio final tras cada modificación significativa; no extrapolar resultados de versiones anteriores.
+8. Limitaciones de este MVP
+No incluye: cuentas, autenticación, reservas online, pagos, cuotas, documentos privados, dashboard administrativo, CMS para editar contenidos, envío automático de formularios ni analítica de tráfico conectada.
 
-- `/`: hero con el video autorizado original y su póster responsive, consulta con borrador, propuestas visibles de Egresados de primaria y secundaria, ocho destinos, otras formas de viajar y turismo receptivo desde China.
-- `/destinos`: catálogo para consulta y módulo escolar ampliado con Primaria, Secundaria y Maestros/El Maestrazo.
-- `/nosotros`: oficina, historia, respaldo declarado, equipo, acompañamiento y mapa de Google que solo carga tras solicitarlo.
-- `/contacto`: Mi viaje (formulario), La agencia (ubicación y horarios) y Mi experiencia (enlace a la ficha de Google para reseñas).
-- `/terminos`: condiciones existentes, pendientes de revisión comercial/legal. No fueron reescritas en esta etapa.
-- `/quienes-somos` está retirada y devuelve **404**: no es alias ni redirección y no figura en el sitemap.
+Pendientes a valorar: subtítulos de testimonios, revisión legal de términos y afirmaciones institucionales, validación manual del dominio y Search Console, mediciones de rendimiento móvil en producción, monitoreo y analítica consensuada.
+9. Futuro sistema de gestión (propuesta, no implementado)
+Una siguiente fase puede incorporar:
+1. Accesos seguros para agencia y responsables de contrataciones.
+2. Gestión de grupos, pasajeros, viajes y contratos.
+3. Planes de cuotas, pagos, comprobantes y conciliación.
+4. Panel administrativo, permisos, auditoría y seguimiento.
+5. Notificaciones y reportes priorizados según necesidades reales.
+La arquitectura futura está analizada en [`docs/06-FUTURE-PLATFORM-ARCHITECTURE.md`](docs/06-FUTURE-PLATFORM-ARCHITECTURE.md). La elección entre un único proyecto modular, app independiente o subdominio debe tomarse con el alcance, el tratamiento de datos de menores, la seguridad y los proveedores de pago ya definidos. No crear autenticación o procesamiento de tarjetas desde cero sin evaluar soluciones mantenidas.
 
-El formulario prepara un mensaje revisable y abre WhatsApp cuando el visitante lo decide. Editar los datos invalida el borrador. No hay persistencia de formularios, backend, cuentas, reservas, pagos o administración. Preparar un borrador o abrir WhatsApp no confirma envío, reserva ni compra. La reseña se escribe y publica en Google, no en la web. Su apertura definitiva debe comprobarse manualmente; no se envían mensajes ni reseñas desde las pruebas.
-
-## Medios
-
-El estado conservado del manifiesto registra 42 variantes aprobadas: fotografías licenciadas de los ocho destinos con créditos visibles, oficina, siete retratos, fotos escolares, la foto de Maestros y videos/posters del hero y la historia. Ese número incluye variantes y recursos compartidos; no significa 42 fotos diferentes. La incorporación concurrente de la foto P130 y el video V067 tiene autorizaciones específicas del 28/10/2026 registradas en el manifiesto; no la realizó la estabilización.
-
-Los originales privados están excluidos de Git y del bundle. Las fotos escolares P168–P170 tienen autorización registrada. La autorización de P130 no se extiende al resto de fotos de la fiesta. Dos perfiles del equipo conservan fallbacks mientras no haya retratos aprobados. Historia utiliza el recurso de V067; con movimiento reducido muestra solo su poster. Ver [medios](docs/Medios.md), [destinos y licencias](docs/Media-Destinos.md) y [viajes escolares](docs/School-Travel-Redesign.md); los documentos históricos pueden describir permisos anteriores al manifiesto actual.
-
-`src/app/opengraph-image.jpg` es una composición estática de 1200×630 hecha con la fotografía de oficina ya aprobada (`page:nosotros`) y texto existente. Next la sirve como metadata de archivo. Puede reproducirse con `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/generate-social-image.mjs`; usa el procesador de imágenes instalado por Next, sin añadir dependencias. Revisar visualmente cualquier regeneración.
-
-## SEO preparado, apagado por defecto
-
-`src/config/seo.ts` centraliza `https://traveldays.tur.ar` y las cinco rutas públicas. Todas tienen canonical y metadata social con URLs absolutas. El sitemap incluye únicamente esas rutas y omite fechas de modificación no documentadas. JSON-LD describe una `TravelAgency` con nombre, URL, teléfono, email, dirección estructurada, horarios y redes ya publicados; no agrega calificaciones, ofertas o certificaciones.
-
-La indexación exige `SITE_INDEXING=true` y entorno de build `production`. `VERCEL_ENV` tiene precedencia sobre `SITE_ENV`; una preview sigue bloqueada aunque se configure el flag. Fuera de Vercel, usar `SITE_ENV=production` únicamente para el lanzamiento aprobado. Ausente, `false` o cualquier otro valor mantiene revisión:
-
-| Configuración del build | HTML | robots.txt | Headers |
-|---|---|---|---|
-| Ausente / distinta de `true` | `noindex, nofollow` | `Disallow: /`, sin referencia al sitemap | `X-Robots-Tag: noindex, nofollow` en todas las rutas |
-| `SITE_INDEXING=true` en entorno production | `index, follow` en páginas públicas | `Allow: /` y sitemap absoluto | Sin bloqueo global de indexación |
-| Flag true en preview/development/review | `noindex, nofollow` | `Disallow: /` | Bloqueo global |
-
-El sitemap existe en ambos modos. En revisión queda cubierto por el header y no se anuncia en robots. Las 404 siguen sin canonical y con `noindex` aunque el resto del sitio esté habilitado.
-
-La metadata y estas rutas se prerenderizan: **cambiar una variable sin reconstruir no actualiza los archivos generados**. Usar el mismo valor durante build y ejecución. Nunca habilitarlo en previews. `.env.example` documenta el valor seguro; no se creó un `.env` que active indexación.
-
-Bloquear rastreo impide que Google lea el `noindex` HTML. Esta combinación preserva el modo de revisión pedido y añade el header, pero **no es un control de privacidad**. Las previews privadas requieren protección de acceso en el hosting. [Guía de Google](https://developers.google.com/search/docs/crawling-indexing/block-indexing).
-
-### Activación futura en producción
-
-1. Cerrar la revisión legal y comercial y resolver las validaciones pendientes de [Estabilización y SEO](docs/Estabilizacion-SEO.md).
-2. Verificar en el hosting que el proyecto apunta a esta web y que `traveldays.tur.ar` tiene DNS correcto y certificado HTTPS válido.
-3. Configurar redirección permanente de HTTP a HTTPS y de `www.traveldays.tur.ar` al origen sin `www`, conservando ruta y query. El control del 28/10 confirmó HTTPS pero www sigue respondiendo 200; el dominio sirve una versión anterior. Ver [checklist actual](docs/05-DEPLOYMENT-CHECKLIST.md).
-4. Mantener `SITE_INDEXING=false` o ausente en previews. Establecer `SITE_INDEXING=true` **solo** en Production aprobada; fuera de Vercel, agregar `SITE_ENV=production`.
-5. Hacer un build y despliegue nuevo con ese valor, sin reutilizar un build de revisión. Este repositorio no se publicó en esta etapa.
-6. En el dominio real revisar las cinco páginas, canonical, OG/Twitter e imagen social, JSON-LD, `/sitemap.xml`, `/robots.txt`, 404 y headers efectivos. Confirmar que el hosting no añade otro `noindex` y conserva los headers de seguridad.
-7. Verificar la propiedad en Search Console y enviar el sitemap después de autorizar el lanzamiento. No se accedió a Search Console en este trabajo.
-
-## Validación local
-
-```powershell
-npm run lint
-npm run typecheck
-npm run verify:media
-npm test
-```
-
-`npm test` construye producción aislada, valida medios y hashes y ejecuta Playwright/Axe. El puerto predeterminado es 3211; puede cambiarse con `RECREAR_TEST_PORT` a otro libre distinto de 3210. No borrar un `qa.lock` sin identificar su proceso propietario.
-
-```powershell
-# Prueba local del modo indexable; no configura ningún hosting.
-$env:SITE_INDEXING = 'true'
-$env:SITE_ENV = 'production'
-$env:RECREAR_TEST_PORT = '3212'
-npm test -- tests/seo.spec.ts
-Remove-Item Env:SITE_INDEXING
-Remove-Item Env:SITE_ENV
-# Reconstruye revisión y ejecuta la suite completa antes de cerrar.
-npm test
-```
-
-Las 29 capturas originales y sus hashes permanecen como historia. Las 36 referencias en `tests/__screenshots__/chromium/current/` cubren cinco páginas en siete anchos y el menú. Su procedencia y los ajustes concurrentes preservados se registran en `tests/current-visual-reference.json`. Se fija transparencia reducida para esa comparación y se prueba el catálogo en ambos modos de transparencia con Axe. La suite compara el DOM real y guarda diferencias históricas informativas; no sustituye el hero, no elimina la narrativa ni compara rotaciones retiradas. Ver [estrategia visual](docs/Referencias-Visuales.md).
-
-El estado de Release 1.0 se detalla en [preparación de producción](docs/01-PRODUCTION-READINESS.md), con [QA actual](docs/04-QA-RESULTS.md), [seguridad](docs/03-SECURITY-AUDIT.md), [SEO/GEO](docs/02-SEO-GEO-AUDIT.md), [decisiones del cliente](docs/07-CLIENT-PENDING-DECISIONS.md) y [arquitectura futura](docs/06-FUTURE-PLATFORM-ARCHITECTURE.md). [Estabilizacion-SEO](docs/Estabilizacion-SEO.md) conserva resultados históricos.
-
-La consulta permite mes/año, pasajeros y localidad opcionales sin guardar datos. `traveldays:measurement` emite eventos locales con nombres/rutas/slugs permitidos; no hay proveedor, cookies ni transmisión externa de analítica. La CSP de producción conserva prerender y animaciones; los scripts inline necesarios siguen permitidos. CI y monitorización externa siguen pendientes.
-
-Playwright incluye Chromium, Firefox y WebKit; instalar sus motores con `npx playwright install chromium firefox webkit` si faltan. Las referencias de píxeles se comparan solo en Chromium. WebKit automatizado no acredita Safari/iPhone físico, indexación real ni rendimiento de usuarios.
-
-El historial de migración y las diferencias con el video original siguen disponibles en `docs/Migracion-Etapa-1.md`, `docs/Migracion-Etapas-2-5.md` y `docs/Bitacora.md`.
+Esta fase requiere análisis, presupuesto y aprobación propios; ningún módulo del portal se presenta como funcional en este release.
+10. Entrega, mantenimiento y propiedad operativa
+- El cliente debe conservar acceso a la titularidad del dominio, correo, cuentas de infraestructura, ficha de Google y redes.
+- Los cambios de contenido se solicitan al equipo de desarrollo; no hay CMS ni panel de edición en esta versión.
+- Revisar periódicamente dependencias, medios, enlaces, disponibilidad, backups y vencimiento del dominio.
+- Las condiciones comerciales, derechos de imagen y textos legales deben validarse con Travel Days y sus asesores.
+Responsables de desarrollo: Reac Studio · https://reacstudio.com
