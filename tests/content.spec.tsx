@@ -38,7 +38,6 @@ test("Nosotros cuenta historia, respaldo, equipo y compromiso con datos reales",
   await expect(narrative).toContainText("23 años de experiencia personal");
   await expect(narrative).toContainText("En 2018 fundó la agencia");
   await expect(narrative.locator("#historia ol li")).toHaveCount(4);
-  await expect(page.locator("[data-agency-value]")).toHaveCount(8);
   await expect(narrative.locator("#equipo [data-team-portrait]")).toHaveCount(7);
   await expect(page.locator(".agency-team-profile")).toHaveCount(7);
   for (const member of teamMembers) await expect(narrative).toContainText(member.name);

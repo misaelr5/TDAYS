@@ -69,11 +69,11 @@ test("teléfono, correo y redes emiten intención sin transmitir destinos extern
   });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/contacto#oficina");
-  await page.locator('#oficina a[href^="tel:"]').first().click();
+  // The office panel no longer lists a tel: link; the phone is reached through WhatsApp.
+  await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
   await page.locator('footer a[href^="mailto:"]').first().click();
   await page.locator('footer').getByRole("link", { name: "Instagram", exact: true }).click();
   expect(await page.evaluate(() => (window as unknown as { __measurement: unknown[] }).__measurement)).toEqual([
-    { event: "phone_click", page: "/contacto" },
     { event: "email_click", page: "/contacto" },
     { event: "social_click", page: "/contacto" },
   ]);
