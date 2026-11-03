@@ -1,5 +1,7 @@
 # Travel Days
 
+**Estado vigente (03/11/2026):** ver [docs/entrega/](docs/entrega/): [post-lanzamiento técnico](docs/entrega/POST_LANZAMIENTO.md), [documentación para el cliente](docs/entrega/DOCUMENTACION_CLIENTE.md) y [virtudes](docs/entrega/VIRTUDES_TRAVEL_DAYS.md). La preview está publicada en Cloudflare Workers; la activación en `traveldays.tur.ar` espera la delegación DNS en NIC Argentina. Los párrafos siguientes son antecedentes.
+
 Revisión vigente del 01/11: [video anterior restaurado y nuevo módulo de Egresados](docs/14-REVISION-EGRESADOS-Y-VIDEO-2026-11-01.md). El [informe previo](docs/13-AUDITORIA-DISENO-2026-11-01.md) se conserva como antecedente. Trabajo local, sin publicación.
 
 Revisión actual del 29/10: [entrega, validación y pendientes](docs/11-ENTREGA-2026-10-29.md), con [evaluación Cloudflare](docs/08-CLOUDFLARE-EVALUATION-2026-10-29.md). Los informes del 28/10 se conservan como antecedentes.
