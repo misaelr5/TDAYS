@@ -42,6 +42,7 @@ export function ConsultationSection() {
           <Sticker kind="pin" at={{ top: "-26px", right: "0" }} tilt={12} size="clamp(40px, 4vw, 56px)" />
           <h2 id="consultation-title">Más formas de viajar.<br />La misma cercanía.</h2>
           <p>Además de egresados, hay más formas de viajar con nosotros. Elegí tu opción y conversemos por WhatsApp.</p>
+          <Link className="text-link" href="/turismo-joven">Turismo joven: empezá a planificar con tu grupo <Arrow /></Link>
         </div>
         <ul className={styles.serviceList}>
           {services.map(service => <li key={service.title} data-soft-reveal="">

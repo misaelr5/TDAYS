@@ -22,7 +22,7 @@ test("el interruptor exige aprobación literal y entorno producción; previews f
   }
 });
 
-test(`SEO real: modo ${indexingEnabled ? "indexable" : "revisión"} en las cinco rutas`, async ({ page, request }) => {
+test(`SEO real: modo ${indexingEnabled ? "indexable" : "revisión"} en las rutas públicas`, async ({ page, request }) => {
   for (const path of publicPaths) {
     const response = await page.goto(path);
     expect(response?.status()).toBe(200);
@@ -42,9 +42,11 @@ test(`SEO real: modo ${indexingEnabled ? "indexable" : "revisión"} en las cinco
     expect(localImage.status()).toBe(200);
     expect(localImage.headers()["content-type"]).toContain("image/jpeg");
     const schema = await page.locator('script[type="application/ld+json"]').allTextContents();
-    expect(schema).toHaveLength(1);
-    const organization = JSON.parse(schema[0]);
-    expect(organization).toEqual({ "@context": "https://schema.org", "@type": "TravelAgency", "@id": `${publicOrigin}/#organization`, name: site.name, url: publicOrigin, image: socialImage.url, telephone: site.phone, email: site.email, address: site.postalAddress, openingHours: site.openingHours, sameAs: [site.instagram, site.facebook] });
+    const entities = schema.map(value => JSON.parse(value));
+    const organization = entities.find(entity => entity["@type"] === "TravelAgency");
+    expect(organization).toMatchObject({ "@context": "https://schema.org", "@type": "TravelAgency", "@id": `${publicOrigin}/#organization`, name: site.name, url: publicOrigin, image: socialImage.url, telephone: site.phone, email: site.email, address: site.postalAddress, openingHours: site.openingHours, sameAs: [site.instagram, site.facebook], logo: `${publicOrigin}/media/logos/travel-days-color.png` });
+    expect(entities.filter(entity => entity["@type"] === "TravelAgency")).toHaveLength(1);
+    expect(entities.find(entity => entity["@type"] === "WebSite")).toMatchObject({ name: site.name, url: publicOrigin, publisher: { "@id": organization["@id"] } });
     expect(organization).not.toHaveProperty("aggregateRating");
     expect(organization).not.toHaveProperty("offers");
   }

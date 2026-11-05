@@ -16,10 +16,13 @@ import "@/features/destinations/details.css";
 
 export const viewport: Viewport = { themeColor: "#006cf9" };
 export const metadata: Metadata = {
-  ...pageMetadata("Travel Days — Egresados de primaria y secundaria", "Viajes de egresados de primaria y secundaria con Travel Days, en Villa Dolores, Córdoba. Consultá por tu grupo y conocé nuestras propuestas de turismo.", "/"),
+  ...pageMetadata("Travel Days | Egresados y turismo en Villa Dolores", "Agencia de viajes en Villa Dolores, Traslasierra, Córdoba. Egresados de primaria y secundaria, turismo joven y viajes nacionales e internacionales. Consultanos.", "/"),
   metadataBase: new URL(publicOrigin),
+  verification: process.env.GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+    : undefined,
   title: {
-    default: "Travel Days — Egresados de primaria y secundaria",
+    default: "Travel Days | Egresados y turismo en Villa Dolores",
     template: "%s | Travel Days",
   },
 };
@@ -31,6 +34,8 @@ const organization = {
   name: site.name,
   url: publicOrigin,
   image: socialImage.url,
+  logo: `${publicOrigin}/media/logos/travel-days-color.png`,
+  description: "Agencia de viajes en Villa Dolores, Traslasierra, Córdoba. Viajes de egresados, educativos, turismo nacional, internacional y receptivo.",
   telephone: site.phone,
   email: site.email,
   address: site.postalAddress,
@@ -44,6 +49,7 @@ export default function RootLayout({
     <html lang="es-AR" data-scroll-behavior="smooth" className={`${inter.variable} ${interExtended.variable}`}>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organization).replace(/</g, "\\u003c") }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ "@context": "https://schema.org", "@type": "WebSite", "@id": `${publicOrigin}/#website`, url: publicOrigin, name: site.name, inLanguage: "es-AR", publisher: { "@id": organization["@id"] } }).replace(/</g, "\\u003c") }} />
         <a className="skip-link" href="#contenido" tabIndex={0}>
           Saltar al contenido
         </a>

@@ -20,7 +20,7 @@ export function SiteFooter() {
         {/* On mobile only this column stays, as one compact row: it is the no-JS menu target. */}
         <div className={`${styles.column} ${styles.routes}`}><h2>Travel Days</h2><Link href="/">Inicio</Link><Link href="/#egresados">Egresados</Link><Link href="/destinos">Destinos</Link><Link href="/nosotros">Nosotros</Link><Link href="/contacto">Contacto</Link></div>
         <div className={`${styles.column} ${styles.extra}`}><h2>Conversemos</h2><a href={whatsappUrl()} target="_blank" rel="noreferrer">WhatsApp</a><a href={`mailto:${site.email}`}>Email</a><a href={site.instagram} target="_blank" rel="noreferrer">Instagram</a><a href={site.facebook} target="_blank" rel="noreferrer">Facebook</a></div>
-        <div className={`${styles.column} ${styles.extra}`}><h2>Tu viaje</h2><Link href="/contacto#consulta">Organizá tu viaje</Link><Link href="/nosotros#viajes-escolares">Preguntas de viajes escolares</Link><Link href="/contacto#experiencia">Compartí tu experiencia</Link><Link href="/nosotros#historia">Nuestra historia</Link></div>
+        <div className={`${styles.column} ${styles.extra}`}><h2>Tu viaje</h2><Link href="/turismo-joven">Turismo joven</Link><Link href="/contacto#consulta">Organizá tu viaje</Link><Link href="/nosotros#viajes-escolares">Preguntas de viajes escolares</Link><Link href="/contacto#experiencia">Compartí tu experiencia</Link><Link href="/nosotros#historia">Nuestra historia</Link></div>
         <div className={styles.contact}>
           <Sticker kind="plane" at={{ top: "-30px", right: "0" }} tilt={-14} size="clamp(44px, 4vw, 60px)" />
           <h2>Sigamos viajando.</h2>

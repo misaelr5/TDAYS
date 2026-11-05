@@ -83,7 +83,13 @@ export async function serveMedia(request, assets) {
 const worker = {
   /** @param {Request} request @param {{ ASSETS: { fetch(request: Request): Promise<Response> } }} env @param {unknown} ctx */
   fetch(request, env, ctx) {
-    if (new URL(request.url).pathname.startsWith("/media/")) return serveMedia(request, env.ASSETS);
+    const url = new URL(request.url);
+    if (url.protocol === "http:" && ["traveldays.tur.ar", "www.traveldays.tur.ar"].includes(url.hostname)) {
+      url.protocol = "https:";
+      url.hostname = "traveldays.tur.ar";
+      return Response.redirect(url.toString(), 308);
+    }
+    if (url.pathname.startsWith("/media/")) return serveMedia(request, env.ASSETS);
     return openNext.fetch(request, env, ctx);
   },
 };

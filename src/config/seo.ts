@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 /** Confirmed production origin. Preview builds still canonicalize to production. */
 export const publicOrigin = "https://traveldays.tur.ar";
-export const publicPaths = ["/", "/destinos", "/nosotros", "/contacto", "/terminos"] as const;
+export const publicPaths = ["/", "/destinos", "/turismo-joven", "/nosotros", "/contacto", "/terminos"] as const;
 export type PublicPath = typeof publicPaths[number];
 
 // Deliberately opt-in and evaluated at build time for prerendered metadata/routes.

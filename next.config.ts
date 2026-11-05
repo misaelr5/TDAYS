@@ -10,7 +10,16 @@ const config: NextConfig = {
   poweredByHeader: false,
   // One canonical host: www keeps path and query and lands on the apex domain.
   async redirects() {
-    return [{ source: "/:path*", has: [{ type: "host", value: "www.traveldays.tur.ar" }], destination: "https://traveldays.tur.ar/:path*", permanent: true }];
+    return [
+      // Preserve the verified URLs of the previous website after the migration.
+      ...[
+        ["/index.html", "/"],
+        ["/turismojoven.html", "/turismo-joven"],
+        ["/nacionales.html", "/destinos"],
+        ["/internacionales.html", "/destinos"],
+      ].map(([source, path]) => ({ source, destination: `https://traveldays.tur.ar${path}`, permanent: true })),
+      { source: "/:path*", has: [{ type: "host", value: "www.traveldays.tur.ar" }], destination: "https://traveldays.tur.ar/:path*", permanent: true },
+    ];
   },
   async headers() {
     return [
