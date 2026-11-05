@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1 --port 3210",
     "build": "next build",
+    "build:production": "npm run verify:media && node scripts/build-production.mjs",
     "prebuild": "npm run verify:media",
     "verify:media": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/verify-media.mjs",
     "start": "next start --hostname 127.0.0.1 --port 3210",

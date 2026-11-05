@@ -47,6 +47,9 @@ test(`SEO real: modo ${indexingEnabled ? "indexable" : "revisión"} en las rutas
     expect(organization).toMatchObject({ "@context": "https://schema.org", "@type": "TravelAgency", "@id": `${publicOrigin}/#organization`, name: site.name, url: publicOrigin, image: socialImage.url, telephone: site.phone, email: site.email, address: site.postalAddress, openingHours: site.openingHours, sameAs: [site.instagram, site.facebook], logo: `${publicOrigin}/media/logos/travel-days-color.png` });
     expect(entities.filter(entity => entity["@type"] === "TravelAgency")).toHaveLength(1);
     expect(entities.find(entity => entity["@type"] === "WebSite")).toMatchObject({ name: site.name, url: publicOrigin, publisher: { "@id": organization["@id"] } });
+    if (indexingEnabled) {
+      await expect(page.locator('meta[name="googlebot"]')).toHaveAttribute("content", /max-image-preview:large/);
+    }
     expect(organization).not.toHaveProperty("aggregateRating");
     expect(organization).not.toHaveProperty("offers");
   }
