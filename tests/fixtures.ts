@@ -31,6 +31,9 @@ export const test = base.extend<{ networkGuard: void }>({
       }
     });
     context.on("requestfailed", request => {
+      // Hosting can inject third-party beacons denied by CSP before routing.
+      // This assertion covers application assets on the tested origin only.
+      if (new URL(request.url()).origin !== new URL(baseURL!).origin) return;
       // Navigation may cancel a prefetch in any engine. HTTP failures and other
       // network failures remain errors; only explicit cancellation codes differ.
       const cancelled = ["net::ERR_ABORTED", "NS_BINDING_ABORTED", "cancelled", "Load request cancelled"].includes(request.failure()?.errorText ?? "");

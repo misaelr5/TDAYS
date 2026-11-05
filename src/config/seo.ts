@@ -10,7 +10,11 @@ export type PublicPath = typeof publicPaths[number];
 // Other hosts must explicitly identify the production build with SITE_ENV.
 const deploymentEnvironment = process.env.VERCEL_ENV ?? (process.env.VERCEL === "1" ? undefined : process.env.SITE_ENV);
 export const indexingEnabled = process.env.SITE_INDEXING === "true" && deploymentEnvironment === "production";
-export const indexingRobots: Metadata["robots"] = { index: indexingEnabled, follow: indexingEnabled };
+export const indexingRobots: Metadata["robots"] = {
+  index: indexingEnabled,
+  follow: indexingEnabled,
+  ...(indexingEnabled ? { googleBot: { index: true, follow: true, "max-image-preview": "large" as const, "max-snippet": -1, "max-video-preview": -1 } } : {}),
+};
 export const publicUrl = (path: string) => `${publicOrigin}${path === "/" ? "" : path}`;
 export const socialImage = {
   url: publicUrl("/opengraph-image.jpg"),

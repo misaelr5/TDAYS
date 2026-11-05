@@ -42,8 +42,18 @@ test(`SEO real: modo ${indexingEnabled ? "indexable" : "revisión"} en las cinco
     expect(localImage.status()).toBe(200);
     expect(localImage.headers()["content-type"]).toContain("image/jpeg");
     const schema = await page.locator('script[type="application/ld+json"]').allTextContents();
-    expect(schema).toHaveLength(1);
-    const organization = JSON.parse(schema[0]);
+    expect(schema).toHaveLength(path === "/" ? 2 : 1);
+    const entities = schema.map(value => JSON.parse(value));
+    const organization = entities.find(entity => entity["@type"] === "TravelAgency");
+    if (path === "/") {
+      expect(entities.find(entity => entity["@type"] === "WebSite")).toMatchObject({
+        "@id": `${publicOrigin}/#website`, name: site.name, url: publicOrigin,
+        inLanguage: "es-AR", publisher: { "@id": `${publicOrigin}/#organization` },
+      });
+    }
+    if (indexingEnabled) {
+      await expect(page.locator('meta[name="googlebot"]')).toHaveAttribute("content", /max-image-preview:large/);
+    }
     expect(organization).toEqual({ "@context": "https://schema.org", "@type": "TravelAgency", "@id": `${publicOrigin}/#organization`, name: site.name, url: publicOrigin, image: socialImage.url, telephone: site.phone, email: site.email, address: site.postalAddress, openingHours: site.openingHours, sameAs: [site.instagram, site.facebook] });
     expect(organization).not.toHaveProperty("aggregateRating");
     expect(organization).not.toHaveProperty("offers");
