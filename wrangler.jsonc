@@ -12,6 +12,8 @@
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS",
+    // Serve verification HTML at its exact filename; Next owns page redirects.
+    "html_handling": "none",
     "run_worker_first": ["/media/*"]
   },
   // next/image optimization through Cloudflare Images (free tier: 5,000 unique transformations/month).
